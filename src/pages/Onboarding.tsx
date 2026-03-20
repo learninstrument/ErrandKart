@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBasket, PackageCheck, MapPin } from 'lucide-react';
 
-// Using uppercase 'UI' to match your Vercel folder structure!
-import { Button } from '../components/ui/Button';
+// FIXED: Using uppercase 'UI' 
+import { Button } from '../components/UI/Button';
 
 const ONBOARDING_DATA = [
   { id: 1, title: "You Make the List", description: "Skip the market traffic. We source the freshest items from local markets straight to your door.", icon: <ShoppingBasket size={80} strokeWidth={1.5} className="text-[#FF6600]" /> },

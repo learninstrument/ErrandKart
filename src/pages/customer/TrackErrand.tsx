@@ -1,9 +1,11 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, MessageSquare, CheckCircle, Circle, Navigation } from 'lucide-react';
-// Using uppercase 'UI' to match your Vercel folder structure
-import { Button } from '../../components/ui/Button';
 
-export const TrackErrand = () => {
+// FIXED: Using uppercase 'UI'
+import { Button } from '../../components/UI/Button';
+
+export const TrackErrand: React.FC = () => {
   const navigate = useNavigate();
 
   const steps = [
@@ -15,7 +17,6 @@ export const TrackErrand = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8F9FA] w-full">
-      {/* --- DESKTOP TOP NAVIGATION --- */}
       <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
         <div className="flex items-center gap-10">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/customer/dashboard')}>
@@ -35,7 +36,6 @@ export const TrackErrand = () => {
         </div>
       </header>
 
-      {/* --- MOBILE HEADER --- */}
       <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400 hover:text-[#FF6600] transition-colors">
           <ArrowLeft size={24} />
@@ -44,12 +44,8 @@ export const TrackErrand = () => {
         <div className="w-8"></div>
       </header>
 
-      {/* --- MAIN CONTENT AREA --- */}
       <main className="flex-1 w-full max-w-6xl mx-auto md:p-8 flex flex-col md:flex-row gap-0 md:gap-8 relative">
-        
-        {/* LEFT COLUMN: Map & Errand Info */}
         <div className="w-full md:w-2/3 flex flex-col">
-          {/* Status Header */}
           <div className="bg-white p-6 md:p-8 md:rounded-t-3xl border-b border-gray-100 flex items-center justify-between shadow-sm z-10">
             <div>
               <h3 className="font-black text-gray-900 text-xl md:text-2xl mb-1">Grocery Pickup</h3>
@@ -60,36 +56,25 @@ export const TrackErrand = () => {
             </span>
           </div>
 
-          {/* Map Placeholder */}
           <div className="h-[40vh] md:h-[60vh] bg-gray-200 relative w-full overflow-hidden md:rounded-b-3xl">
              <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(#9ca3af 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
-             
-             {/* Map Pins */}
              <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-gray-800 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
                 <div className="w-2 h-2 bg-white rounded-full"></div>
              </div>
-             
              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-[#FF6600] rounded-full border-4 border-white shadow-xl flex items-center justify-center animate-bounce z-10">
                 <Navigation size={20} className="text-white fill-current transform rotate-45" />
              </div>
-
-             {/* Route Line */}
              <svg className="absolute inset-0 w-full h-full pointer-events-none">
                <path d="M 25% 25% Q 50% 25% 50% 50%" stroke="#FF6600" strokeWidth="4" fill="none" strokeDasharray="10,5" className="animate-pulse" />
              </svg>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Timeline & Runner Info */}
         <div className="w-full md:w-1/3 flex flex-col bg-white md:rounded-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-sm z-20 -mt-6 md:mt-0 border border-gray-100 overflow-hidden">
-          
-          {/* Timeline */}
           <div className="p-6 md:p-8 flex-1">
             <h4 className="font-bold text-gray-900 mb-6 text-lg">Activity History</h4>
             <div className="space-y-8 pl-2 relative">
-              {/* Vertical Connecting Line */}
               <div className="absolute left-[15px] top-2 bottom-6 w-0.5 bg-gray-100"></div>
-
               {steps.map((step, index) => (
                 <div key={index} className="flex gap-6 relative z-10">
                   <div className="flex-shrink-0 bg-white">
@@ -110,11 +95,10 @@ export const TrackErrand = () => {
             </div>
           </div>
 
-          {/* Runner Contact Sheet */}
           <div className="p-6 md:p-8 bg-gray-50 border-t border-gray-100 pb-10 md:pb-8">
             <div className="flex justify-between items-center mb-6">
                <div className="flex items-center gap-4">
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Michael" alt="Runner" className="w-14 h-14 bg-white rounded-2xl border-2 border-gray-200 shadow-sm" />
+                  <img src="[https://api.dicebear.com/7.x/avataaars/svg?seed=Michael](https://api.dicebear.com/7.x/avataaars/svg?seed=Michael)" alt="Runner" className="w-14 h-14 bg-white rounded-2xl border-2 border-gray-200 shadow-sm" />
                   <div>
                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Your Runner</p>
                     <h4 className="font-black text-gray-900 text-lg leading-tight">Michael B.</h4>
@@ -134,7 +118,6 @@ export const TrackErrand = () => {
               </Button>
             </div>
           </div>
-
         </div>
       </main>
     </div>

@@ -2,12 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Clock, Plus, ShoppingBasket, Pill } from 'lucide-react';
 import { BottomNav } from './BottomNav';
-import { Button } from '../../components/ui/Button';
+
+// FIXED: Using uppercase 'UI'
+import { Button } from '../../components/UI/Button';
 
 export const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();
 
-  // Mock data matching the PDF feed style
   const userErrands = [
     { id: 1, title: 'Grocery Pickup at Whole Foods', price: '₦4,500', location: 'Lekki Phase 1', time: 'In Progress', status: 'active', icon: <ShoppingBasket size={24} /> },
     { id: 2, title: 'Pharmacy Run for Medication', price: '₦2,000', location: 'Victoria Island', time: 'Yesterday', status: 'completed', icon: <Pill size={24} /> },
@@ -15,7 +16,6 @@ export const CustomerDashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8F9FA] w-full">
-      {/* --- DESKTOP TOP NAVIGATION (From PDF) --- */}
       <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
         <div className="flex items-center gap-10">
           <div className="flex items-center gap-2">
@@ -24,10 +24,7 @@ export const CustomerDashboard: React.FC = () => {
           </div>
           <nav className="flex gap-8">
             <button className="text-[#FF6600] font-bold border-b-2 border-[#FF6600] pb-1">Dashboard</button>
-            
-            {/* Connected to Track Errand */}
             <button onClick={() => navigate('/customer/track')} className="text-gray-500 hover:text-gray-900 font-medium pb-1 transition-colors">Activity</button>
-            
             <button className="text-gray-500 hover:text-gray-900 font-medium pb-1 transition-colors">Wallet</button>
           </nav>
         </div>
@@ -41,7 +38,6 @@ export const CustomerDashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* --- MOBILE HEADER --- */}
       <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-[#FF6600] rounded-lg flex items-center justify-center text-white font-black italic text-xs">K</div>
@@ -52,10 +48,7 @@ export const CustomerDashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* --- MAIN CONTENT AREA --- */}
       <main className="flex-1 w-full max-w-5xl mx-auto p-6 md:p-10 pb-24 md:pb-10">
-        
-        {/* Welcome & Search Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-1">Welcome back, Sarah</h2>
@@ -79,7 +72,6 @@ export const CustomerDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* --- FEED SECTION (Modern List View) --- */}
         <div>
           <div className="flex items-center justify-between mb-4 px-1">
              <h3 className="text-lg font-bold text-gray-900">Recent Errands</h3>
@@ -93,7 +85,6 @@ export const CustomerDashboard: React.FC = () => {
                 onClick={() => navigate('/customer/track')}
                 className="group flex items-center justify-between p-4 md:p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
               >
-                {/* Left: Icon & Details */}
                 <div className="flex items-center gap-4 md:gap-5 w-full md:w-auto">
                   <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${errand.status === 'active' ? 'bg-orange-50 text-[#FF6600] group-hover:bg-[#FF6600] group-hover:text-white' : 'bg-gray-50 text-gray-500 group-hover:bg-gray-100'}`}>
                     {errand.icon}
@@ -111,7 +102,6 @@ export const CustomerDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Right: Price & Status */}
                 <div className="hidden md:flex flex-col items-end justify-center min-w-[100px]">
                   <span className="font-bold text-gray-900 text-lg">{errand.price}</span>
                   {errand.status === 'active' && (
@@ -126,7 +116,6 @@ export const CustomerDashboard: React.FC = () => {
         </div>
       </main>
 
-      {/* Mobile Bottom Nav */}
       <div className="md:hidden">
         <BottomNav activeTab="home" />
       </div>

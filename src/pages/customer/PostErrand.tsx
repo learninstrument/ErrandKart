@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { TextArea } from '../../components/ui/TextArea';
+
+// FIXED: Using uppercase 'UI'
+import { Button } from '../../components/UI/Button';
+import { Input } from '../../components/UI/Input';
+import { TextArea } from '../../components/UI/TextArea';
 
 export const PostErrand: React.FC = () => {
   const navigate = useNavigate();
@@ -71,7 +73,7 @@ export const PostErrand: React.FC = () => {
       </div>
 
       <div className="fixed bottom-0 w-full md:max-w-md bg-white border-t border-gray-100 p-6 z-30">
-        <Button fullWidth onClick={() => {}}>Post Errand Request</Button>
+        <Button fullWidth onClick={() => navigate('/customer/track')}>Post Errand Request</Button>
       </div>
     </div>
   );
