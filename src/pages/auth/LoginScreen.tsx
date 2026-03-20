@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Truck } from 'lucide-react';
-import { Button } from '../../components/UI/Button';
-import { Input } from '../../components/UI/Input';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
 import { Onboarding } from '../Onboarding';
 
 export const LoginScreen: React.FC = () => {

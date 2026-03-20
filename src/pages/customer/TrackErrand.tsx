@@ -1,12 +1,11 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, MessageSquare, CheckCircle, Circle, Navigation } from 'lucide-react';
+// Using uppercase 'UI' to match your Vercel folder structure
 import { Button } from '../../components/ui/Button';
 
-export const TrackErrand: React.FC = () => {
+export const TrackErrand = () => {
   const navigate = useNavigate();
 
-  // Mock timeline data based on PDF
   const steps = [
     { title: 'Errand Posted', subtitle: 'Request sent to the system', completed: true },
     { title: 'Runner Assigned', subtitle: 'Michael B. accepted your errand', completed: true },
@@ -115,7 +114,7 @@ export const TrackErrand: React.FC = () => {
           <div className="p-6 md:p-8 bg-gray-50 border-t border-gray-100 pb-10 md:pb-8">
             <div className="flex justify-between items-center mb-6">
                <div className="flex items-center gap-4">
-                  <img src="[https://api.dicebear.com/7.x/avataaars/svg?seed=Michael](https://api.dicebear.com/7.x/avataaars/svg?seed=Michael)" alt="Runner" className="w-14 h-14 bg-white rounded-2xl border-2 border-gray-200 shadow-sm" />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Michael" alt="Runner" className="w-14 h-14 bg-white rounded-2xl border-2 border-gray-200 shadow-sm" />
                   <div>
                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Your Runner</p>
                     <h4 className="font-black text-gray-900 text-lg leading-tight">Michael B.</h4>

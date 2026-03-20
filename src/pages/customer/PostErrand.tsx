@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home } from 'lucide-react';
-import { Button } from '../../components/UI/Button';
-import { Input } from '../../components/UI/Input';
-import { TextArea } from '../../components/UI/TextArea';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { TextArea } from '../../components/ui/TextArea';
 
 export const PostErrand: React.FC = () => {
   const navigate = useNavigate();

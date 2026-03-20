@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Clock, Plus, ShoppingBasket, Pill } from 'lucide-react';
 import { BottomNav } from './BottomNav';
-import { Button } from '../../components/UI/Button';
+import { Button } from '../../components/ui/Button';
 
 export const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();
