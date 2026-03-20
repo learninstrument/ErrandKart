@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -6,7 +6,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Add 'theme' and 'icon' here so Vercel knows they are allowed properties
+// Vercel needs this interface to know 'theme' and 'icon' are allowed!
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   theme?: 'orange' | 'green';

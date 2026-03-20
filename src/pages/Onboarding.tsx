@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBasket, PackageCheck, MapPin } from 'lucide-react';
 
-// Fixed import path to match your folder structure
+// Fixed import path (Removed one set of ../)
 import { Button } from '../components/UI/Button';
 
 const ONBOARDING_DATA = [
@@ -12,7 +12,6 @@ const ONBOARDING_DATA = [
   { id: 3, title: "Track Every Step", description: "Real-time updates and secure escrow payments. You only pay when the job is done.", icon: <MapPin size={80} strokeWidth={1.5} className="text-[#FF6600]" /> }
 ];
 
-// Added interface so Vercel doesn't throw 'IntrinsicAttributes' errors
 interface OnboardingProps {
   isDesktopSidePanel?: boolean;
 }
