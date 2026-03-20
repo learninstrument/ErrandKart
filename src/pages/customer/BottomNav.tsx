@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, FileText, Wallet, User } from 'lucide-react';
 
@@ -11,17 +10,16 @@ export const BottomNav = ({ activeTab }: { activeTab: 'home' | 'orders' | 'walle
         <span className="text-[10px] font-bold">Home</span>
       </button>
       
-      {/* Connected to Track Errand */}
       <button onClick={() => navigate('/customer/track')} className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'orders' ? 'text-[#FF6600]' : 'text-gray-400 hover:text-gray-600'}`}>
         <FileText size={24} className={activeTab === 'orders' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Activity</span>
       </button>
       
-      <button onClick={() => {}} className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'wallet' ? 'text-[#FF6600]' : 'text-gray-400 hover:text-gray-600'}`}>
+      <button className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'wallet' ? 'text-[#FF6600]' : 'text-gray-400 hover:text-gray-600'}`}>
         <Wallet size={24} className={activeTab === 'wallet' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Wallet</span>
       </button>
-      <button onClick={() => {}} className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'profile' ? 'text-[#FF6600]' : 'text-gray-400 hover:text-gray-600'}`}>
+      <button className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'profile' ? 'text-[#FF6600]' : 'text-gray-400 hover:text-gray-600'}`}>
         <User size={24} className={activeTab === 'profile' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Profile</span>
       </button>
