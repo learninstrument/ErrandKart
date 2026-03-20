@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBasket, PackageCheck, MapPin } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
+
+// Fixed import path to match your folder structure
+import { Button } from '../components/UI/Button';
 
 const ONBOARDING_DATA = [
   { id: 1, title: "You Make the List", description: "Skip the market traffic. We source the freshest items from local markets straight to your door.", icon: <ShoppingBasket size={80} strokeWidth={1.5} className="text-[#FF6600]" /> },
@@ -10,7 +12,7 @@ const ONBOARDING_DATA = [
   { id: 3, title: "Track Every Step", description: "Real-time updates and secure escrow payments. You only pay when the job is done.", icon: <MapPin size={80} strokeWidth={1.5} className="text-[#FF6600]" /> }
 ];
 
-// Added an explicit Interface to fix the TypeScript error on Vercel
+// Added interface so Vercel doesn't throw 'IntrinsicAttributes' errors
 interface OnboardingProps {
   isDesktopSidePanel?: boolean;
 }

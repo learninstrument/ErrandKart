@@ -1,38 +1,41 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
- function cn(...inputs: ClassValue[]) {
+function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+// Add 'theme' and 'icon' here so Vercel knows they are allowed properties
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  theme?: 'orange' | 'green';
+  icon?: React.ReactNode;
   error?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, error, ...props }, ref) => {
+  ({ className, type = "text", label, theme = 'orange', icon, error, ...props }, ref) => {
+    const focusRing = theme === 'orange' ? 'focus:ring-[#FF6600]' : 'focus:ring-[#2E8B57]';
+    
     return (
-      <div className="w-full flex flex-col gap-1.5 mb-4">
-        {label && (
-          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
-            {label}
-          </label>
-        )}
-        <input
-          type={type}
-          className={cn(
-            "flex h-12 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-asphalt-grey transition-colors",
-            "file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kart-orange focus-visible:border-transparent",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            error && "border-red-500 focus-visible:ring-red-500",
-            className
-          )}
-          ref={ref}
-          {...props}
-        />
+      <div className="flex flex-col gap-1.5 mb-4 text-left w-full">
+        {label && <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{label}</label>}
+        <div className="relative">
+          {icon && <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">{icon}</div>}
+          <input
+            type={type}
+            ref={ref}
+            className={cn(
+              "flex h-12 w-full rounded-xl border border-gray-200 bg-gray-50 py-2 text-sm text-[#333333] transition-colors focus:outline-none focus:ring-2 focus:border-transparent placeholder:text-gray-400",
+              icon ? 'pl-11 pr-4' : 'px-4',
+              focusRing,
+              error && "border-red-500 focus:ring-red-500",
+              className
+            )}
+            {...props}
+          />
+        </div>
         {error && <span className="text-xs text-red-500 ml-1 font-medium">{error}</span>}
       </div>
     );
