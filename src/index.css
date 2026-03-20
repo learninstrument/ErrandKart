@@ -1,0 +1,21 @@
+@import url('[https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap](https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap)');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f3f4f6; /* Light gray outer background */
+  color: #333333;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Hide scrollbar for a cleaner mobile-app feel but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
