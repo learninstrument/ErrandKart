@@ -1,111 +1,160 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Clock, Plus, ShoppingBasket, Pill } from 'lucide-react';
+import { Search, MapPin, Clock, Plus, ShoppingBasket, Pill, Wallet, Sparkles } from 'lucide-react';
 import { BottomNav } from './BottomNav';
-
-// FIXED: Using uppercase 'UI'
 import { Button } from '../../components/UI/Button';
 
 export const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const userErrands = [
-    { id: 1, title: 'Grocery Pickup at Whole Foods', price: '₦4,500', location: 'Lekki Phase 1', time: 'In Progress', status: 'active', icon: <ShoppingBasket size={24} /> },
-    { id: 2, title: 'Pharmacy Run for Medication', price: '₦2,000', location: 'Victoria Island', time: 'Yesterday', status: 'completed', icon: <Pill size={24} /> },
+    {
+      id: 1,
+      title: 'Grocery Pickup at Whole Foods',
+      price: '₦4,500',
+      location: 'Lekki Phase 1',
+      time: 'In Progress',
+      status: 'active',
+      icon: <ShoppingBasket size={24} />,
+    },
+    {
+      id: 2,
+      title: 'Pharmacy Run for Medication',
+      price: '₦2,000',
+      location: 'Victoria Island',
+      time: 'Yesterday',
+      status: 'completed',
+      icon: <Pill size={24} />,
+    },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8F9FA] w-full">
-      <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
+    <div className="flex min-h-screen w-full flex-col bg-transparent">
+      <header className="sticky top-0 z-30 border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <div className="flex items-center gap-10">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#FF6600] rounded-lg flex items-center justify-center text-white font-black italic">K</div>
-            <h1 className="text-xl font-black text-gray-900 tracking-tight">Errand<span className="text-[#FF6600]">Kart</span></h1>
-          </div>
-          <nav className="flex gap-8">
-            <button className="text-[#FF6600] font-bold border-b-2 border-[#FF6600] pb-1">Dashboard</button>
-            <button onClick={() => navigate('/customer/track')} className="text-gray-500 hover:text-gray-900 font-medium pb-1 transition-colors">Activity</button>
-            <button className="text-gray-500 hover:text-gray-900 font-medium pb-1 transition-colors">Wallet</button>
-          </nav>
-        </div>
-        <div className="flex items-center gap-6">
-          <Button onClick={() => navigate('/customer/post-errand')} className="gap-2 px-6 py-2.5 shadow-md shadow-orange-200">
-            <Plus size={18} /> Post New Errand
-          </Button>
-          <div className="w-10 h-10 rounded-full bg-orange-50 text-[#FF6600] flex items-center justify-center font-bold border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors">
-            SD
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-kart-orange text-xs font-black text-white">
+                K
+              </div>
+              <h1 className="text-xl font-black tracking-tight text-white">
+                Errand<span className="text-kart-orange">Kart</span>
+              </h1>
+            </div>
+
+            <div className="hidden items-center gap-4 md:flex">
+              <Button onClick={() => navigate('/customer/post-errand')} className="gap-2">
+                <Plus size={17} /> Post Errand
+              </Button>
+              <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 font-bold text-white">
+                SD
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#FF6600] rounded-lg flex items-center justify-center text-white font-black italic text-xs">K</div>
-          <h1 className="text-lg font-black text-gray-900 tracking-tight">Errand<span className="text-[#FF6600]">Kart</span></h1>
-        </div>
-        <div className="w-9 h-9 rounded-full bg-orange-50 text-[#FF6600] flex items-center justify-center font-bold text-sm border border-orange-100">
-          SD
-        </div>
-      </header>
-
-      <main className="flex-1 w-full max-w-5xl mx-auto p-6 md:p-10 pb-24 md:pb-10">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-1">Welcome back, Sarah</h2>
-            <p className="text-gray-500">Manage your errands and track deliveries.</p>
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:px-10 md:pb-10">
+        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#111722] via-[#121826] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)] md:p-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Control center</p>
+              <h2 className="mb-1 text-3xl font-black tracking-tight">Welcome back, Sarah</h2>
+              <p className="text-sm text-white/70">Book fast errands, track runner movement, and stay in charge.</p>
+            </div>
+            <Button onClick={() => navigate('/customer/post-errand')} className="gap-2 md:hidden">
+              <Plus size={17} /> Post Errand
+            </Button>
           </div>
-          
-          <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-            <div className="relative w-full md:w-80">
-              <Search size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search your errands..." 
-                className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-[#FF6600] focus:border-transparent focus:outline-none transition-all shadow-sm"
+        </section>
+
+        <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[
+            { label: 'Active', value: '1', highlight: true },
+            { label: 'Completed', value: '12' },
+            { label: 'Wallet', value: '₦32k' },
+            { label: 'Avg ETA', value: '18m' },
+          ].map((stat, index) => (
+            <div
+              key={index}
+              className={`rounded-2xl border ${stat.highlight ? 'border-kart-orange/40' : 'border-white/10'} bg-[#111722] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.35)]`}
+            >
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
+              <p className="mt-2 text-2xl font-black text-white">{stat.value}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="relative w-full md:w-96">
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search errands..."
+                className="w-full rounded-2xl border border-[#253043] bg-[#0f141f] py-3 pl-11 pr-4 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.25)] outline-none transition-all placeholder:text-slate-500 focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/20"
               />
             </div>
-            <div className="md:hidden w-full">
-               <Button fullWidth onClick={() => navigate('/customer/post-errand')} className="gap-2">
-                 <Plus size={18} /> Post New Errand
-               </Button>
+
+            <div className="flex flex-wrap gap-2">
+              <button className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80 hover:text-white">
+                <Wallet size={16} /> Wallet
+              </button>
+              <button className="inline-flex items-center gap-2 rounded-2xl border border-kart-orange/40 bg-kart-orange/15 px-4 py-3 text-sm font-semibold text-kart-orange">
+                <Sparkles size={16} /> Priority
+              </button>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div>
-          <div className="flex items-center justify-between mb-4 px-1">
-             <h3 className="text-lg font-bold text-gray-900">Recent Errands</h3>
-             <button onClick={() => navigate('/customer/track')} className="text-[#FF6600] text-sm font-bold hover:underline">View All</button>
+        <section>
+          <div className="mb-4 flex items-center justify-between px-1">
+            <h3 className="text-lg font-bold text-white">Recent Errands</h3>
+            <button onClick={() => navigate('/customer/track')} className="text-sm font-bold text-kart-orange hover:underline">
+              View All
+            </button>
           </div>
 
           <div className="flex flex-col gap-3">
             {userErrands.map(errand => (
-              <div 
-                key={errand.id} 
+              <div
+                key={errand.id}
                 onClick={() => navigate('/customer/track')}
-                className="group flex items-center justify-between p-4 md:p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+                className="group flex cursor-pointer items-center justify-between rounded-2xl border border-white/10 bg-[#111722] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 md:p-5"
               >
-                <div className="flex items-center gap-4 md:gap-5 w-full md:w-auto">
-                  <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${errand.status === 'active' ? 'bg-orange-50 text-[#FF6600] group-hover:bg-[#FF6600] group-hover:text-white' : 'bg-gray-50 text-gray-500 group-hover:bg-gray-100'}`}>
+                <div className="flex w-full items-center gap-4 md:w-auto md:gap-5">
+                  <div
+                    className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl transition-colors md:h-14 md:w-14 ${
+                      errand.status === 'active'
+                        ? 'bg-kart-orange/15 text-kart-orange group-hover:bg-kart-orange group-hover:text-white'
+                        : 'bg-white/5 text-slate-400'
+                    }`}
+                  >
                     {errand.icon}
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 text-base md:text-lg mb-1">{errand.title}</h4>
-                    <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-gray-500">
-                      <span className="flex items-center gap-1"><MapPin size={14} className="text-gray-400" /> {errand.location}</span>
-                      <span className="hidden md:inline text-gray-300">•</span>
+                    <h4 className="mb-1 text-base font-bold text-white md:text-lg">{errand.title}</h4>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 md:gap-3 md:text-sm">
                       <span className="flex items-center gap-1">
-                        <Clock size={14} className="text-gray-400" /> 
-                        {errand.status === 'active' ? <span className="text-[#FF6600] font-medium">{errand.time}</span> : errand.time}
+                        <MapPin size={14} className="text-slate-500" /> {errand.location}
+                      </span>
+                      <span className="hidden text-white/15 md:inline">•</span>
+                      <span className="flex items-center gap-1">
+                        <Clock size={14} className="text-slate-500" />
+                        {errand.status === 'active' ? (
+                          <span className="font-medium text-kart-orange">{errand.time}</span>
+                        ) : (
+                          errand.time
+                        )}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="hidden md:flex flex-col items-end justify-center min-w-[100px]">
-                  <span className="font-bold text-gray-900 text-lg">{errand.price}</span>
+                <div className="hidden min-w-[100px] flex-col items-end justify-center md:flex">
+                  <span className="text-lg font-bold text-white">{errand.price}</span>
                   {errand.status === 'active' && (
-                    <span className="text-[10px] uppercase tracking-wider font-bold text-[#FF6600] bg-orange-50 px-2 py-1 rounded-md mt-1">
+                    <span className="mt-1 rounded-md bg-kart-orange/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-kart-orange">
                       Active
                     </span>
                   )}
@@ -113,7 +162,7 @@ export const CustomerDashboard: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
+        </section>
       </main>
 
       <div className="md:hidden">

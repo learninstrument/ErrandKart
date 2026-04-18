@@ -6,7 +6,6 @@ export const Splash: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Automatically navigate to onboarding after 2.5 seconds
     const timer = setTimeout(() => {
       navigate('/onboarding');
     }, 2500);
@@ -15,37 +14,40 @@ export const Splash: React.FC = () => {
   }, [navigate]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-kart-orange overflow-hidden relative">
-      {/* Background glowing effects */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl opacity-50"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full mix-blend-overlay filter blur-3xl opacity-50"></div>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0b0e13]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,102,0,0.3),transparent_46%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(46,139,87,0.2),transparent_48%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.04),transparent_40%)]" />
 
-      <motion.div 
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative z-10 flex flex-col items-center"
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="relative z-10 flex flex-col items-center px-8 text-center"
       >
-        {/* The Geometric 'K/Cart' Logo representation */}
-        <motion.div 
+        <motion.div
           animate={{ y: [0, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center transform -rotate-6 mb-6 shadow-2xl"
+          transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
+          className="mb-8 flex h-24 w-24 items-center justify-center rounded-[28px] bg-white shadow-[0_30px_70px_rgba(0,0,0,0.4)]"
         >
-          <div className="relative w-12 h-12">
-            <div className="absolute left-1 top-1 bottom-1 w-2.5 bg-kart-orange rounded-md"></div>
-            <div className="absolute right-1 top-1 w-8 h-2.5 bg-kart-orange rounded-md origin-bottom-left rotate-[-35deg] translate-y-1.5 translate-x-1"></div>
-            <div className="absolute right-1 bottom-3 w-8 h-2.5 bg-kart-orange rounded-md origin-top-left rotate-[35deg] translate-y-1 translate-x-1"></div>
-            {/* Wheels */}
-            <div className="absolute -bottom-2 right-1 w-3.5 h-3.5 bg-asphalt-grey rounded-full border-2 border-white"></div>
-            <div className="absolute -bottom-2 left-3 w-3.5 h-3.5 bg-asphalt-grey rounded-full border-2 border-white"></div>
+          <div className="relative h-12 w-12">
+            <div className="absolute inset-0 rounded-2xl border border-kart-orange/30"></div>
+            <div className="absolute inset-2 rounded-xl bg-kart-orange"></div>
+            <div className="absolute bottom-2 left-2 h-2 w-2 rounded-full bg-white"></div>
+            <div className="absolute right-2 top-2 h-3 w-3 rounded-full border border-white/70"></div>
           </div>
         </motion.div>
 
-        <h1 className="text-5xl font-black text-white mb-2 tracking-tight">
-          Errand<span className="text-asphalt-grey">Kart</span>
+        <h1 className="mb-2 text-5xl font-black tracking-tight text-white md:text-6xl">
+          Errand<span className="text-kart-orange">Kart</span>
         </h1>
-        <p className="text-white/80 font-medium tracking-wide">Your Life, Delivered.</p>
+        <p className="max-w-sm font-medium tracking-wide text-white/75">
+          Premium errand fulfillment with trusted runners on demand.
+        </p>
+        <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/50">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-market-green"></span>
+          Always on, always moving
+        </div>
       </motion.div>
     </div>
   );

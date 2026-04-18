@@ -1,116 +1,159 @@
 import React from 'react';
-import { Search, MapPin, Clock, SlidersHorizontal, ShoppingBasket, Pill, Shirt } from 'lucide-react';
+import { Search, MapPin, Clock, SlidersHorizontal, ShoppingBasket, Pill, Shirt, Wallet, Bolt } from 'lucide-react';
 import { RunnerBottomNav } from './RunnerBottomNav';
 
 export const RunnerDashboard: React.FC = () => {
-  // Mock data matching the PDF feed style
   const availableErrands = [
-    { id: 1, title: 'Grocery Pickup at Whole Foods', price: '₦4,500', location: 'Lekki Phase 1', time: '20 mins ago', distance: '1.2 km away', icon: <ShoppingBasket size={24} /> },
-    { id: 2, title: 'Pharmacy Run for Medication', price: '₦2,000', location: 'Victoria Island', time: '1 hour ago', distance: '3.5 km away', icon: <Pill size={24} /> },
-    { id: 3, title: 'Dry Cleaning Pickup', price: '₦1,500', location: 'Ikoyi', time: '2 hours ago', distance: '4.0 km away', icon: <Shirt size={24} /> },
+    {
+      id: 1,
+      title: 'Grocery Pickup at Whole Foods',
+      price: '₦4,500',
+      location: 'Lekki Phase 1',
+      time: '20 mins ago',
+      distance: '1.2 km away',
+      icon: <ShoppingBasket size={24} />,
+    },
+    {
+      id: 2,
+      title: 'Pharmacy Run for Medication',
+      price: '₦2,000',
+      location: 'Victoria Island',
+      time: '1 hour ago',
+      distance: '3.5 km away',
+      icon: <Pill size={24} />,
+    },
+    {
+      id: 3,
+      title: 'Dry Cleaning Pickup',
+      price: '₦1,500',
+      location: 'Ikoyi',
+      time: '2 hours ago',
+      distance: '4.0 km away',
+      icon: <Shirt size={24} />,
+    },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8F9FA] w-full">
-      {/* --- DESKTOP TOP NAVIGATION (From PDF) --- */}
-      <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
+    <div className="flex min-h-screen w-full flex-col bg-transparent">
+      <header className="sticky top-0 z-30 border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <div className="flex items-center gap-10">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#2E8B57] rounded-lg flex items-center justify-center text-white font-black italic">K</div>
-            <h1 className="text-xl font-black text-gray-900 tracking-tight">Errand<span className="text-[#2E8B57]">Kart</span></h1>
-          </div>
-          <nav className="flex gap-8">
-            <button className="text-[#2E8B57] font-bold border-b-2 border-[#2E8B57] pb-1">Dashboard</button>
-            <button className="text-gray-500 hover:text-gray-900 font-medium pb-1 transition-colors">Activity</button>
-            <button className="text-gray-500 hover:text-gray-900 font-medium pb-1 transition-colors">Wallet</button>
-          </nav>
-        </div>
-        <div className="flex items-center gap-5">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#2E8B57] animate-pulse"></span>
-            <span className="text-sm font-bold text-gray-700">Online</span>
-          </div>
-          <div className="w-px h-6 bg-gray-200"></div>
-          <div className="w-10 h-10 rounded-full bg-green-50 text-[#2E8B57] flex items-center justify-center font-bold border border-green-100 cursor-pointer hover:bg-green-100 transition-colors">
-            MB
-          </div>
-        </div>
-      </header>
-
-      {/* --- MOBILE HEADER --- */}
-      <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 sticky top-0 z-30">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#2E8B57] rounded-lg flex items-center justify-center text-white font-black italic text-xs">K</div>
-          <h1 className="text-lg font-black text-gray-900 tracking-tight">Errand<span className="text-[#2E8B57]">Kart</span></h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="w-2 h-2 rounded-full bg-[#2E8B57] animate-pulse"></span>
-          <div className="w-9 h-9 rounded-full bg-green-50 text-[#2E8B57] flex items-center justify-center font-bold text-sm border border-green-100">
-            MB
-          </div>
-        </div>
-      </header>
-
-      {/* --- MAIN CONTENT AREA --- */}
-      <main className="flex-1 w-full max-w-5xl mx-auto p-6 md:p-10 pb-24 md:pb-10">
-        
-        {/* Welcome & Search Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-1">Available Errands</h2>
-            <p className="text-gray-500 font-medium"><span className="text-[#2E8B57] font-bold">{availableErrands.length} opportunities</span> near you right now.</p>
-          </div>
-          
-          <div className="flex gap-3 w-full md:w-auto">
-            <div className="relative w-full md:w-80">
-              <Search size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search gigs near you..." 
-                className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent focus:outline-none transition-all shadow-sm"
-              />
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-market-green text-xs font-black text-white">
+                K
+              </div>
+              <h1 className="text-xl font-black tracking-tight text-white">
+                Errand<span className="text-market-green">Kart</span>
+              </h1>
             </div>
-            <button className="bg-white border border-gray-200 p-3 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors shadow-sm flex-shrink-0">
-              <SlidersHorizontal size={20} />
-            </button>
+
+            <div className="flex items-center gap-4">
+              <div className="hidden items-center gap-2 md:flex">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-market-green"></span>
+                <span className="text-sm font-semibold text-white/70">Online</span>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 font-bold text-white">
+                MB
+              </div>
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* --- FEED SECTION (Modern List View) --- */}
-        <div className="flex flex-col gap-3">
-          {availableErrands.map(errand => (
-            <div 
-              key={errand.id} 
-              className="group flex items-center justify-between p-4 md:p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:px-10 md:pb-10">
+        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)] md:p-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Runner hub</p>
+              <h2 className="mb-1 text-3xl font-black tracking-tight">Available Errands</h2>
+              <p className="text-sm text-white/70">
+                <span className="font-bold text-[#b2ffd2]">{availableErrands.length} opportunities</span> near you right now.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[
+            { label: 'Open jobs', value: '17', highlight: true },
+            { label: 'Completed', value: '43' },
+            { label: 'Earnings', value: '₦84k' },
+            { label: 'Acceptance', value: '96%' },
+          ].map((stat, index) => (
+            <div
+              key={index}
+              className={`rounded-2xl border ${stat.highlight ? 'border-market-green/40' : 'border-white/10'} bg-[#111722] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.35)]`}
             >
-              {/* Left: Icon & Details */}
-              <div className="flex items-center gap-4 md:gap-5 w-full md:w-auto">
-                <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-green-50 text-[#2E8B57] group-hover:bg-[#2E8B57] group-hover:text-white flex items-center justify-center flex-shrink-0 transition-colors">
-                  {errand.icon}
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-base md:text-lg mb-1">{errand.title}</h4>
-                  <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-gray-500">
-                    <span className="flex items-center gap-1"><MapPin size={14} className="text-gray-400" /> {errand.location}</span>
-                    <span className="hidden md:inline text-gray-300">•</span>
-                    <span className="font-semibold text-[#2E8B57]">{errand.distance}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right: Price & Time */}
-              <div className="hidden md:flex flex-col items-end justify-center min-w-[100px]">
-                <span className="font-bold text-gray-900 text-lg">{errand.price}</span>
-                <span className="flex items-center gap-1 text-[11px] text-gray-400 font-medium mt-1 uppercase tracking-wider">
-                  <Clock size={12} /> {errand.time}
-                </span>
-              </div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
+              <p className="mt-2 text-2xl font-black text-white">{stat.value}</p>
             </div>
           ))}
-        </div>
+        </section>
+
+        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="relative w-full md:w-96">
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search gigs near you..."
+                className="w-full rounded-2xl border border-[#253043] bg-[#0f141f] py-3 pl-11 pr-4 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.25)] outline-none transition-all placeholder:text-slate-500 focus:border-market-green focus:ring-4 focus:ring-market-green/20"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80 hover:text-white">
+                <Wallet size={16} /> Wallet
+              </button>
+              <button className="inline-flex items-center gap-2 rounded-2xl border border-market-green/40 bg-market-green/15 px-4 py-3 text-sm font-semibold text-market-green">
+                <Bolt size={16} /> Boost
+              </button>
+              <button className="rounded-2xl border border-white/10 bg-white/5 p-3 text-white/70 hover:text-white">
+                <SlidersHorizontal size={18} />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div className="mb-4 px-1">
+            <h3 className="text-lg font-bold text-white">Errand Feed</h3>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {availableErrands.map(errand => (
+              <div
+                key={errand.id}
+                className="group flex cursor-pointer items-center justify-between rounded-2xl border border-white/10 bg-[#111722] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 md:p-5"
+              >
+                <div className="flex w-full items-center gap-4 md:w-auto md:gap-5">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-market-green/15 text-market-green transition-colors group-hover:bg-market-green group-hover:text-white md:h-14 md:w-14">
+                    {errand.icon}
+                  </div>
+                  <div>
+                    <h4 className="mb-1 text-base font-bold text-white md:text-lg">{errand.title}</h4>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 md:gap-3 md:text-sm">
+                      <span className="flex items-center gap-1">
+                        <MapPin size={14} className="text-slate-500" /> {errand.location}
+                      </span>
+                      <span className="hidden text-white/15 md:inline">•</span>
+                      <span className="font-semibold text-market-green">{errand.distance}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="hidden min-w-[100px] flex-col items-end justify-center md:flex">
+                  <span className="text-lg font-bold text-white">{errand.price}</span>
+                  <span className="mt-1 flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                    <Clock size={12} /> {errand.time}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
 
-      {/* Mobile Bottom Nav */}
       <div className="md:hidden">
         <RunnerBottomNav activeTab="available" />
       </div>

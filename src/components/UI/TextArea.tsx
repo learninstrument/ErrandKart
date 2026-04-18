@@ -1,10 +1,23 @@
-// Removed unused React import to satisfy Vercel
-export const TextArea = ({ label, placeholder, rows = 3 }: { label: string, placeholder?: string, rows?: number }) => (
-  <div className="flex flex-col gap-1.5 mb-4 text-left w-full">
-    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{label}</label>
+export const TextArea = ({
+  label,
+  placeholder,
+  rows = 3,
+  theme = 'orange',
+}: {
+  label: string;
+  placeholder?: string;
+  rows?: number;
+  theme?: 'orange' | 'green';
+}) => (
+  <div className="mb-4 flex w-full flex-col gap-1.5 text-left">
+    <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</label>
     <textarea
       rows={rows}
-      className="flex w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#333333] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6600] focus:border-transparent placeholder:text-gray-400 resize-none"
+      className={`flex w-full resize-none rounded-2xl border border-[#253043] bg-[#111621] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all placeholder:text-slate-500 focus:outline-none focus:ring-4 ${
+        theme === 'orange'
+          ? 'focus:border-kart-orange focus:ring-kart-orange/25'
+          : 'focus:border-market-green focus:ring-market-green/25'
+      }`}
       placeholder={placeholder}
     ></textarea>
   </div>

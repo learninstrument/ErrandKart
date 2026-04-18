@@ -1,17 +1,36 @@
-@import url('[https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap](https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap)');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #f3f4f6; /* Light gray outer background */
-  color: #333333;
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
+:root {
+  color-scheme: dark;
 }
 
-/* Hide scrollbar for a cleaner mobile-app feel but keep functionality */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  color: #f5f7fb;
+  background:
+    radial-gradient(1200px 520px at -10% -15%, rgba(255, 102, 0, 0.2), transparent 55%),
+    radial-gradient(900px 420px at 110% 10%, rgba(46, 139, 87, 0.18), transparent 52%),
+    #0c0f14;
+  -webkit-font-smoothing: antialiased;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

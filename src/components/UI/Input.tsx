@@ -6,7 +6,6 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Vercel needs this interface to know 'theme' and 'icon' are allowed!
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   theme?: 'orange' | 'green';
@@ -16,27 +15,34 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type = "text", label, theme = 'orange', icon, error, ...props }, ref) => {
-    const focusRing = theme === 'orange' ? 'focus:ring-[#FF6600]' : 'focus:ring-[#2E8B57]';
-    
+    const accent =
+      theme === 'orange'
+        ? 'focus:border-kart-orange focus:ring-kart-orange/25'
+        : 'focus:border-market-green focus:ring-market-green/25';
+
     return (
-      <div className="flex flex-col gap-1.5 mb-4 text-left w-full">
-        {label && <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{label}</label>}
+      <div className="mb-4 flex w-full flex-col gap-1.5 text-left">
+        {label && (
+          <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+            {label}
+          </label>
+        )}
         <div className="relative">
-          {icon && <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">{icon}</div>}
+          {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">{icon}</div>}
           <input
             type={type}
             ref={ref}
             className={cn(
-              "flex h-12 w-full rounded-xl border border-gray-200 bg-gray-50 py-2 text-sm text-[#333333] transition-colors focus:outline-none focus:ring-2 focus:border-transparent placeholder:text-gray-400",
+              'flex h-12 w-full rounded-2xl border border-[#253043] bg-[#111621] px-4 py-2 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all placeholder:text-slate-500 focus:outline-none focus:ring-4',
               icon ? 'pl-11 pr-4' : 'px-4',
-              focusRing,
-              error && "border-red-500 focus:ring-red-500",
+              accent,
+              error && 'border-red-500 focus:border-red-500 focus:ring-red-500/25',
               className
             )}
             {...props}
           />
         </div>
-        {error && <span className="text-xs text-red-500 ml-1 font-medium">{error}</span>}
+        {error && <span className="ml-1 text-xs font-medium text-red-400">{error}</span>}
       </div>
     );
   }

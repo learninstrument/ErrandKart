@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home } from 'lucide-react';
-
-// FIXED: Using uppercase 'UI'
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { TextArea } from '../../components/UI/TextArea';
@@ -14,66 +12,88 @@ export const PostErrand: React.FC = () => {
   const categories = [
     { id: 'Market', label: 'Market Run', icon: <ShoppingBasket size={16} /> },
     { id: 'Purchase', label: 'Purchase', icon: <ShoppingCart size={16} /> },
-    { id: 'Service', label: 'Service', icon: <PackageCheck size={16} /> }
+    { id: 'Service', label: 'Service', icon: <PackageCheck size={16} /> },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-white w-full md:max-w-md md:mx-auto relative shadow-2xl">
-      <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white z-20">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400 hover:text-gray-800 transition-colors">
+    <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col bg-transparent">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 p-6 backdrop-blur-md">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 -ml-2 text-white/60 transition-colors hover:text-white"
+        >
           <ArrowLeft size={24} />
         </button>
-        <h2 className="text-lg font-black text-[#333333]">Post a New Errand</h2>
-        <div className="w-8"></div>
-      </div>
+        <h2 className="text-lg font-black text-white">Post New Errand</h2>
+        <div className="w-8" />
+      </header>
 
-      <div className="p-6 overflow-y-auto pb-32">
-        <p className="text-gray-500 text-sm mb-8">Describe what you need, set a price and get it done.</p>
+      <main className="p-6 pb-36 md:p-8">
+        <div className="mb-6 rounded-[28px] border border-white/10 bg-gradient-to-br from-[#111722] via-[#121826] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/60">Create request</p>
+          <h3 className="mb-1 text-2xl font-black">Describe your errand clearly</h3>
+          <p className="text-sm text-white/70">Set details, pickup & delivery points, and runner fee.</p>
+        </div>
 
-        <h3 className="font-black text-[#333333] tracking-wide mb-4">ERRAND DETAILS</h3>
-        <Input label="Title" placeholder="e.g., Pickup groceries from Shoprite" />
-        <TextArea label="Description" placeholder="Provide details about items, special instructions..." rows={4} />
+        <section className="mb-5 rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ERRAND DETAILS</h3>
+          <Input label="Title" placeholder="e.g., Pickup groceries from Shoprite" />
+          <TextArea label="Description" placeholder="Share item list, preferred brand, quantity, and instructions..." rows={4} />
 
-        <div className="mb-8">
-          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1 mb-2 block">Category</label>
-          <div className="flex gap-2">
-            {categories.map(cat => (
-              <button 
-                key={cat.id}
-                onClick={() => setCategory(cat.id)}
-                className={`flex-1 py-3 px-2 flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 transition-all ${category === cat.id ? 'border-[#FF6600] bg-[#FFF0E5] text-[#FF6600]' : 'border-gray-100 text-gray-500 hover:border-gray-200'}`}
-              >
-                {cat.icon}
-                <span className="text-xs font-bold">{cat.label}</span>
-              </button>
-            ))}
+          <div>
+            <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Category
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setCategory(cat.id)}
+                  className={`flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 px-2 py-3 text-xs font-semibold transition-all ${
+                    category === cat.id
+                      ? 'border-kart-orange bg-kart-orange/15 text-kart-orange'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20'
+                  }`}
+                >
+                  {cat.icon}
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
 
-        <h3 className="font-black text-[#333333] tracking-wide mb-4">LOCATIONS</h3>
-        <Input label="Pickup Location" placeholder="Where should the runner go?" icon={<MapPin size={18} />} />
-        <Input label="Delivery Location" placeholder="Enter delivery address" icon={<Home size={18} />} />
-        
-        <div className="flex items-center gap-2 mb-8 ml-1">
-           <input type="checkbox" id="saveLoc" className="w-4 h-4 text-[#FF6600] rounded focus:ring-[#FF6600]" />
-           <label htmlFor="saveLoc" className="text-sm text-gray-500">Must have a cooler bag / insulation</label>
-        </div>
+        <section className="mb-5 rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">LOCATIONS</h3>
+          <Input label="Pickup Location" placeholder="Where should the runner go?" icon={<MapPin size={18} />} />
+          <Input label="Delivery Location" placeholder="Enter delivery address" icon={<Home size={18} />} />
 
-        <h3 className="font-black text-[#333333] tracking-wide mb-4">BUDGET (SERVICE FEE)</h3>
-        <p className="text-xs text-gray-500 mb-2 ml-1">How much are you paying the runner for this trip?</p>
-        
-        <div className="relative mb-6">
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl font-black text-[#333333]">₦</div>
-          <input 
-            type="number" 
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl py-4 pl-10 pr-4 text-2xl font-black text-[#333333] focus:outline-none focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all"
-            placeholder="0.00"
-          />
-        </div>
-      </div>
+          <label className="ml-1 flex items-center gap-2 text-sm text-slate-400">
+            <input type="checkbox" id="saveLoc" className="h-4 w-4 rounded accent-kart-orange" />
+            Must have a cooler bag / insulation
+          </label>
+        </section>
 
-      <div className="fixed bottom-0 w-full md:max-w-md bg-white border-t border-gray-100 p-6 z-30">
-        <Button fullWidth onClick={() => navigate('/customer/track')}>Post Errand Request</Button>
+        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">BUDGET</h3>
+          <p className="mb-2 ml-1 text-xs text-slate-400">How much are you paying the runner for this errand?</p>
+
+          <div className="relative mb-2">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-black text-white">₦</div>
+            <input
+              type="number"
+              className="w-full rounded-2xl border border-[#253043] bg-[#0f141f] py-4 pl-10 pr-4 text-2xl font-black text-white shadow-[0_10px_24px_rgba(0,0,0,0.25)] outline-none transition-all placeholder:text-slate-500 focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/20"
+              placeholder="0.00"
+            />
+          </div>
+        </section>
+      </main>
+
+      <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-3xl -translate-x-1/2 border-t border-white/5 bg-[#0d1117]/95 p-5 backdrop-blur-md md:p-6">
+        <Button fullWidth onClick={() => navigate('/customer/track')}>
+          Post Errand Request
+        </Button>
       </div>
     </div>
   );
