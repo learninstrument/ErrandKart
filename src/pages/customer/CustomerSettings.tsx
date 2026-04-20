@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Bell, ShieldCheck, MapPin, Globe, LogOut } from 'lucide-react';
+import { ArrowLeft, Bell, ShieldCheck, MapPin, Globe, LifeBuoy, LogOut } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { BottomNav } from './BottomNav';
 
@@ -116,6 +116,21 @@ export const CustomerSettings: React.FC = () => {
               </select>
             </div>
           </div>
+        </section>
+
+        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
+              <LifeBuoy size={18} />
+            </div>
+            <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SUPPORT</h3>
+          </div>
+          <p className="text-sm text-slate-400">
+            Get help with payments, orders, or account access.
+          </p>
+          <Button className="mt-4 w-full gap-2 text-xs" onClick={() => navigate('/customer/support')}>
+            Open help center
+          </Button>
         </section>
 
         <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">

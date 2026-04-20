@@ -78,7 +78,8 @@ export const CustomerOrders: React.FC = () => {
           {filteredOrders.map(order => (
             <div
               key={order.id}
-              className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
+              onClick={() => navigate(`/customer/orders/${order.id}`)}
+              className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] cursor-pointer transition-all hover:border-white/20"
             >
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
@@ -103,10 +104,24 @@ export const CustomerOrders: React.FC = () => {
 
               {order.status === 'active' && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Button onClick={() => navigate('/customer/track')} className="gap-2">
+                  <Button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      navigate('/customer/track');
+                    }}
+                    className="gap-2"
+                  >
                     Track Errand
                   </Button>
-                  <Button variant="outline">Contact Runner</Button>
+                  <Button
+                    variant="outline"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      navigate(`/customer/chat/${order.id}`);
+                    }}
+                  >
+                    Contact Runner
+                  </Button>
                 </div>
               )}
 
