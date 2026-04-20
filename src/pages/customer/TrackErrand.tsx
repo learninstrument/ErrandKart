@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, MessageSquare, CheckCircle, Circle, Navigation } from 'lucide-react';
+import * as L from 'leaflet';
 import { Button } from '../../components/UI/Button';
 
 export const TrackErrand: React.FC = () => {
   const navigate = useNavigate();
+  const pickupLocation: [number, number] = [6.4474, 3.4558];
+  const dropoffLocation: [number, number] = [6.4281, 3.4219];
+  const [runnerLocation, setRunnerLocation] = useState<[number, number]>([6.4408, 3.4469]);
+  const mapRef = useRef<L.Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const runnerMarkerRef = useRef<L.Marker | null>(null);
+  const routeLineRef = useRef<L.Polyline | null>(null);
 
   const steps = [
     { title: 'Errand Posted', subtitle: 'Request sent to ErrandKart', completed: true },
@@ -12,6 +20,92 @@ export const TrackErrand: React.FC = () => {
     { title: 'On the way', subtitle: 'Runner is heading to pickup', completed: true, active: true },
     { title: 'Completed', subtitle: 'Awaiting drop-off', completed: false },
   ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRunnerLocation(prev => {
+        const nextLat = prev[0] - 0.00055;
+        const nextLng = prev[1] - 0.0007;
+        const reached = nextLat <= dropoffLocation[0] && nextLng <= dropoffLocation[1];
+        return reached ? dropoffLocation : [nextLat, nextLng];
+      });
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [dropoffLocation]);
+
+  const pickupIcon = useMemo(
+    () =>
+      L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      }),
+    []
+  );
+
+  const dropoffIcon = useMemo(
+    () =>
+      L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      }),
+    []
+  );
+
+  const runnerIcon = useMemo(
+    () =>
+      L.divIcon({
+        className: '',
+        html: `<div style="width:26px;height:26px;border-radius:12px;background:#FF6600;color:#ffffff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(255,102,0,0.45);">R</div>`,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13],
+      }),
+    []
+  );
+
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    const map = L.map(mapContainerRef.current, {
+      zoomControl: false,
+      attributionControl: false,
+    }).setView(runnerLocation, 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
+
+    L.marker(pickupLocation, { icon: pickupIcon }).addTo(map);
+    L.marker(dropoffLocation, { icon: dropoffIcon }).addTo(map);
+
+    const runnerMarker = L.marker(runnerLocation, { icon: runnerIcon }).addTo(map);
+    runnerMarkerRef.current = runnerMarker;
+
+    const routeLine = L.polyline([pickupLocation, runnerLocation, dropoffLocation], {
+      color: '#FF6600',
+      weight: 3,
+      dashArray: '8 10',
+    }).addTo(map);
+    routeLineRef.current = routeLine;
+
+    map.fitBounds([pickupLocation, dropoffLocation], { padding: [60, 60] });
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, [pickupLocation, dropoffLocation, pickupIcon, dropoffIcon, runnerIcon, runnerLocation]);
+
+  useEffect(() => {
+    if (!mapRef.current || !runnerMarkerRef.current || !routeLineRef.current) return;
+    runnerMarkerRef.current.setLatLng(runnerLocation);
+    routeLineRef.current.setLatLngs([pickupLocation, runnerLocation, dropoffLocation]);
+  }, [runnerLocation, pickupLocation, dropoffLocation]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
@@ -54,26 +148,10 @@ export const TrackErrand: React.FC = () => {
           </div>
 
           <div className="relative h-[42vh] w-full overflow-hidden rounded-b-[28px] border border-white/10 bg-[#0f141f] md:h-[64vh]">
-            <div
-              className="absolute inset-0 opacity-35"
-              style={{ backgroundImage: 'radial-gradient(#1f2937 1px, transparent 1px)', backgroundSize: '22px 22px' }}
-            ></div>
-            <div className="absolute left-[24%] top-[28%] flex h-9 w-9 items-center justify-center rounded-full border-2 border-white/60 bg-white/10 shadow-lg">
-              <div className="h-2.5 w-2.5 rounded-full bg-white"></div>
+            <div ref={mapContainerRef} className="h-full w-full" />
+            <div className="pointer-events-none absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/10 bg-[#111722]/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
+              <Navigation size={14} className="text-kart-orange" /> Live
             </div>
-            <div className="absolute left-1/2 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 animate-bounce items-center justify-center rounded-full border-2 border-white/70 bg-kart-orange shadow-xl">
-              <Navigation size={20} className="rotate-45 fill-current text-white" />
-            </div>
-            <svg className="pointer-events-none absolute inset-0 h-full w-full">
-              <path
-                d="M 24% 28% Q 50% 28% 50% 50%"
-                stroke="#FF6600"
-                strokeWidth="3"
-                fill="none"
-                strokeDasharray="10,6"
-                className="animate-pulse"
-              />
-            </svg>
           </div>
         </div>
 

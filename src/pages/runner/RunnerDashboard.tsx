@@ -1,8 +1,10 @@
 import React from 'react';
-import { Search, MapPin, Clock, SlidersHorizontal, ShoppingBasket, Pill, Shirt, Wallet, Bolt } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, Clock, SlidersHorizontal, ShoppingBasket, Pill, Shirt, Wallet, Bolt, PackageCheck } from 'lucide-react';
 import { RunnerBottomNav } from './RunnerBottomNav';
 
 export const RunnerDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const availableErrands = [
     {
       id: 1,
@@ -11,6 +13,7 @@ export const RunnerDashboard: React.FC = () => {
       location: 'Lekki Phase 1',
       time: '20 mins ago',
       distance: '1.2 km away',
+      items: '8 items',
       icon: <ShoppingBasket size={24} />,
     },
     {
@@ -20,6 +23,7 @@ export const RunnerDashboard: React.FC = () => {
       location: 'Victoria Island',
       time: '1 hour ago',
       distance: '3.5 km away',
+      items: '4 items',
       icon: <Pill size={24} />,
     },
     {
@@ -29,6 +33,7 @@ export const RunnerDashboard: React.FC = () => {
       location: 'Ikoyi',
       time: '2 hours ago',
       distance: '4.0 km away',
+      items: '3 items',
       icon: <Shirt size={24} />,
     },
   ];
@@ -102,7 +107,10 @@ export const RunnerDashboard: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <button className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80 hover:text-white">
+              <button
+                onClick={() => navigate('/runner/wallet')}
+                className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80 hover:text-white"
+              >
                 <Wallet size={16} /> Wallet
               </button>
               <button className="inline-flex items-center gap-2 rounded-2xl border border-market-green/40 bg-market-green/15 px-4 py-3 text-sm font-semibold text-market-green">
@@ -124,6 +132,7 @@ export const RunnerDashboard: React.FC = () => {
             {availableErrands.map(errand => (
               <div
                 key={errand.id}
+                onClick={() => navigate(`/runner/errand/${errand.id}`)}
                 className="group flex cursor-pointer items-center justify-between rounded-2xl border border-white/10 bg-[#111722] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 md:p-5"
               >
                 <div className="flex w-full items-center gap-4 md:w-auto md:gap-5">
@@ -138,6 +147,10 @@ export const RunnerDashboard: React.FC = () => {
                       </span>
                       <span className="hidden text-white/15 md:inline">•</span>
                       <span className="font-semibold text-market-green">{errand.distance}</span>
+                      <span className="hidden text-white/15 md:inline">•</span>
+                      <span className="flex items-center gap-1">
+                        <PackageCheck size={14} className="text-slate-500" /> {errand.items}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -147,6 +160,15 @@ export const RunnerDashboard: React.FC = () => {
                   <span className="mt-1 flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider text-slate-500">
                     <Clock size={12} /> {errand.time}
                   </span>
+                  <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      navigate(`/runner/errand/${errand.id}`);
+                    }}
+                    className="mt-3 inline-flex items-center gap-2 rounded-2xl border border-market-green/40 bg-market-green/15 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-market-green"
+                  >
+                    View details
+                  </button>
                 </div>
               </div>
             ))}

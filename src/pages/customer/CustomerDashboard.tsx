@@ -97,7 +97,10 @@ export const CustomerDashboard: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <button className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80 hover:text-white">
+              <button
+                onClick={() => navigate('/customer/wallet')}
+                className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80 hover:text-white"
+              >
                 <Wallet size={16} /> Wallet
               </button>
               <button className="inline-flex items-center gap-2 rounded-2xl border border-kart-orange/40 bg-kart-orange/15 px-4 py-3 text-sm font-semibold text-kart-orange">
@@ -110,7 +113,7 @@ export const CustomerDashboard: React.FC = () => {
         <section>
           <div className="mb-4 flex items-center justify-between px-1">
             <h3 className="text-lg font-bold text-white">Recent Errands</h3>
-            <button onClick={() => navigate('/customer/track')} className="text-sm font-bold text-kart-orange hover:underline">
+            <button onClick={() => navigate('/customer/orders')} className="text-sm font-bold text-kart-orange hover:underline">
               View All
             </button>
           </div>

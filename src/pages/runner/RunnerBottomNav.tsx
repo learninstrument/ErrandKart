@@ -15,17 +15,26 @@ export const RunnerBottomNav = ({ activeTab }: { activeTab: 'available' | 'activ
         <span className="text-[10px] font-bold">Available</span>
       </button>
 
-      <button className={`${baseClass} ${activeTab === 'active' ? 'text-market-green' : 'text-white/50 hover:text-white'}`}>
+      <button
+        onClick={() => navigate('/runner/active')}
+        className={`${baseClass} ${activeTab === 'active' ? 'text-market-green' : 'text-white/50 hover:text-white'}`}
+      >
         <CheckSquare size={24} className={activeTab === 'active' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Active</span>
       </button>
 
-      <button className={`${baseClass} ${activeTab === 'wallet' ? 'text-market-green' : 'text-white/50 hover:text-white'}`}>
+      <button
+        onClick={() => navigate('/runner/wallet')}
+        className={`${baseClass} ${activeTab === 'wallet' ? 'text-market-green' : 'text-white/50 hover:text-white'}`}
+      >
         <Wallet size={24} className={activeTab === 'wallet' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Wallet</span>
       </button>
 
-      <button className={`${baseClass} ${activeTab === 'profile' ? 'text-market-green' : 'text-white/50 hover:text-white'}`}>
+      <button
+        onClick={() => navigate('/runner/profile')}
+        className={`${baseClass} ${activeTab === 'profile' ? 'text-market-green' : 'text-white/50 hover:text-white'}`}
+      >
         <User size={24} className={activeTab === 'profile' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Profile</span>
       </button>

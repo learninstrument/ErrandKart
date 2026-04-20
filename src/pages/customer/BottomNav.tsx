@@ -16,19 +16,25 @@ export const BottomNav = ({ activeTab }: { activeTab: 'home' | 'orders' | 'walle
       </button>
 
       <button
-        onClick={() => navigate('/customer/track')}
+        onClick={() => navigate('/customer/orders')}
         className={`${baseClass} ${activeTab === 'orders' ? 'text-kart-orange' : 'text-white/50 hover:text-white'}`}
       >
         <FileText size={24} className={activeTab === 'orders' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Activity</span>
       </button>
 
-      <button className={`${baseClass} ${activeTab === 'wallet' ? 'text-kart-orange' : 'text-white/50 hover:text-white'}`}>
+      <button
+        onClick={() => navigate('/customer/wallet')}
+        className={`${baseClass} ${activeTab === 'wallet' ? 'text-kart-orange' : 'text-white/50 hover:text-white'}`}
+      >
         <Wallet size={24} className={activeTab === 'wallet' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Wallet</span>
       </button>
 
-      <button className={`${baseClass} ${activeTab === 'profile' ? 'text-kart-orange' : 'text-white/50 hover:text-white'}`}>
+      <button
+        onClick={() => navigate('/customer/profile')}
+        className={`${baseClass} ${activeTab === 'profile' ? 'text-kart-orange' : 'text-white/50 hover:text-white'}`}
+      >
         <User size={24} className={activeTab === 'profile' ? 'fill-current' : ''} />
         <span className="text-[10px] font-bold">Profile</span>
       </button>
