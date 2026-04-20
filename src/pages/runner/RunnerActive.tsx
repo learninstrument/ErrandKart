@@ -115,6 +115,7 @@ export const RunnerActive: React.FC = () => {
             theme="green"
             className="mt-4 w-full"
             disabled={!receiptSelected}
+            onClick={() => navigate('/runner/delivery-review/EK-4920')}
           >
             Mark Errand Complete
           </Button>

@@ -22,6 +22,8 @@ import { RunnerSettings } from './pages/runner/RunnerSettings';
 import { RunnerNotifications } from './pages/runner/RunnerNotifications';
 import { RunnerChat } from './pages/runner/RunnerChat';
 import { RunnerSupport } from './pages/runner/RunnerSupport';
+import { RunnerDeliveryReview } from './pages/runner/RunnerDeliveryReview';
+import { RunnerEarnings } from './pages/runner/RunnerEarnings';
 
 function App() {
   return (
@@ -63,6 +65,8 @@ function App() {
           <Route path="/runner/notifications" element={<RunnerNotifications />} />
           <Route path="/runner/chat/:orderId" element={<RunnerChat />} />
           <Route path="/runner/support" element={<RunnerSupport />} />
+          <Route path="/runner/delivery-review/:orderId" element={<RunnerDeliveryReview />} />
+          <Route path="/runner/earnings" element={<RunnerEarnings />} />
         </Routes>
       </div>
     </BrowserRouter>

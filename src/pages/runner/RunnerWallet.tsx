@@ -31,9 +31,14 @@ export const RunnerWallet: React.FC = () => {
               <h3 className="mt-3 text-3xl font-black">₦26,400</h3>
               <p className="mt-2 text-sm text-white/70">Withdraw anytime to your bank account.</p>
             </div>
-            <Button theme="green" className="gap-2">
-              <Banknote size={16} /> Withdraw
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button theme="green" className="gap-2">
+                <Banknote size={16} /> Withdraw
+              </Button>
+              <Button variant="outline" className="gap-2" onClick={() => navigate('/runner/earnings')}>
+                View analytics
+              </Button>
+            </div>
           </div>
         </section>
 
