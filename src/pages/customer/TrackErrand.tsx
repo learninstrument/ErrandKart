@@ -200,7 +200,12 @@ export const TrackErrand: React.FC = () => {
               <Button variant="outline" fullWidth className="gap-2 py-3">
                 <Phone size={18} className="text-white/80" /> Call
               </Button>
-              <Button theme="green" fullWidth className="gap-2 py-3">
+              <Button
+                theme="green"
+                fullWidth
+                className="gap-2 py-3"
+                onClick={() => navigate('/customer/chat/EK-4920')}
+              >
                 <MessageSquare size={18} /> Chat
               </Button>
             </div>

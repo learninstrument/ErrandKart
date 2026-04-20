@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Camera, ShieldCheck, Settings } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { RunnerBottomNav } from './RunnerBottomNav';
@@ -71,6 +71,18 @@ export const RunnerProfile: React.FC = () => {
           <Input label="Full Name" placeholder="Michael B." theme="green" />
           <Input label="Email Address" type="email" placeholder="michael@errandkart.com" theme="green" />
           <Input label="Phone Number" type="tel" placeholder="+234 801 123 9876" theme="green" />
+        </section>
+
+        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SETTINGS</h3>
+              <p className="mt-2 text-sm text-slate-400">Notifications, safety, and job preferences.</p>
+            </div>
+            <Button onClick={() => navigate('/runner/settings')} className="gap-2 text-xs">
+              <Settings size={14} /> Manage
+            </Button>
+          </div>
         </section>
 
         <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">

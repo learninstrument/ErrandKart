@@ -91,7 +91,7 @@ export const RunnerActive: React.FC = () => {
               <Button variant="outline" className="gap-2">
                 <Phone size={16} className="text-white/80" /> Call
               </Button>
-              <Button theme="green" className="gap-2">
+              <Button theme="green" className="gap-2" onClick={() => navigate('/runner/chat/EK-4920')}>
                 <MessageSquare size={16} /> Chat
               </Button>
             </div>

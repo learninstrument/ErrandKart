@@ -8,11 +8,17 @@ import { TrackErrand } from './pages/customer/TrackErrand';
 import { CustomerProfile } from './pages/customer/CustomerProfile';
 import { CustomerWallet } from './pages/customer/CustomerWallet';
 import { CustomerOrders } from './pages/customer/CustomerOrders';
+import { CustomerSettings } from './pages/customer/CustomerSettings';
+import { CustomerNotifications } from './pages/customer/CustomerNotifications';
+import { CustomerChat } from './pages/customer/CustomerChat';
 import { RunnerDashboard } from './pages/runner/RunnerDashboard';
 import { RunnerProfile } from './pages/runner/RunnerProfile';
 import { RunnerWallet } from './pages/runner/RunnerWallet';
 import { RunnerActive } from './pages/runner/RunnerActive';
 import { RunnerErrandDetails } from './pages/runner/RunnerErrandDetails';
+import { RunnerSettings } from './pages/runner/RunnerSettings';
+import { RunnerNotifications } from './pages/runner/RunnerNotifications';
+import { RunnerChat } from './pages/runner/RunnerChat';
 
 function App() {
   return (
@@ -40,11 +46,17 @@ function App() {
           <Route path="/customer/profile" element={<CustomerProfile />} />
           <Route path="/customer/wallet" element={<CustomerWallet />} />
           <Route path="/customer/orders" element={<CustomerOrders />} />
+          <Route path="/customer/settings" element={<CustomerSettings />} />
+          <Route path="/customer/notifications" element={<CustomerNotifications />} />
+          <Route path="/customer/chat/:orderId" element={<CustomerChat />} />
           <Route path="/runner/dashboard" element={<RunnerDashboard />} />
           <Route path="/runner/profile" element={<RunnerProfile />} />
           <Route path="/runner/wallet" element={<RunnerWallet />} />
           <Route path="/runner/active" element={<RunnerActive />} />
           <Route path="/runner/errand/:id" element={<RunnerErrandDetails />} />
+          <Route path="/runner/settings" element={<RunnerSettings />} />
+          <Route path="/runner/notifications" element={<RunnerNotifications />} />
+          <Route path="/runner/chat/:orderId" element={<RunnerChat />} />
         </Routes>
       </div>
     </BrowserRouter>
