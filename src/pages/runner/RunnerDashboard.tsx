@@ -1,7 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Clock, SlidersHorizontal, ShoppingBasket, Pill, Shirt, Wallet, Bolt, PackageCheck } from 'lucide-react';
+import {
+  Search,
+  MapPin,
+  Clock,
+  SlidersHorizontal,
+  ShoppingBasket,
+  Pill,
+  Shirt,
+  Wallet,
+  Bolt,
+  PackageCheck,
+  CheckSquare,
+  TrendingUp,
+  LifeBuoy,
+} from 'lucide-react';
 import { RunnerBottomNav } from './RunnerBottomNav';
+import { Button } from '../../components/UI/Button';
 
 export const RunnerDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -57,9 +72,23 @@ export const RunnerDashboard: React.FC = () => {
                 <span className="h-2 w-2 animate-pulse rounded-full bg-market-green"></span>
                 <span className="text-sm font-semibold text-white/70">Online</span>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 font-bold text-white">
-                MB
+              <div className="hidden md:block">
+                <Button variant="outline" className="gap-2" onClick={() => navigate('/runner/active')}>
+                  <CheckSquare size={16} /> Activity
+                </Button>
               </div>
+              <button
+                onClick={() => navigate('/runner/profile')}
+                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-white/80 transition-colors hover:text-white"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/10 font-bold text-white">
+                  MB
+                </div>
+                <div className="hidden flex-col md:flex">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Profile</span>
+                  <span className="text-sm font-bold text-white">Michael B.</span>
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -93,6 +122,55 @@ export const RunnerDashboard: React.FC = () => {
               <p className="mt-2 text-2xl font-black text-white">{stat.value}</p>
             </div>
           ))}
+        </section>
+
+        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <div className="mb-4 flex items-center justify-between px-1">
+            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white/60">Quick Actions</h3>
+            <span className="text-xs font-semibold text-white/40">Your essentials</span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-4">
+            {[
+              {
+                label: 'Go Active',
+                description: 'Resume current errand',
+                icon: <CheckSquare size={18} />,
+                href: '/runner/active',
+              },
+              {
+                label: 'Wallet',
+                description: 'Withdraw earnings',
+                icon: <Wallet size={18} />,
+                href: '/runner/wallet',
+              },
+              {
+                label: 'Earnings',
+                description: 'View performance',
+                icon: <TrendingUp size={18} />,
+                href: '/runner/earnings',
+              },
+              {
+                label: 'Support',
+                description: 'Get quick help',
+                icon: <LifeBuoy size={18} />,
+                href: '/runner/support',
+              },
+            ].map(action => (
+              <button
+                key={action.label}
+                onClick={() => navigate(action.href)}
+                className="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#0f141f] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-white/20"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green group-hover:bg-market-green group-hover:text-white">
+                  {action.icon}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">{action.label}</p>
+                  <p className="mt-1 text-xs text-white/50">{action.description}</p>
+                </div>
+              </button>
+            ))}
+          </div>
         </section>
 
         <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">

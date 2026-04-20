@@ -120,9 +120,18 @@ export const TrackErrand: React.FC = () => {
                 Errand<span className="text-kart-orange">Kart</span>
               </h1>
             </div>
-            <div className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 font-bold text-white md:flex">
-              SD
-            </div>
+            <button
+              onClick={() => navigate('/customer/profile')}
+              className="hidden items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-white/80 transition-colors hover:text-white md:flex"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/10 font-bold text-white">
+                SD
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Profile</span>
+                <span className="text-sm font-bold text-white">Sarah D.</span>
+              </div>
+            </button>
           </div>
         </div>
       </header>

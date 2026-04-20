@@ -13,6 +13,8 @@ import { CustomerNotifications } from './pages/customer/CustomerNotifications';
 import { CustomerChat } from './pages/customer/CustomerChat';
 import { CustomerSupport } from './pages/customer/CustomerSupport';
 import { CustomerOrderDetails } from './pages/customer/CustomerOrderDetails';
+import { CustomerCheckout } from './pages/customer/CustomerCheckout';
+import { CustomerConfirmation } from './pages/customer/CustomerConfirmation';
 import { RunnerDashboard } from './pages/runner/RunnerDashboard';
 import { RunnerProfile } from './pages/runner/RunnerProfile';
 import { RunnerWallet } from './pages/runner/RunnerWallet';
@@ -52,6 +54,8 @@ function App() {
           <Route path="/customer/wallet" element={<CustomerWallet />} />
           <Route path="/customer/orders" element={<CustomerOrders />} />
           <Route path="/customer/orders/:orderId" element={<CustomerOrderDetails />} />
+          <Route path="/customer/checkout" element={<CustomerCheckout />} />
+          <Route path="/customer/confirmation" element={<CustomerConfirmation />} />
           <Route path="/customer/settings" element={<CustomerSettings />} />
           <Route path="/customer/notifications" element={<CustomerNotifications />} />
           <Route path="/customer/chat/:orderId" element={<CustomerChat />} />

@@ -1,6 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Clock, Plus, ShoppingBasket, Pill, Wallet, Sparkles } from 'lucide-react';
+import {
+  Search,
+  MapPin,
+  Clock,
+  Plus,
+  ShoppingBasket,
+  Pill,
+  Wallet,
+  Sparkles,
+  LifeBuoy,
+  FileText,
+} from 'lucide-react';
 import { BottomNav } from './BottomNav';
 import { Button } from '../../components/UI/Button';
 
@@ -43,12 +54,24 @@ export const CustomerDashboard: React.FC = () => {
             </div>
 
             <div className="hidden items-center gap-4 md:flex">
+              <Button variant="outline" onClick={() => navigate('/customer/orders')} className="gap-2">
+                <FileText size={16} /> Activity
+              </Button>
               <Button onClick={() => navigate('/customer/post-errand')} className="gap-2">
                 <Plus size={17} /> Post Errand
               </Button>
-              <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 font-bold text-white">
-                SD
-              </div>
+              <button
+                onClick={() => navigate('/customer/profile')}
+                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-white/80 transition-colors hover:text-white"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/10 font-bold text-white">
+                  SD
+                </div>
+                <div className="hidden flex-col md:flex">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Profile</span>
+                  <span className="text-sm font-bold text-white">Sarah D.</span>
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -83,6 +106,55 @@ export const CustomerDashboard: React.FC = () => {
               <p className="mt-2 text-2xl font-black text-white">{stat.value}</p>
             </div>
           ))}
+        </section>
+
+        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <div className="mb-4 flex items-center justify-between px-1">
+            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white/60">Quick Actions</h3>
+            <span className="text-xs font-semibold text-white/40">Tap to jump</span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-4">
+            {[
+              {
+                label: 'Post Errand',
+                description: 'Create a new request',
+                icon: <Plus size={18} />,
+                href: '/customer/post-errand',
+              },
+              {
+                label: 'Track Live',
+                description: 'View runner location',
+                icon: <MapPin size={18} />,
+                href: '/customer/track',
+              },
+              {
+                label: 'Wallet',
+                description: 'Top up or view spend',
+                icon: <Wallet size={18} />,
+                href: '/customer/wallet',
+              },
+              {
+                label: 'Support',
+                description: 'Get quick help',
+                icon: <LifeBuoy size={18} />,
+                href: '/customer/support',
+              },
+            ].map(action => (
+              <button
+                key={action.label}
+                onClick={() => navigate(action.href)}
+                className="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#0f141f] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-white/20"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange group-hover:bg-kart-orange group-hover:text-white">
+                  {action.icon}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">{action.label}</p>
+                  <p className="mt-1 text-xs text-white/50">{action.description}</p>
+                </div>
+              </button>
+            ))}
+          </div>
         </section>
 
         <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
