@@ -46,8 +46,8 @@ export const Onboarding = ({ isDesktopSidePanel = false }: OnboardingProps) => {
 
       <header className="relative z-20 flex items-center justify-between px-8 pt-8">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-kart-orange text-sm font-black text-white">
-            K
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 p-1">
+            <img src="/logo.png" alt="ErrandKart" className="h-full w-full object-contain" />
           </div>
           <span className="text-lg font-black tracking-tight">
             Errand<span className="text-kart-orange">Kart</span>

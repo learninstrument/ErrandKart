@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, MessageSquare, CheckCircle, Circle, Navigation } from 'lucide-react';
+import { ArrowLeft, Phone, MessageSquare, CheckCircle, Circle, Navigation, Wallet, MapPin, ShieldCheck, Timer } from 'lucide-react';
 import * as L from 'leaflet';
 import { Button } from '../../components/UI/Button';
 
@@ -113,8 +113,8 @@ export const TrackErrand: React.FC = () => {
         <div className="flex items-center gap-10">
           <div className="flex flex-1 items-center justify-between">
             <div className="flex cursor-pointer items-center gap-2" onClick={() => navigate('/customer/dashboard')}>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-kart-orange text-xs font-black text-white">
-                K
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 p-1">
+                <img src="/logo.png" alt="ErrandKart" className="h-full w-full object-contain" />
               </div>
               <h1 className="text-xl font-black tracking-tight text-white">
                 Errand<span className="text-kart-orange">Kart</span>
@@ -221,6 +221,28 @@ export const TrackErrand: React.FC = () => {
           </div>
         </aside>
       </main>
+
+      <section className="mx-auto w-full max-w-6xl px-6 pb-10 md:px-10">
+        <div className="grid gap-4 md:grid-cols-4">
+          {[
+            { label: 'ETA', value: '18 min', icon: <Timer size={16} className="text-kart-orange" /> },
+            { label: 'Distance left', value: '3.2 km', icon: <MapPin size={16} className="text-kart-orange" /> },
+            { label: 'Runner payout', value: '₦4,500', icon: <Wallet size={16} className="text-kart-orange" /> },
+            { label: 'Safety', value: 'Live tracking on', icon: <ShieldCheck size={16} className="text-market-green" /> },
+          ].map(item => (
+            <div
+              key={item.label}
+              className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
+            >
+              <div className="flex items-center gap-3 text-white/70">
+                {item.icon}
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{item.label}</p>
+              </div>
+              <p className="mt-3 text-lg font-black text-white">{item.value}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

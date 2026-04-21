@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Truck } from 'lucide-react';
+import { User, Truck, ShieldCheck, Timer, MapPin } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { Onboarding } from '../Onboarding';
@@ -24,6 +24,7 @@ export const LoginScreen: React.FC = () => {
   const theme = role === 'runner' ? 'green' : 'orange';
   const accent = role === 'runner' ? 'text-market-green' : 'text-kart-orange';
   const cardAccent = role === 'runner' ? 'bg-market-green' : 'bg-kart-orange';
+  const accentIcon = role === 'runner' ? 'text-market-green' : 'text-kart-orange';
 
   return (
     <div className="flex min-h-screen w-full bg-[#0c0f14]">
@@ -37,9 +38,8 @@ export const LoginScreen: React.FC = () => {
             <div
               className={`mx-auto mb-6 flex h-12 w-12 -rotate-6 items-center justify-center rounded-2xl shadow-[0_18px_40px_rgba(0,0,0,0.4)] transition-colors duration-300 md:mx-0 ${cardAccent}`}
             >
-              <div className="relative h-6 w-6">
-                <div className="absolute inset-0 rounded-lg border border-white/40"></div>
-                <div className="absolute inset-1 rounded-md bg-white"></div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 p-1 shadow-sm">
+                <img src="/logo.png" alt="ErrandKart" className="h-full w-full object-contain" />
               </div>
             </div>
             <h2 className="mb-2 text-3xl font-black text-white">
@@ -113,6 +113,25 @@ export const LoginScreen: React.FC = () => {
               </Button>
             </div>
           </form>
+
+          <div className="mt-6 rounded-2xl border border-white/10 bg-[#0f141f] p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Why ErrandKart</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                { label: 'Live tracking', icon: <MapPin size={16} className={accentIcon} /> },
+                { label: 'Secure payments', icon: <ShieldCheck size={16} className={accentIcon} /> },
+                { label: 'Fast matching', icon: <Timer size={16} className={accentIcon} /> },
+              ].map(item => (
+                <div
+                  key={item.label}
+                  className="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-[#111822] px-3 py-3 text-xs font-semibold text-white/70"
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">

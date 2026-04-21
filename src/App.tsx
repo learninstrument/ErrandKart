@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Splash } from './pages/auth/Splash';
 import { Onboarding } from './pages/Onboarding';
 import { LoginScreen } from './pages/auth/LoginScreen';
@@ -30,6 +30,7 @@ import { RunnerEarnings } from './pages/runner/RunnerEarnings';
 function App() {
   return (
     <BrowserRouter>
+      <PathNormalizer />
       <div className="min-h-screen text-white">
         <Routes>
           <Route path="/" element={<Splash />} />
@@ -78,3 +79,14 @@ function App() {
 }
 
 export default App;
+
+const PathNormalizer = () => {
+  const location = useLocation();
+  const normalizedPath = location.pathname.replace(/\/{2,}/g, '/');
+
+  if (normalizedPath !== location.pathname) {
+    return <Navigate to={`${normalizedPath}${location.search}${location.hash}`} replace />;
+  }
+
+  return null;
+};

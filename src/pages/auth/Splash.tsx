@@ -30,12 +30,7 @@ export const Splash: React.FC = () => {
           transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
           className="mb-8 flex h-24 w-24 items-center justify-center rounded-[28px] bg-white shadow-[0_30px_70px_rgba(0,0,0,0.4)]"
         >
-          <div className="relative h-12 w-12">
-            <div className="absolute inset-0 rounded-2xl border border-kart-orange/30"></div>
-            <div className="absolute inset-2 rounded-xl bg-kart-orange"></div>
-            <div className="absolute bottom-2 left-2 h-2 w-2 rounded-full bg-white"></div>
-            <div className="absolute right-2 top-2 h-3 w-3 rounded-full border border-white/70"></div>
-          </div>
+          <img src="/logo.png" alt="ErrandKart" className="h-14 w-14 object-contain" />
         </motion.div>
 
         <h1 className="mb-2 text-5xl font-black tracking-tight text-white md:text-6xl">

@@ -59,8 +59,8 @@ export const RunnerDashboard: React.FC = () => {
         <div className="flex items-center gap-10">
           <div className="flex flex-1 items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-market-green text-xs font-black text-white">
-                K
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 p-1">
+                <img src="/logo.png" alt="ErrandKart" className="h-full w-full object-contain" />
               </div>
               <h1 className="text-xl font-black tracking-tight text-white">
                 Errand<span className="text-market-green">Kart</span>
