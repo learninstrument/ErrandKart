@@ -26,6 +26,10 @@ import { RunnerChat } from './pages/runner/RunnerChat';
 import { RunnerSupport } from './pages/runner/RunnerSupport';
 import { RunnerDeliveryReview } from './pages/runner/RunnerDeliveryReview';
 import { RunnerEarnings } from './pages/runner/RunnerEarnings';
+import { AdminLogin } from './pages/admin/AdminLogin';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { AdminActivity } from './pages/admin/AdminActivity';
+import { AdminAdmins } from './pages/admin/AdminAdmins';
 
 function App() {
   return (
@@ -72,6 +76,11 @@ function App() {
           <Route path="/runner/support" element={<RunnerSupport />} />
           <Route path="/runner/delivery-review/:orderId" element={<RunnerDeliveryReview />} />
           <Route path="/runner/earnings" element={<RunnerEarnings />} />
+          <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/activity" element={<AdminActivity />} />
+          <Route path="/admin/admins" element={<AdminAdmins />} />
         </Routes>
       </div>
     </BrowserRouter>
