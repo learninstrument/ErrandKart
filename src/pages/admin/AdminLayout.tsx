@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Activity, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, Activity, Users, LogOut, ShieldCheck, Navigation, LifeBuoy } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 
-type AdminSection = 'dashboard' | 'activity' | 'admins';
+type AdminSection = 'dashboard' | 'activity' | 'tracking' | 'support' | 'users' | 'admins';
 
 interface AdminLayoutProps {
   title: string;
@@ -14,7 +14,10 @@ interface AdminLayoutProps {
 const NAV_ITEMS: Array<{ id: AdminSection; label: string; icon: React.ReactNode; href: string }> = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, href: '/admin/dashboard' },
   { id: 'activity', label: 'Activity', icon: <Activity size={18} />, href: '/admin/activity' },
-  { id: 'admins', label: 'Admins', icon: <Users size={18} />, href: '/admin/admins' },
+  { id: 'tracking', label: 'Tracking', icon: <Navigation size={18} />, href: '/admin/tracking' },
+  { id: 'support', label: 'Support', icon: <LifeBuoy size={18} />, href: '/admin/support' },
+  { id: 'users', label: 'Users', icon: <Users size={18} />, href: '/admin/users' },
+  { id: 'admins', label: 'Admins', icon: <ShieldCheck size={18} />, href: '/admin/admins' },
 ];
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, children }) => {

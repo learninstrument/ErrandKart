@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, CreditCard, Users, ClipboardCheck, Bell, ArrowUpRight } from 'lucide-react';
+import { Activity, CreditCard, Users, ClipboardCheck, Bell, ArrowUpRight, UserCheck, Navigation, LifeBuoy } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { AdminLayout } from './AdminLayout';
 
@@ -191,6 +191,15 @@ export const AdminDashboard: React.FC = () => {
             <div className="mt-4 flex flex-col gap-3">
               <Button className="w-full gap-2" onClick={() => navigate('/admin/activity')}>
                 <Activity size={16} /> Review activity log
+              </Button>
+              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/admin/tracking')}>
+                <Navigation size={16} className="text-white/70" /> Open live tracking
+              </Button>
+              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/admin/support')}>
+                <LifeBuoy size={16} className="text-white/70" /> Manage support
+              </Button>
+              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/admin/users')}>
+                <UserCheck size={16} className="text-white/70" /> Monitor users
               </Button>
               <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/admin/admins')}>
                 <Users size={16} className="text-white/70" /> Manage admin access

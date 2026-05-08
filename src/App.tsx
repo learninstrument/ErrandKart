@@ -30,6 +30,10 @@ import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminActivity } from './pages/admin/AdminActivity';
 import { AdminAdmins } from './pages/admin/AdminAdmins';
+import { AdminUsers } from './pages/admin/AdminUsers';
+import { AdminUserDetails } from './pages/admin/AdminUserDetails';
+import { AdminTracking } from './pages/admin/AdminTracking';
+import { AdminSupport } from './pages/admin/AdminSupport';
 
 function App() {
   return (
@@ -80,6 +84,10 @@ function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/activity" element={<AdminActivity />} />
+          <Route path="/admin/tracking" element={<AdminTracking />} />
+          <Route path="/admin/support" element={<AdminSupport />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users/:userId" element={<AdminUserDetails />} />
           <Route path="/admin/admins" element={<AdminAdmins />} />
         </Routes>
       </div>
