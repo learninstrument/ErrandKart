@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, ShieldCheck, MapPin, Globe, LifeBuoy, LogOut, User, Wallet, FileText } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { BottomNav } from './BottomNav';
+import { clearSession, logout } from '../../utils/auth';
 
 export const CustomerSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +11,21 @@ export const CustomerSettings: React.FC = () => {
   const [emailEnabled, setEmailEnabled] = useState(true);
   const [smsEnabled, setSmsEnabled] = useState(false);
   const [locationEnabled, setLocationEnabled] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout(apiBaseUrl);
+    } catch (error) {
+      console.error('[Logout]', error);
+      clearSession();
+    } finally {
+      setIsLoggingOut(false);
+      navigate('/login');
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
@@ -134,12 +150,12 @@ export const CustomerSettings: React.FC = () => {
             </Button>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ACCOUNT</h3>
-            <Button variant="outline" className="w-full gap-2">
-              <LogOut size={16} className="text-white/70" /> Sign out
-            </Button>
-          </section>
+            <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+              <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ACCOUNT</h3>
+              <Button variant="outline" className="w-full gap-2" onClick={handleLogout} disabled={isLoggingOut}>
+                <LogOut size={16} className="text-white/70" /> {isLoggingOut ? 'Signing out...' : 'Sign out'}
+              </Button>
+            </section>
 
           <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">QUICK ACTIONS</h3>

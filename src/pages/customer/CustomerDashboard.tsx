@@ -7,6 +7,7 @@ import {
   Plus,
   ShoppingBasket,
   Pill,
+  Store,
   Wallet,
   Sparkles,
   LifeBuoy,
@@ -36,6 +37,15 @@ export const CustomerDashboard: React.FC = () => {
       time: 'Yesterday',
       status: 'completed',
       icon: <Pill size={24} />,
+    },
+    {
+      id: 3,
+      title: 'Supermarket Dispatch · Shoprite',
+      price: '₦3,200',
+      location: 'Lekki Phase 1',
+      time: 'Today',
+      status: 'active',
+      icon: <Store size={24} />,
     },
   ];
 
@@ -83,7 +93,9 @@ export const CustomerDashboard: React.FC = () => {
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Control center</p>
               <h2 className="mb-1 text-3xl font-black tracking-tight">Welcome back, Sarah</h2>
-              <p className="text-sm text-white/70">Book fast errands, track runner movement, and stay in charge.</p>
+              <p className="text-sm text-white/70">
+                Book fast errands, including supermarket dispatch, track runner movement, and stay in charge.
+              </p>
             </div>
             <Button onClick={() => navigate('/customer/post-errand')} className="gap-2 md:hidden">
               <Plus size={17} /> Post Errand
@@ -113,7 +125,7 @@ export const CustomerDashboard: React.FC = () => {
             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white/60">Quick Actions</h3>
             <span className="text-xs font-semibold text-white/40">Tap to jump</span>
           </div>
-          <div className="grid gap-3 md:grid-cols-4">
+          <div className="grid gap-3 md:grid-cols-5">
             {[
               {
                 label: 'Post Errand',
@@ -132,6 +144,12 @@ export const CustomerDashboard: React.FC = () => {
                 description: 'Top up or view spend',
                 icon: <Wallet size={18} />,
                 href: '/customer/wallet',
+              },
+              {
+                label: 'Supermarket',
+                description: 'Create store dispatch request',
+                icon: <Store size={18} />,
+                href: '/customer/post-errand',
               },
               {
                 label: 'Support',

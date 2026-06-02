@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, CreditCard, Users, ClipboardCheck, Bell, ArrowUpRight, UserCheck, Navigation, LifeBuoy } from 'lucide-react';
+import { Activity, CreditCard, Users, ClipboardCheck, Bell, ArrowUpRight, UserCheck, Navigation, LifeBuoy, Store } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { AdminLayout } from './AdminLayout';
+import { ADMIN_SUPERMARKETS } from './adminData';
 
 const FEED = [
   { id: 1, title: 'New customer registration', detail: 'Sarah Daniels verified email', time: '2 mins ago' },
@@ -35,10 +36,12 @@ export const AdminDashboard: React.FC = () => {
 
   const paymentTotal = paymentSeries[paymentSeries.length - 1];
   const usersTotal = userSeries[userSeries.length - 1];
+  const pendingSupermarkets = ADMIN_SUPERMARKETS.filter(store => store.verificationStatus === 'pending').length;
   const stats = [
     { label: 'Total Users', value: usersTotal.toLocaleString(), icon: <Users size={18} />, tone: 'text-kart-orange' },
     { label: 'Active Errands', value: '148', icon: <Activity size={18} />, tone: 'text-market-green' },
     { label: 'Payments Today', value: `₦${paymentTotal.toFixed(2)}M`, icon: <CreditCard size={18} />, tone: 'text-kart-orange' },
+    { label: 'Store Verifications', value: pendingSupermarkets.toString(), icon: <Store size={18} />, tone: 'text-kart-orange' },
     { label: 'Pending Reviews', value: '36', icon: <ClipboardCheck size={18} />, tone: 'text-market-green' },
   ];
 
@@ -63,7 +66,7 @@ export const AdminDashboard: React.FC = () => {
 
   return (
     <AdminLayout title="Admin Dashboard" active="dashboard">
-      <section className="grid gap-4 md:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-5">
         {stats.map(stat => (
           <div
             key={stat.label}
@@ -197,6 +200,9 @@ export const AdminDashboard: React.FC = () => {
               </Button>
               <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/admin/support')}>
                 <LifeBuoy size={16} className="text-white/70" /> Manage support
+              </Button>
+              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/admin/supermarkets')}>
+                <Store size={16} className="text-white/70" /> Verify supermarkets
               </Button>
               <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/admin/users')}>
                 <UserCheck size={16} className="text-white/70" /> Monitor users

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, ShieldCheck, MapPin, SlidersHorizontal, LifeBuoy, LogOut, Wallet, TrendingUp, User } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { RunnerBottomNav } from './RunnerBottomNav';
+import { clearSession, logout } from '../../utils/auth';
 
 export const RunnerSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +12,21 @@ export const RunnerSettings: React.FC = () => {
   const [autoAccept, setAutoAccept] = useState(false);
   const [priorityAlerts, setPriorityAlerts] = useState(true);
   const [shareLocation, setShareLocation] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout(apiBaseUrl);
+    } catch (error) {
+      console.error('[Logout]', error);
+      clearSession();
+    } finally {
+      setIsLoggingOut(false);
+      navigate('/login');
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
@@ -134,8 +150,8 @@ export const RunnerSettings: React.FC = () => {
 
           <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ACCOUNT</h3>
-            <Button variant="outline" className="w-full gap-2">
-              <LogOut size={16} className="text-white/70" /> Sign out
+            <Button variant="outline" className="w-full gap-2" onClick={handleLogout} disabled={isLoggingOut}>
+              <LogOut size={16} className="text-white/70" /> {isLoggingOut ? 'Signing out...' : 'Sign out'}
             </Button>
           </section>
 

@@ -143,8 +143,99 @@ export const ADMIN_USER_PROFILES: AdminUserProfile[] = [
   },
 ];
 
+export type SupermarketVerificationStatus = 'pending' | 'verified' | 'rejected' | 'suspended';
+
+export interface AdminSupermarketProfile {
+  id: string;
+  businessName: string;
+  managerName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  verificationStatus: SupermarketVerificationStatus;
+  cacNumber: string;
+  taxId: string;
+  submittedAt: string;
+  lastUpdated: string;
+  dispatchOrders: number;
+  activeRunners: number;
+  documents: {
+    cacCertificateImage: string;
+    governmentIdImage: string;
+    storefrontImage: string;
+  };
+}
+
+export const ADMIN_SUPERMARKETS: AdminSupermarketProfile[] = [
+  {
+    id: 'SM-2001',
+    businessName: 'Shoprite Lekki',
+    managerName: 'Amina Yusuf',
+    email: 'dispatch.lekki@shoprite.ng',
+    phone: '+234 809 320 1000',
+    address: 'Circle Mall, Jakande Roundabout',
+    city: 'Lagos',
+    verificationStatus: 'verified',
+    cacNumber: 'RC-9987611',
+    taxId: 'TIN-445-118-09',
+    submittedAt: '2026-04-10',
+    lastUpdated: '2 hrs ago',
+    dispatchOrders: 128,
+    activeRunners: 14,
+    documents: {
+      cacCertificateImage: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=60',
+      governmentIdImage: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=60',
+      storefrontImage: 'https://images.unsplash.com/photo-1534723328310-e82dad3ee43f?auto=format&fit=crop&w=900&q=60',
+    },
+  },
+  {
+    id: 'SM-2002',
+    businessName: 'Spar Victoria Island',
+    managerName: 'Tunde Adebayo',
+    email: 'ops.vi@spar.ng',
+    phone: '+234 803 201 8890',
+    address: '17 Adeola Odeku Street',
+    city: 'Lagos',
+    verificationStatus: 'pending',
+    cacNumber: 'RC-6721102',
+    taxId: 'TIN-337-900-22',
+    submittedAt: '2026-05-11',
+    lastUpdated: 'just now',
+    dispatchOrders: 0,
+    activeRunners: 0,
+    documents: {
+      cacCertificateImage: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=900&q=60',
+      governmentIdImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=60',
+      storefrontImage: 'https://images.unsplash.com/photo-1604719312566-8912e9c8a213?auto=format&fit=crop&w=900&q=60',
+    },
+  },
+  {
+    id: 'SM-2003',
+    businessName: 'Ebeano Ikoyi',
+    managerName: 'Kemi Oladele',
+    email: 'manager@ebeanoikoyi.com',
+    phone: '+234 802 771 3349',
+    address: '15 Awolowo Road',
+    city: 'Lagos',
+    verificationStatus: 'suspended',
+    cacNumber: 'RC-5530984',
+    taxId: 'TIN-129-410-77',
+    submittedAt: '2026-03-02',
+    lastUpdated: '1 day ago',
+    dispatchOrders: 56,
+    activeRunners: 0,
+    documents: {
+      cacCertificateImage: 'https://images.unsplash.com/photo-1554224155-1696413565d3?auto=format&fit=crop&w=900&q=60',
+      governmentIdImage: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=900&q=60',
+      storefrontImage: 'https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=900&q=60',
+    },
+  },
+];
+
 export interface ActiveErrandTrack {
   orderId: string;
+  source: 'customer-direct' | 'supermarket-dispatch';
   customerUserId: string;
   runnerUserId: string;
   customerName: string;
@@ -159,11 +250,14 @@ export interface ActiveErrandTrack {
   pickupLocation: [number, number];
   dropoffLocation: [number, number];
   currentLocation: [number, number];
+  supermarketName?: string;
+  supermarketContact?: string;
 }
 
 export const ADMIN_ACTIVE_ERRANDS: ActiveErrandTrack[] = [
   {
     orderId: 'EK-4920',
+    source: 'supermarket-dispatch',
     customerUserId: 'U-1001',
     runnerUserId: 'U-1002',
     customerName: 'Sarah Daniels',
@@ -178,9 +272,12 @@ export const ADMIN_ACTIVE_ERRANDS: ActiveErrandTrack[] = [
     pickupLocation: [6.4474, 3.4558],
     dropoffLocation: [6.4281, 3.4219],
     currentLocation: [6.4408, 3.4469],
+    supermarketName: 'Shoprite Lekki',
+    supermarketContact: '+234 809 320 1000',
   },
   {
     orderId: 'EK-4961',
+    source: 'customer-direct',
     customerUserId: 'U-1001',
     runnerUserId: 'U-1002',
     customerName: 'Sarah Daniels',
@@ -282,6 +379,22 @@ export const ADMIN_SUPPORT_TICKETS: AdminSupportTicket[] = [
     updatedAt: 'Resolved',
     slaTarget: '24 hrs',
     lastMessage: 'Verification completed and account cleared.',
+  },
+  {
+    id: 'SUP-1005',
+    orderId: 'EK-4920',
+    requesterUserId: 'U-1001',
+    requesterName: 'Sarah Daniels',
+    requesterRole: 'customer',
+    channel: 'live-chat',
+    category: 'Supermarket handoff delay',
+    summary: 'Customer requested update after supermarket held dispatch for item replacement.',
+    priority: 'medium',
+    status: 'open',
+    createdAt: 'Today · 11:05 AM',
+    updatedAt: 'Just now',
+    slaTarget: '2 mins',
+    lastMessage: 'Store confirmed replacement item is now packed.',
   },
 ];
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home } from 'lucide-react';
+import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home, Store } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { TextArea } from '../../components/UI/TextArea';
@@ -8,11 +8,13 @@ import { TextArea } from '../../components/UI/TextArea';
 export const PostErrand: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState('Purchase');
+  const [fulfillmentMode, setFulfillmentMode] = useState<'direct-runner' | 'supermarket-dispatch'>('direct-runner');
 
   const categories = [
     { id: 'Market', label: 'Market Run', icon: <ShoppingBasket size={16} /> },
     { id: 'Purchase', label: 'Purchase', icon: <ShoppingCart size={16} /> },
     { id: 'Service', label: 'Service', icon: <PackageCheck size={16} /> },
+    { id: 'Supermarket', label: 'Supermarket', icon: <Store size={16} /> },
   ];
 
   return (
@@ -50,12 +52,19 @@ export const PostErrand: React.FC = () => {
                 <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                   Category
                 </label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                   {categories.map(cat => (
                     <button
                       key={cat.id}
                       type="button"
-                      onClick={() => setCategory(cat.id)}
+                      onClick={() => {
+                        setCategory(cat.id);
+                        if (cat.id === 'Supermarket') {
+                          setFulfillmentMode('supermarket-dispatch');
+                        } else {
+                          setFulfillmentMode('direct-runner');
+                        }
+                      }}
                       className={`flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 px-2 py-3 text-xs font-semibold transition-all ${
                         category === cat.id
                           ? 'border-kart-orange bg-kart-orange/15 text-kart-orange'
@@ -68,7 +77,53 @@ export const PostErrand: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              <div className="mt-4">
+                <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Fulfillment mode
+                </label>
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                  {[
+                    { id: 'direct-runner', label: 'Customer assigns runner', detail: 'Regular customer request flow' },
+                    {
+                      id: 'supermarket-dispatch',
+                      label: 'Supermarket dispatch',
+                      detail: 'Store coordinates runner delivery',
+                    },
+                  ].map(mode => (
+                    <button
+                      key={mode.id}
+                      type="button"
+                      onClick={() => setFulfillmentMode(mode.id as 'direct-runner' | 'supermarket-dispatch')}
+                      className={`rounded-2xl border px-4 py-3 text-left transition-all ${
+                        fulfillmentMode === mode.id
+                          ? 'border-kart-orange/40 bg-kart-orange/15'
+                          : 'border-white/10 bg-white/5 hover:border-white/20'
+                      }`}
+                    >
+                      <p className="text-sm font-semibold text-white">{mode.label}</p>
+                      <p className="mt-1 text-xs text-white/60">{mode.detail}</p>
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-white/50">
+                  Supermarket requests still start in customer session so the customer controls delivery address and payment.
+                </p>
+              </div>
             </section>
+
+            {(category === 'Supermarket' || fulfillmentMode === 'supermarket-dispatch') && (
+              <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+                <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">SUPERMARKET DETAILS</h3>
+                <Input label="Supermarket name" placeholder="e.g., Shoprite, Spar, Ebeano" />
+                <Input label="Order reference (optional)" placeholder="Paste your order ID or cart ref" />
+                <Input label="Supermarket contact" placeholder="Store phone or contact person" />
+                <label className="ml-1 flex items-center gap-2 text-sm text-slate-400">
+                  <input type="checkbox" className="h-4 w-4 rounded accent-kart-orange" defaultChecked />
+                  Supermarket will dispatch a runner to deliver items
+                </label>
+              </section>
+            )}
 
             <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
               <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">LOCATIONS</h3>

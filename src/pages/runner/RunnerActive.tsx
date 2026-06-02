@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload, Store } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { RunnerBottomNav } from './RunnerBottomNav';
 
@@ -39,7 +39,7 @@ export const RunnerActive: React.FC = () => {
         <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Order #EK-4920</p>
           <h3 className="mt-2 text-2xl font-black">Grocery Pickup · Lekki</h3>
-          <p className="mt-2 text-sm text-white/70">Budget payout ₦4,500 · Service fee ₦700</p>
+          <p className="mt-2 text-sm text-white/70">Budget payout ₦4,500 · Service fee ₦700 · Source: Supermarket dispatch</p>
         </section>
 
         <div className="flex flex-col gap-6 md:grid md:grid-cols-[1.05fr_0.95fr] md:items-start">
@@ -97,6 +97,24 @@ export const RunnerActive: React.FC = () => {
                   </Button>
                   <Button theme="green" className="gap-2" onClick={() => navigate('/runner/chat/EK-4920')}>
                     <MessageSquare size={16} /> Chat
+                  </Button>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+              <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">SUPERMARKET CONTACT</h3>
+              <div className="rounded-2xl border border-white/10 bg-[#0f141f] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="flex items-center gap-2 text-base font-bold text-white">
+                      <Store size={16} className="text-kart-orange" /> Shoprite Lekki
+                    </p>
+                    <p className="mt-1 text-sm text-white/60">Dispatch Desk · +234 809 320 1000</p>
+                    <p className="mt-2 text-xs text-white/50">Confirm packed items and handoff code before leaving store.</p>
+                  </div>
+                  <Button variant="outline" className="gap-2">
+                    <Phone size={16} className="text-white/80" /> Call
                   </Button>
                 </div>
               </div>

@@ -5,7 +5,7 @@ import { AdminLayout } from './AdminLayout';
 import { ADMIN_USER_PROFILES } from './adminData';
 
 type UserRole = 'customer' | 'runner' | 'admin';
-type UserStatus = 'active' | 'inactive' | 'suspended';
+//type UserStatus = 'active' | 'inactive' | 'suspended';
 
 export const AdminUsers: React.FC = () => {
   const navigate = useNavigate();

@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageCircle, Mail, PhoneCall, ShieldAlert, Star, LifeBuoy, ChevronRight, User, Bike } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { AdminLayout } from './AdminLayout';
-import { ADMIN_ORDER_RATINGS, ADMIN_SUPPORT_TICKETS, ADMIN_USER_PROFILES } from './adminData';
-import type { AdminSupportTicket, SupportTicketStatus } from './adminData';
+import type { AdminOrderRating, AdminSupportTicket, SupportTicketStatus } from './adminData';
+import { buildAuthHeaders } from '../../utils/auth';
 
 const renderStars = (value: number) => (
   <div className="flex items-center gap-1">
@@ -37,11 +37,67 @@ export const AdminSupport: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<'all' | 'customer' | 'runner'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | SupportTicketStatus>('all');
   const [ratingFilter, setRatingFilter] = useState<'all' | 'attention'>('all');
+  const [tickets, setTickets] = useState<SupportTicketView[]>([]);
+  const [ratings, setRatings] = useState<AdminOrderRating[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
-  const userLookup = useMemo(() => new Map(ADMIN_USER_PROFILES.map(user => [user.id, user])), []);
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
+
+    const loadData = async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+      try {
+        const [ticketsResponse, ratingsResponse] = await Promise.all([
+          fetch(`${apiBaseUrl}/api/admin/support/tickets`, { signal: controller.signal, headers: buildAuthHeaders() }),
+          fetch(`${apiBaseUrl}/api/admin/ratings`, { signal: controller.signal, headers: buildAuthHeaders() }),
+        ]);
+
+        const ticketJson = await ticketsResponse.json().catch(() => ({}));
+        if (!ticketsResponse.ok) {
+          throw new Error(ticketJson.message ?? 'Failed to load support tickets');
+        }
+
+        const ratingJson = await ratingsResponse.json().catch(() => ({}));
+        if (!ratingsResponse.ok) {
+          throw new Error(ratingJson.message ?? 'Failed to load order ratings');
+        }
+
+        const ticketItems = Array.isArray(ticketJson) ? ticketJson : (ticketJson.tickets ?? []);
+        const ratingItems = Array.isArray(ratingJson) ? ratingJson : (ratingJson.ratings ?? []);
+
+        if (mounted) {
+          setTickets(ticketItems.map(mapTicket));
+          setRatings(ratingItems.map(mapRating));
+        }
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
+        const message = error instanceof Error ? error.message : 'Failed to load support data';
+        if (mounted) {
+          setErrorMessage(message);
+          setTickets([]);
+          setRatings([]);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, [apiBaseUrl]);
 
   const filteredTickets = useMemo(() => {
-    return ADMIN_SUPPORT_TICKETS.filter(ticket => {
+    return tickets.filter(ticket => {
       const matchesRole = roleFilter === 'all' || ticket.requesterRole === roleFilter;
       const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
       const matchesQuery =
@@ -53,24 +109,24 @@ export const AdminSupport: React.FC = () => {
         (ticket.orderId ?? '').toLowerCase().includes(query.toLowerCase());
       return matchesRole && matchesStatus && matchesQuery;
     });
-  }, [query, roleFilter, statusFilter]);
+  }, [query, roleFilter, statusFilter, tickets]);
 
-  const openTickets = ADMIN_SUPPORT_TICKETS.filter(ticket => ticket.status !== 'resolved').length;
-  const escalatedTickets = ADMIN_SUPPORT_TICKETS.filter(ticket => ticket.status === 'escalated').length;
-  const customerTickets = ADMIN_SUPPORT_TICKETS.filter(ticket => ticket.requesterRole === 'customer').length;
-  const runnerTickets = ADMIN_SUPPORT_TICKETS.filter(ticket => ticket.requesterRole === 'runner').length;
+  const openTickets = tickets.filter(ticket => ticket.status !== 'resolved').length;
+  const escalatedTickets = tickets.filter(ticket => ticket.status === 'escalated').length;
+  const customerTickets = tickets.filter(ticket => ticket.requesterRole === 'customer').length;
+  const runnerTickets = tickets.filter(ticket => ticket.requesterRole === 'runner').length;
   const avgRating = useMemo(() => {
-    const values = ADMIN_ORDER_RATINGS.flatMap(item => [item.customerToRunnerRating, item.runnerToCustomerRating]);
+    const values = ratings.flatMap(item => [item.customerToRunnerRating, item.runnerToCustomerRating]);
     const total = values.reduce((sum, value) => sum + value, 0);
     return values.length === 0 ? 0 : total / values.length;
-  }, []);
+  }, [ratings]);
 
   const ratingItems = useMemo(() => {
-    return ADMIN_ORDER_RATINGS.filter(item => {
+    return ratings.filter(item => {
       if (ratingFilter === 'all') return true;
       return item.customerToRunnerRating <= 3 || item.runnerToCustomerRating <= 3;
     });
-  }, [ratingFilter]);
+  }, [ratingFilter, ratings]);
 
   return (
     <AdminLayout title="Support & Ratings" active="support">
@@ -163,15 +219,22 @@ export const AdminSupport: React.FC = () => {
             </button>
           ))}
         </div>
-      </section>
+        </section>
 
       <section className="mt-6 space-y-3">
+        {isLoading && (
+          <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 text-sm text-white/70">
+            Loading support tickets...
+          </div>
+        )}
+        {errorMessage && (
+          <div className="rounded-[24px] border border-red-500/40 bg-red-500/10 p-5 text-sm text-red-200">
+            {errorMessage}
+          </div>
+        )}
         {filteredTickets.map(ticket => {
           const channel = getChannelMeta(ticket.channel);
-          const requester = userLookup.get(ticket.requesterUserId);
-          const rating = ticket.orderId
-            ? ADMIN_ORDER_RATINGS.find(item => item.orderId === ticket.orderId) ?? null
-            : null;
+          const rating = ticket.orderId ? ratings.find(item => item.orderId === ticket.orderId) ?? null : null;
 
           return (
             <div
@@ -216,8 +279,8 @@ export const AdminSupport: React.FC = () => {
                 <div className="w-full rounded-2xl border border-white/10 bg-[#0f141f] p-3 md:w-[280px]">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Requester</p>
                   <p className="mt-2 text-sm font-bold text-white">{ticket.requesterName}</p>
-                  <p className="text-xs text-white/60">{requester?.email ?? 'no email'}</p>
-                  <p className="text-xs text-white/60">{requester?.phone ?? 'no phone'}</p>
+                  <p className="text-xs text-white/60">{ticket.requesterEmail ?? 'no email'}</p>
+                  <p className="text-xs text-white/60">{ticket.requesterPhone ?? 'no phone'}</p>
                   <p className="mt-2 text-xs text-white/50">Last update: {ticket.updatedAt}</p>
                   <p className="text-xs text-white/50">{ticket.lastMessage}</p>
                 </div>
@@ -286,7 +349,7 @@ export const AdminSupport: React.FC = () => {
         <div className="mt-4 grid gap-3">
           {ratingItems.map(item => {
             const linkedTicket = item.linkedSupportTicketId
-              ? ADMIN_SUPPORT_TICKETS.find(ticket => ticket.id === item.linkedSupportTicketId) ?? null
+              ? tickets.find(ticket => ticket.id === item.linkedSupportTicketId) ?? null
               : null;
 
             return (
@@ -333,3 +396,85 @@ export const AdminSupport: React.FC = () => {
     </AdminLayout>
   );
 };
+
+type SupportTicketView = AdminSupportTicket & {
+  requesterEmail?: string | null;
+  requesterPhone?: string | null;
+};
+
+type SupportTicketApi = {
+  id: string;
+  order_id: string | null;
+  requester_user_id: string;
+  requester_role: AdminSupportTicket['requesterRole'];
+  channel: AdminSupportTicket['channel'];
+  category: string;
+  summary: string;
+  priority: AdminSupportTicket['priority'];
+  status: SupportTicketStatus;
+  sla_target: string | null;
+  last_message: string | null;
+  created_at: string;
+  updated_at: string;
+  requester?: {
+    id: string;
+    full_name: string | null;
+    email: string | null;
+    phone_number: string | null;
+  } | null;
+};
+
+type RatingApi = {
+  order_id: string;
+  customer_user_id: string;
+  runner_user_id: string;
+  customer_to_runner_rating: number;
+  runner_to_customer_rating: number;
+  customer_comment: string | null;
+  runner_comment: string | null;
+  submitted_at: string;
+  customer?: { id: string; full_name: string | null } | null;
+  runner?: { id: string; full_name: string | null } | null;
+};
+
+const mapTicket = (ticket: SupportTicketApi): SupportTicketView => {
+  return {
+    id: ticket.id,
+    orderId: ticket.order_id ?? undefined,
+    requesterUserId: ticket.requester_user_id,
+    requesterName: ticket.requester?.full_name ?? 'Unknown requester',
+    requesterRole: ticket.requester_role,
+    channel: ticket.channel,
+    category: ticket.category,
+    summary: ticket.summary,
+    priority: ticket.priority,
+    status: ticket.status,
+    createdAt: formatDate(ticket.created_at),
+    updatedAt: formatDate(ticket.updated_at),
+    slaTarget: ticket.sla_target ?? 'N/A',
+    lastMessage: ticket.last_message ?? 'No updates yet',
+    requesterEmail: ticket.requester?.email ?? null,
+    requesterPhone: ticket.requester?.phone_number ?? null,
+  };
+};
+
+const mapRating = (rating: RatingApi): AdminOrderRating => {
+  return {
+    orderId: rating.order_id,
+    customerUserId: rating.customer_user_id,
+    runnerUserId: rating.runner_user_id,
+    customerName: rating.customer?.full_name ?? 'Customer',
+    runnerName: rating.runner?.full_name ?? 'Runner',
+    customerToRunnerRating: rating.customer_to_runner_rating,
+    runnerToCustomerRating: rating.runner_to_customer_rating,
+    customerComment: rating.customer_comment ?? '',
+    runnerComment: rating.runner_comment ?? '',
+    submittedAt: formatDate(rating.submitted_at),
+  };
+};
+
+const formatDate = (value: string) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+};
+

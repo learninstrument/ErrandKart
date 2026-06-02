@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Activity, Users, LogOut, ShieldCheck, Navigation, LifeBuoy } from 'lucide-react';
+import { LayoutDashboard, Activity, Users, LogOut, ShieldCheck, Navigation, LifeBuoy, Store } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
+import { clearSession, logout } from '../../utils/auth';
 
-type AdminSection = 'dashboard' | 'activity' | 'tracking' | 'support' | 'users' | 'admins';
+type AdminSection = 'dashboard' | 'activity' | 'tracking' | 'support' | 'supermarkets' | 'users' | 'admins';
 
 interface AdminLayoutProps {
   title: string;
@@ -16,12 +17,28 @@ const NAV_ITEMS: Array<{ id: AdminSection; label: string; icon: React.ReactNode;
   { id: 'activity', label: 'Activity', icon: <Activity size={18} />, href: '/admin/activity' },
   { id: 'tracking', label: 'Tracking', icon: <Navigation size={18} />, href: '/admin/tracking' },
   { id: 'support', label: 'Support', icon: <LifeBuoy size={18} />, href: '/admin/support' },
+  { id: 'supermarkets', label: 'Supermarkets', icon: <Store size={18} />, href: '/admin/supermarkets' },
   { id: 'users', label: 'Users', icon: <Users size={18} />, href: '/admin/users' },
   { id: 'admins', label: 'Admins', icon: <ShieldCheck size={18} />, href: '/admin/admins' },
 ];
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, children }) => {
   const navigate = useNavigate();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout(apiBaseUrl);
+    } catch (error) {
+      console.error('[Logout]', error);
+      clearSession();
+    } finally {
+      setIsLoggingOut(false);
+      navigate('/admin/login');
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full bg-[#0b0f14] text-white">
@@ -57,8 +74,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, childre
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Signed in</p>
           <p className="mt-2 text-sm font-bold text-white">Super Admin</p>
           <p className="text-xs text-white/50">admin@errandkart.com</p>
-          <Button variant="outline" className="mt-4 w-full gap-2 text-xs" onClick={() => navigate('/admin/login')}>
-            <LogOut size={14} className="text-white/70" /> Log out
+          <Button variant="outline" className="mt-4 w-full gap-2 text-xs" onClick={handleLogout} disabled={isLoggingOut}>
+            <LogOut size={14} className="text-white/70" /> {isLoggingOut ? 'Logging out...' : 'Log out'}
           </Button>
         </div>
       </aside>

@@ -24,6 +24,9 @@ dist-ssr
 *.sw?
 .node_modules
 
+
 # Custom files to ignore
 .env
+.env.production
+.env.development
 coverage/

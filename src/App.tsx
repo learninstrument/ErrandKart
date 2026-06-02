@@ -26,6 +26,8 @@ import { RunnerChat } from './pages/runner/RunnerChat';
 import { RunnerSupport } from './pages/runner/RunnerSupport';
 import { RunnerDeliveryReview } from './pages/runner/RunnerDeliveryReview';
 import { RunnerEarnings } from './pages/runner/RunnerEarnings';
+import { NotFound } from './pages/NotFound';
+import { SupermarketRegister } from './pages/supermarket/SupermarketRegister';
 import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminActivity } from './pages/admin/AdminActivity';
@@ -34,6 +36,7 @@ import { AdminUsers } from './pages/admin/AdminUsers';
 import { AdminUserDetails } from './pages/admin/AdminUserDetails';
 import { AdminTracking } from './pages/admin/AdminTracking';
 import { AdminSupport } from './pages/admin/AdminSupport';
+import { AdminSupermarkets } from './pages/admin/AdminSupermarkets';
 
 function App() {
   return (
@@ -56,6 +59,7 @@ function App() {
             }
           />
           <Route path="/login" element={<LoginScreen />} />
+          <Route path="/supermarket/register" element={<SupermarketRegister />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/customer/post-errand" element={<PostErrand />} />
           <Route path="/customer/track" element={<TrackErrand />} />
@@ -86,9 +90,11 @@ function App() {
           <Route path="/admin/activity" element={<AdminActivity />} />
           <Route path="/admin/tracking" element={<AdminTracking />} />
           <Route path="/admin/support" element={<AdminSupport />} />
+          <Route path="/admin/supermarkets" element={<AdminSupermarkets />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/users/:userId" element={<AdminUserDetails />} />
           <Route path="/admin/admins" element={<AdminAdmins />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </BrowserRouter>
