@@ -37,6 +37,9 @@ import { AdminUserDetails } from './pages/admin/AdminUserDetails';
 import { AdminTracking } from './pages/admin/AdminTracking';
 import { AdminSupport } from './pages/admin/AdminSupport';
 import { AdminSupermarkets } from './pages/admin/AdminSupermarkets';
+import { VerifyOtpScreen } from './pages/auth/VerifyOtpScreen';
+import { UpdatePasswordScreen } from './pages/auth/UpdatePasswordScreen';
+
 
 function App() {
   return (
@@ -59,6 +62,8 @@ function App() {
             }
           />
           <Route path="/login" element={<LoginScreen />} />
+          <Route path="/verify-otp" element={<VerifyOtpScreen />} />
+          <Route path="/update-password" element={<UpdatePasswordScreen />} />
           <Route path="/supermarket/register" element={<SupermarketRegister />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/customer/post-errand" element={<PostErrand />} />

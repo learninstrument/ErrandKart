@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { supabaseAdmin } from '../config/supabase.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { HttpError } from '../utils/http-error.js';
-import { requireAuth } from '../utils/auth.js';
+import { requireAuth } from './auth.js';
 
 export const adminRouter = Router();
 
@@ -130,4 +130,3 @@ adminRouter.patch(
     });
   })
 );
-

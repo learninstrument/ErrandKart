@@ -1,60 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, PackageCheck, Receipt, MessageSquare } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 
-const ORDER_DETAILS: Record<string, {
-  id: string;
-  title: string;
-  status: 'active' | 'completed' | 'cancelled';
-  location: string;
-  date: string;
-  payout: string;
-  items: string[];
-  runner: string;
-  serviceFee?: string;
-  itemsCost?: string;
-  receiptUrl?: string;
-}> = {
-  'EK-4920': {
-    id: 'EK-4920',
-    title: 'Grocery Pickup',
-    status: 'active',
-    location: 'Lekki Phase 1',
-    date: 'Today · 10:14 AM',
-    payout: '₦4,500',
-    items: ['2x Whole wheat bread', '1x Almond milk', '3x Eggs (medium)', '1x Detergent'],
-    runner: 'Michael B.',
-  },
-  'EK-4811': {
-    id: 'EK-4811',
-    title: 'Pharmacy Run',
-    status: 'completed',
-    location: 'Victoria Island',
-    date: 'Yesterday · 4:32 PM',
-    payout: '₦2,700',
-    items: ['Pain relief tablets', 'Vitamin C', 'Cough syrup'],
-    runner: 'Michael B.',
-    serviceFee: '₦500',
-    itemsCost: '₦2,200',
-    receiptUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=900&q=60',
-  },
-  'EK-4722': {
-    id: 'EK-4722',
-    title: 'Laundry Pickup',
-    status: 'cancelled',
-    location: 'Ikoyi',
-    date: 'Apr 14 · 1:05 PM',
-    payout: '₦1,800',
-    items: ['Laundry basket', 'Dry cleaning'],
-    runner: '—',
-  },
-};
-
 export const CustomerOrderDetails: React.FC = () => {
   const navigate = useNavigate();
   const { orderId = '' } = useParams();
-  const order = ORDER_DETAILS[orderId] ?? null;
+  const [order, setOrder] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  useEffect(() => {
+    fetch(`${apiBaseUrl}/api/errands/${orderId}`, { method: 'GET', credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.errand) {
+          const o = data.errand;
+          let uiStatus = 'active';
+          if (o.status === 'completed') uiStatus = 'completed';
+          if (o.status === 'cancelled') uiStatus = 'cancelled';
+
+          setOrder({
+            id: o.id,
+            displayId: `EK-${o.id.split('-')[0].toUpperCase()}`,
+            title: o.title,
+            status: uiStatus,
+            location: o.pickup_address,
+            date: new Date(o.created_at).toLocaleString(),
+            payout: `₦${(Number(o.budget_service_fee) + 700).toLocaleString()}`,
+            items: o.description ? o.description.split('\n') : ['No details provided'],
+            runner: o.runner_id ? 'Runner Assigned' : 'Matching...',
+            serviceFee: '₦700',
+            itemsCost: `₦${Number(o.budget_service_fee).toLocaleString()}`,
+            receiptUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=900&q=60',
+          });
+        }
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }, [apiBaseUrl, orderId]);
+
+  if (isLoading) {
+    return <div className="flex min-h-screen items-center justify-center text-white/70">Loading...</div>;
+  }
 
   if (!order) {
     return (
@@ -78,7 +66,7 @@ export const CustomerOrderDetails: React.FC = () => {
         <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#111722] via-[#121826] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">{order.id}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">{order.displayId}</p>
               <h3 className="mt-2 text-2xl font-black">{order.title}</h3>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70">
                 <span className="flex items-center gap-1">
@@ -102,8 +90,8 @@ export const CustomerOrderDetails: React.FC = () => {
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{order.items.length} items</span>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            {order.items.map(item => (
-              <div key={item} className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/80">
+            {order.items.map((item: string, index: number) => (
+              <div key={index} className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/80">
                 <PackageCheck size={14} className="mr-2 inline text-kart-orange" />
                 {item}
               </div>

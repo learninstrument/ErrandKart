@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, ShieldCheck, MapPin, Globe, LifeBuoy, LogOut, User, Wallet, FileText } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { BottomNav } from './BottomNav';
-import { clearSession, logout } from '../../utils/auth';
+import { clearSession } from '../../utils/auth';
 
 export const CustomerSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -17,11 +17,14 @@ export const CustomerSettings: React.FC = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await logout(apiBaseUrl);
+      await fetch(`${apiBaseUrl}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
     } catch (error) {
       console.error('[Logout]', error);
-      clearSession();
     } finally {
+      clearSession();
       setIsLoggingOut(false);
       navigate('/login');
     }

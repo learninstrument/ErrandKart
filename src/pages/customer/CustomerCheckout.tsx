@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, MapPin, Wallet, Tag, ShieldCheck, CreditCard, CheckCircle2, LifeBuoy } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 
 export const CustomerCheckout: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const errand = location.state?.errand;
+  
   const [useWallet, setUseWallet] = useState(true);
   const [priority, setPriority] = useState(false);
   const [promo, setPromo] = useState('');
 
+  if (!errand) {
+    navigate('/customer/post-errand', { replace: true });
+    return null;
+  }
+
   const serviceFee = 700;
-  const runnerFee = 4500;
+  const runnerFee = Number(errand.budget_service_fee) || 0;
   const priorityFee = priority ? 500 : 0;
   const total = serviceFee + runnerFee + priorityFee;
 
@@ -34,11 +42,11 @@ export const CustomerCheckout: React.FC = () => {
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-[#0f141f] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Pickup</p>
-                <p className="mt-2 text-sm font-bold text-white">Shoprite, Lekki Phase 1</p>
+                <p className="mt-2 text-sm font-bold text-white">{errand.pickup_address}</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-[#0f141f] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Dropoff</p>
-                <p className="mt-2 text-sm font-bold text-white">Eko Atlantic, Victoria Island</p>
+                <p className="mt-2 text-sm font-bold text-white">{errand.dropoff_address}</p>
               </div>
             </div>
           </section>
@@ -191,7 +199,7 @@ export const CustomerCheckout: React.FC = () => {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Payment method</p>
               <p className="mt-1 font-semibold text-white">{useWallet ? 'Wallet balance' : 'Paystack checkout'}</p>
             </div>
-            <Button fullWidth className="mt-5 gap-2" onClick={() => navigate('/customer/confirmation')}>
+            <Button fullWidth className="mt-5 gap-2" onClick={() => navigate('/customer/confirmation', { state: { errand } })}>
               <CheckCircle2 size={16} /> Confirm & Place Errand
             </Button>
           </section>
@@ -209,7 +217,7 @@ export const CustomerCheckout: React.FC = () => {
       </main>
 
       <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-4xl -translate-x-1/2 border-t border-white/5 bg-[#0d1117]/95 p-5 backdrop-blur-md md:hidden">
-        <Button fullWidth className="gap-2" onClick={() => navigate('/customer/confirmation')}>
+        <Button fullWidth className="gap-2" onClick={() => navigate('/customer/confirmation', { state: { errand } })}>
           <CheckCircle2 size={16} /> Confirm & Place Errand
         </Button>
       </div>

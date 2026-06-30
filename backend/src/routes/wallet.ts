@@ -5,7 +5,7 @@ import { env } from '../config/env.js';
 import { supabaseAdmin } from '../config/supabase.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { HttpError } from '../utils/http-error.js';
-import { requireAuth } from '../utils/auth.js';
+import { requireAuth } from './auth.js';
 
 export const walletRouter = Router();
 
@@ -165,13 +165,14 @@ walletRouter.post(
       .single();
 
     if (insertError) {
-      await supabaseAdmin
-        .from('users')
-        .update({ wallet_balance: walletBalance })
-        .eq('id', profile.id)
-        .catch(rollbackError => {
-          console.error('[WithdrawalRollback]', rollbackError);
-        });
+      try {
+        await supabaseAdmin
+          .from('users')
+          .update({ wallet_balance: walletBalance })
+          .eq('id', profile.id);
+      } catch (rollbackError: any) {
+        console.error('[WithdrawalRollback]', rollbackError);
+      }
       throw new HttpError(500, 'Failed to record withdrawal', insertError);
     }
 
@@ -183,4 +184,3 @@ walletRouter.post(
     });
   })
 );
-

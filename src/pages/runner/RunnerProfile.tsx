@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, ShieldCheck, Settings } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
@@ -8,6 +8,48 @@ import { RunnerBottomNav } from './RunnerBottomNav';
 export const RunnerProfile: React.FC = () => {
   const navigate = useNavigate();
   const [isOnline, setIsOnline] = useState(true);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [gender, setGender] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  useEffect(() => {
+    fetch(`${apiBaseUrl}/api/auth/me`, { method: 'GET', credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data?.user) {
+          setFullName(data.user.full_name || '');
+          setEmail(data.user.email || '');
+          setGender(data.user.gender || data.user.user_metadata?.gender || '');
+          setPhoneNumber(data.user.phone_number || '');
+        }
+      })
+      .catch(console.error);
+  }, [apiBaseUrl]);
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    setMessage({ type: '', text: '' });
+    try {
+      const res = await fetch(`${apiBaseUrl}/api/auth/profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ full_name: fullName, gender, phone_number: phoneNumber })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to save profile');
+      setMessage({ type: 'success', text: 'Profile updated successfully!' });
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
@@ -29,14 +71,14 @@ export const RunnerProfile: React.FC = () => {
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fullName || 'Runner')}`}
                 alt="Profile"
                 className="h-16 w-16 rounded-2xl border border-white/10 bg-white/5"
               />
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Runner profile</p>
-                <p className="text-lg font-bold text-white">Michael B.</p>
-                <p className="text-sm text-slate-400">michael@errandkart.com</p>
+                <p className="text-lg font-bold text-white">{fullName || 'Loading...'}</p>
+                <p className="text-sm text-slate-400">{email || 'Loading...'}</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -68,9 +110,47 @@ export const RunnerProfile: React.FC = () => {
 
         <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">PERSONAL INFO</h3>
-          <Input label="Full Name" placeholder="Michael B." theme="green" />
-          <Input label="Email Address" type="email" placeholder="michael@errandkart.com" theme="green" />
-          <Input label="Phone Number" type="tel" placeholder="+234 801 123 9876" theme="green" />
+          <Input 
+            label="Full Name" 
+            placeholder="Your Name" 
+            theme="green" 
+            value={fullName} 
+            onChange={e => setFullName(e.target.value)} 
+          />
+          <Input label="Email Address" type="email" placeholder="your@email.com" theme="green" value={email} disabled />
+          
+          <Input 
+            label="Phone Number" 
+            type="tel" 
+            placeholder="+234 801 123 9876" 
+            theme="green" 
+            value={phoneNumber} 
+            onChange={e => setPhoneNumber(e.target.value)}
+          />
+
+          <div>
+            <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Gender</label>
+            <select 
+              value={gender}
+              onChange={e => setGender(e.target.value)}
+              className="mb-6 mt-1 w-full rounded-2xl border border-[#253043] bg-[#111621] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-market-green focus:ring-4 focus:ring-market-green/25"
+            >
+              <option value="" disabled>Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+
+          {message.text && (
+            <div className={`mb-4 rounded-2xl border px-4 py-3 text-sm ${message.type === 'error' ? 'border-red-500/40 bg-red-500/10 text-red-200' : 'border-market-green/40 bg-market-green/10 text-market-green'}`}>
+              {message.text}
+            </div>
+          )}
+
+          <Button theme="green" className="w-full" onClick={handleSaveProfile} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Profile'}
+          </Button>
         </section>
 
         <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">

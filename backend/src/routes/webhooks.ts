@@ -132,13 +132,14 @@ webhooksRouter.post(
     });
 
     if (insertError) {
-      await supabaseAdmin
-        .from('users')
-        .update({ wallet_balance: previousBalance })
-        .eq('id', profile.id)
-        .catch(rollbackError => {
-          console.error('[WebhookRollback]', rollbackError);
-        });
+      try {
+        await supabaseAdmin
+          .from('users')
+          .update({ wallet_balance: previousBalance })
+          .eq('id', profile.id);
+      } catch (rollbackError: any) {
+        console.error('[WebhookRollback]', rollbackError);
+      }
       throw new HttpError(500, 'Failed to record transaction', insertError);
     }
 

@@ -22,16 +22,17 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const baseStyle =
-    'inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0';
+    'inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none';
 
   const variants = {
     primary:
       theme === 'orange'
-        ? 'bg-kart-orange text-white shadow-[0_14px_28px_rgba(255,102,0,0.35)] hover:brightness-95 focus-visible:ring-kart-orange/50'
-        : 'bg-market-green text-white shadow-[0_14px_28px_rgba(46,139,87,0.35)] hover:brightness-95 focus-visible:ring-market-green/50',
+        ? 'bg-kart-orange text-white shadow-[0_0_15px_rgba(255,102,0,0.2)] hover:shadow-[0_0_25px_rgba(255,102,0,0.4)] hover:brightness-110'
+        : 'bg-market-green text-white shadow-[0_0_15px_rgba(46,139,87,0.2)] hover:shadow-[0_0_25px_rgba(46,139,87,0.4)] hover:brightness-110',
     outline:
-      'border border-[#263042] bg-[#111621] text-white/80 shadow-[0_10px_24px_rgba(0,0,0,0.18)] hover:border-[#364155] hover:text-white focus-visible:ring-white/20',
-    ghost: 'bg-transparent text-white/70 hover:bg-white/10 focus-visible:ring-white/20',
+      'border border-[#1e293b] bg-[#111722]/80 text-white shadow-lg backdrop-blur-md hover:border-kart-orange/50 hover:bg-[#111722]',
+    ghost: 
+      'bg-transparent text-white/60 hover:bg-white/10 hover:text-white',
   };
 
   return (

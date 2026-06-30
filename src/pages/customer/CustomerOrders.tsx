@@ -1,62 +1,73 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Receipt, Clock } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { BottomNav } from './BottomNav';
+import { clearSession } from '../../utils/auth';
 
 type OrderStatus = 'active' | 'completed' | 'cancelled';
-
-const ORDERS = [
-  {
-    id: 'EK-4920',
-    title: 'Grocery Pickup',
-    location: 'Lekki Phase 1',
-    date: 'Today · 10:14 AM',
-    status: 'active' as OrderStatus,
-    fee: '₦4,500',
-  },
-  {
-    id: 'EK-4811',
-    title: 'Pharmacy Run',
-    location: 'Victoria Island',
-    date: 'Yesterday · 4:32 PM',
-    status: 'completed' as OrderStatus,
-    fee: '₦2,700',
-    serviceFee: '₦500',
-    itemsCost: '₦2,200',
-    receiptUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: 'EK-4722',
-    title: 'Laundry Pickup',
-    location: 'Ikoyi',
-    date: 'Apr 14 · 1:05 PM',
-    status: 'cancelled' as OrderStatus,
-    fee: '₦1,800',
-  },
-];
 
 export const CustomerOrders: React.FC = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<OrderStatus>('active');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  useEffect(() => {
+    fetch(`${apiBaseUrl}/api/errands`, { method: 'GET', credentials: 'include' })
+      .then(res => {
+        if (res.status === 401) {
+          clearSession();
+          navigate('/login');
+          throw new Error('Session expired');
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.errands) {
+          const formatted = data.errands.map((o: any) => {
+            let uiStatus: OrderStatus = 'active';
+            if (o.status === 'completed') uiStatus = 'completed';
+            if (o.status === 'cancelled') uiStatus = 'cancelled';
+
+            return {
+              id: o.id,
+              displayId: `EK-${o.id.split('-')[0].toUpperCase()}`,
+              title: o.title,
+              location: o.pickup_address,
+              date: new Date(o.created_at).toLocaleString(),
+              status: uiStatus,
+              fee: `₦${(Number(o.budget_service_fee) + 700).toLocaleString()}`,
+              serviceFee: '₦700',
+              itemsCost: `₦${Number(o.budget_service_fee).toLocaleString()}`,
+              receiptUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=60',
+            };
+          });
+          setOrders(formatted);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }, [apiBaseUrl]);
 
   const orderStats = useMemo(
     () =>
-      ORDERS.reduce(
+      orders.reduce(
         (acc, order) => {
           acc[order.status] += 1;
           return acc;
         },
         { active: 0, completed: 0, cancelled: 0 } as Record<OrderStatus, number>
       ),
-    []
+    [orders]
   );
 
-  const activeOrder = ORDERS.find(order => order.status === 'active') ?? null;
+  const activeOrder = orders.find(order => order.status === 'active') ?? null;
 
   const filteredOrders = useMemo(
-    () => ORDERS.filter(order => order.status === filter),
-    [filter]
+    () => orders.filter(order => order.status === filter),
+    [filter, orders]
   );
 
   return (
@@ -98,7 +109,7 @@ export const CustomerOrders: React.FC = () => {
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{order.id}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{order.displayId}</p>
                     <h3 className="mt-2 text-xl font-black text-white">{order.title}</h3>
                     <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-400">
                       <span className="flex items-center gap-1">
@@ -195,7 +206,7 @@ export const CustomerOrders: React.FC = () => {
             </div>
             <div className="mt-5 text-sm text-white/70">
               {activeOrder
-                ? `Active order ${activeOrder.id} is in progress.`
+                ? `Active order ${activeOrder.displayId} is in progress.`
                 : 'No active errands right now.'}
             </div>
             <Button
@@ -240,7 +251,7 @@ export const CustomerOrders: React.FC = () => {
             </div>
             <div className="mt-5 text-sm text-white/70">
               {activeOrder
-                ? `Active order ${activeOrder.id} is in progress.`
+                ? `Active order ${activeOrder.displayId} is in progress.`
                 : 'No active errands right now.'}
             </div>
             <Button

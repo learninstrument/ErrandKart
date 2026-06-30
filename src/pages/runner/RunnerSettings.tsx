@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, ShieldCheck, MapPin, SlidersHorizontal, LifeBuoy, LogOut, Wallet, TrendingUp, User } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { RunnerBottomNav } from './RunnerBottomNav';
-import { clearSession, logout } from '../../utils/auth';
+import { clearSession } from '../../utils/auth';
 
 export const RunnerSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -18,11 +18,14 @@ export const RunnerSettings: React.FC = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await logout(apiBaseUrl);
+      await fetch(`${apiBaseUrl}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
     } catch (error) {
       console.error('[Logout]', error);
-      clearSession();
     } finally {
+      clearSession();
       setIsLoggingOut(false);
       navigate('/login');
     }

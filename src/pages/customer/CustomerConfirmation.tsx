@@ -1,10 +1,20 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckCircle2, MapPin, PackageCheck, Receipt, LifeBuoy } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 
 export const CustomerConfirmation: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const errand = location.state?.errand;
+
+  if (!errand) {
+    navigate('/customer/dashboard', { replace: true });
+    return null;
+  }
+
+  const displayOrderId = `EK-${errand.id.split('-')[0].toUpperCase()}`;
+  const total = (Number(errand.budget_service_fee) || 0) + 700; // adding 700 service fee
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
@@ -20,7 +30,7 @@ export const CustomerConfirmation: React.FC = () => {
                 Your request is live. We’re matching you with the best nearby runner.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-                Order ID <span className="text-kart-orange">EK-4920</span>
+                Order ID <span className="text-kart-orange">{displayOrderId}</span>
               </div>
             </div>
           </section>
@@ -31,7 +41,7 @@ export const CustomerConfirmation: React.FC = () => {
                 <MapPin size={18} className="text-kart-orange" />
                 <p className="text-xs font-semibold uppercase tracking-[0.2em]">Route</p>
               </div>
-              <p className="mt-3 text-sm text-white/80">Shoprite, Lekki → Eko Atlantic</p>
+              <p className="mt-3 text-sm text-white/80">{errand.pickup_address} → {errand.dropoff_address}</p>
             </div>
             <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]">
               <div className="flex items-center gap-3 text-white/70">
@@ -45,7 +55,7 @@ export const CustomerConfirmation: React.FC = () => {
                 <Receipt size={18} className="text-white/70" />
                 <p className="text-xs font-semibold uppercase tracking-[0.2em]">Total</p>
               </div>
-              <p className="mt-3 text-sm text-white/80">₦5,200 (incl. service fee)</p>
+              <p className="mt-3 text-sm text-white/80">₦{total.toLocaleString()} (incl. service fee)</p>
             </div>
           </section>
 

@@ -1,19 +1,86 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, FileImage, MapPin, Receipt, Upload, Wallet } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
-
-const ORDER_SUMMARY = {
-  title: 'Grocery Pickup',
-  payout: '₦4,500',
-  customer: 'Sarah Daniels',
-  location: 'Lekki Phase 1',
-  items: ['2x Whole wheat bread', '1x Almond milk', '3x Eggs (medium)', '1x Detergent'],
-};
+import { clearSession } from '../../utils/auth';
 
 export const RunnerDeliveryReview: React.FC = () => {
   const navigate = useNavigate();
   const { orderId } = useParams();
+  const [errand, setErrand] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  useEffect(() => {
+    if (!orderId) return;
+    fetch(`${apiBaseUrl}/api/errands/${orderId}`, { method: 'GET', credentials: 'include' })
+      .then(res => {
+        if (res.status === 401) {
+          clearSession();
+          navigate('/login');
+          throw new Error('Session expired');
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.errand) setErrand(data.errand);
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }, [orderId, apiBaseUrl, navigate]);
+
+  const checklistItems = useMemo(() => {
+    return errand?.description?.split('\n').filter((item: string) => item.trim() !== '') || [];
+  }, [errand]);
+
+  const handleSubmit = async () => {
+    if (!orderId) return;
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const res = await fetch(`${apiBaseUrl}/api/errands/${orderId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          status: 'completed',
+          // Pass a mock receipt URL for demo/completion tracking purposes
+          proof_of_purchase_url: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=60',
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to complete errand');
+
+      navigate('/runner/dashboard');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-white bg-[#0c0f14]">
+        Loading delivery review details...
+      </div>
+    );
+  }
+
+  if (!errand) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-white bg-[#0c0f14]">
+        Errand not found.
+      </div>
+    );
+  }
+
+  const orderDisplayId = `EK-${errand.id.split('-')[0].toUpperCase()}`;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
@@ -29,34 +96,44 @@ export const RunnerDeliveryReview: React.FC = () => {
         <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Order {orderId}</p>
-              <h3 className="mt-2 text-2xl font-black">{ORDER_SUMMARY.title}</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Order #{orderDisplayId}</p>
+              <h3 className="mt-2 text-2xl font-black">{errand.title}</h3>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70">
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} className="text-market-green" /> {ORDER_SUMMARY.location}
+                  <MapPin size={14} className="text-market-green" /> {errand.pickup_address}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Wallet size={14} className="text-market-green" /> {ORDER_SUMMARY.payout} payout
+                  <Wallet size={14} className="text-market-green" /> ₦{Number(errand.budget_customer_fee).toLocaleString()} payout
                 </span>
               </div>
             </div>
             <div className="rounded-2xl border border-market-green/40 bg-market-green/15 px-5 py-4 text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-market-green">Customer</p>
-              <p className="mt-2 text-lg font-black text-white">{ORDER_SUMMARY.customer}</p>
+              <p className="mt-2 text-lg font-black text-white">{errand.customer?.full_name || 'Customer'}</p>
             </div>
           </div>
         </section>
 
+        {error && (
+          <div className="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {error}
+          </div>
+        )}
+
         <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ITEM SUMMARY</h3>
-          <div className="grid gap-3 md:grid-cols-2">
-            {ORDER_SUMMARY.items.map(item => (
-              <div key={item} className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/80">
-                <CheckCircle2 size={14} className="mr-2 inline text-market-green" />
-                {item}
-              </div>
-            ))}
-          </div>
+          {checklistItems.length === 0 ? (
+            <p className="text-sm text-white/50">No items specified.</p>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              {checklistItems.map((item, idx) => (
+                <div key={idx} className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/80">
+                  <CheckCircle2 size={14} className="mr-2 inline text-market-green" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
@@ -95,11 +172,11 @@ export const RunnerDeliveryReview: React.FC = () => {
         </section>
 
         <section className="flex flex-col gap-3 md:flex-row">
-          <Button variant="outline" className="w-full">
-            Save draft
+          <Button variant="outline" className="w-full" onClick={() => navigate('/runner/dashboard')}>
+            Cancel
           </Button>
-          <Button theme="green" className="w-full" onClick={() => navigate('/runner/dashboard')}>
-            Submit for review
+          <Button theme="green" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit for review'}
           </Button>
         </section>
       </main>

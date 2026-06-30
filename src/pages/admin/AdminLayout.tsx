@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Activity, Users, LogOut, ShieldCheck, Navigation, LifeBuoy, Store } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
-import { clearSession, logout } from '../../utils/auth';
+import { clearSession } from '../../utils/auth';
 
 type AdminSection = 'dashboard' | 'activity' | 'tracking' | 'support' | 'supermarkets' | 'users' | 'admins';
 
@@ -25,16 +25,33 @@ const NAV_ITEMS: Array<{ id: AdminSection; label: string; icon: React.ReactNode;
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, children }) => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+  useEffect(() => {
+    fetch(`${apiBaseUrl}/api/auth/me`, { method: 'GET', credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data?.user) {
+          setFullName(data.user.full_name || '');
+          setEmail(data.user.email || '');
+        }
+      })
+      .catch(console.error);
+  }, [apiBaseUrl]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await logout(apiBaseUrl);
+      await fetch(`${apiBaseUrl}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
     } catch (error) {
       console.error('[Logout]', error);
-      clearSession();
     } finally {
+      clearSession();
       setIsLoggingOut(false);
       navigate('/admin/login');
     }
@@ -72,8 +89,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, childre
 
         <div className="mt-auto rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Signed in</p>
-          <p className="mt-2 text-sm font-bold text-white">Super Admin</p>
-          <p className="text-xs text-white/50">admin@errandkart.com</p>
+          <p className="mt-2 text-sm font-bold text-white">{fullName || 'Super Admin'}</p>
+          <p className="text-xs text-white/50">{email || 'Loading...'}</p>
           <Button variant="outline" className="mt-4 w-full gap-2 text-xs" onClick={handleLogout} disabled={isLoggingOut}>
             <LogOut size={14} className="text-white/70" /> {isLoggingOut ? 'Logging out...' : 'Log out'}
           </Button>
@@ -94,9 +111,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, childre
 
           <div className="hidden items-center gap-3 md:flex">
             <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 font-bold text-white">
-              SA
+              {fullName ? fullName.substring(0, 2).toUpperCase() : 'SA'}
             </div>
-            <div className="text-sm font-semibold text-white/70">Super Admin</div>
+            <div className="text-sm font-semibold text-white/70">{fullName || 'Super Admin'}</div>
           </div>
         </header>
 

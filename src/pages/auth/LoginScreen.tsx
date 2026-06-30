@@ -1,409 +1,242 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { User, Truck, ShieldCheck, Timer, MapPin, Store } from 'lucide-react';
-import { Button } from '../../components/UI/Button';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, User, Truck, Store, MapPin, ShieldCheck, Zap } from 'lucide-react';
 import { Input } from '../../components/UI/Input';
+import { Button } from '../../components/UI/Button';
 import { Onboarding } from '../Onboarding';
 
 const resolveNextPath = (targetRole?: string | null) => {
   switch (targetRole) {
-    case 'runner':
-      return '/runner/dashboard';
-    case 'admin':
-      return '/admin/dashboard';
-    case 'supermarket':
-      return '/supermarket/register';
+    case 'runner': return '/runner/dashboard';
+    case 'admin': return '/admin/dashboard';
+    case 'supermarket': return '/supermarket/register';
     case 'customer':
-    default:
-      return '/customer/dashboard';
+    default: return '/customer/dashboard';
   }
 };
 
 export const LoginScreen: React.FC = () => {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot_password'>('login');
   const [role, setRole] = useState<'customer' | 'runner'>('customer');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [gender, setGender] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
-  const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
-  const [isResending, setIsResending] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
   const navigate = useNavigate();
   const location = useLocation();
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
-
-  const fallbackNextPath = resolveNextPath(role);
-
-  const persistSession = (accessToken: string, refreshToken: string, expiresAt?: number | null) => {
-    localStorage.setItem(
-      'errandkart_session',
-      JSON.stringify({
-        accessToken,
-        refreshToken,
-        expiresAt: expiresAt ?? null,
-      })
-    );
-  };
+  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const verified = params.get('verified');
-    if (verified) {
-      setSuccessMessage('Email verified. Please log in.');
-    }
-    const oauthError = params.get('oauth_error') ?? params.get('error');
-    const oauthErrorDescription = params.get('oauth_error_description') ?? params.get('error_description');
-    if (oauthError) {
-      setErrorMessage(oauthErrorDescription ?? 'Google authentication failed. Please try again.');
-      return;
-    }
-
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    const expiresAtParam = params.get('expires_at');
+    const oauthError = params.get('oauth_error');
+    const oauthErrorDescription = params.get('oauth_error_description');
     const oauthProvider = params.get('oauth_provider');
     const nextPath = params.get('next_path');
-    const oauthRole = params.get('role') ?? sessionStorage.getItem('errandkart_oauth_role');
-    const expiresAt = expiresAtParam ? Number(expiresAtParam) : null;
 
-    if (oauthProvider === 'google' && accessToken && refreshToken) {
-      persistSession(accessToken, refreshToken, Number.isNaN(expiresAt) ? null : expiresAt);
-      sessionStorage.removeItem('errandkart_oauth_role');
-      navigate(nextPath ?? resolveNextPath(oauthRole) ?? fallbackNextPath, { replace: true });
+    if (oauthError) {
+      setErrorMessage(oauthErrorDescription || 'Authentication failed. Please try again.');
+      window.history.replaceState({}, '', '/login');
+    } else if (oauthProvider && nextPath) {
+      navigate(nextPath);
     }
-  }, [location.search, navigate, fallbackNextPath]);
+  }, [location, navigate]);
 
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setSuccessMessage(null);
-    setVerificationMessage(null);
-
-    if (mode === 'register' && fullName.trim().length < 2) {
-      setErrorMessage('Please enter your full name.');
-      return;
-    }
-
-    if (!email || !password) {
-      setErrorMessage('Email and password are required.');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
       const endpoint = mode === 'register' ? '/api/auth/register' : '/api/auth/login';
+      const body = mode === 'register' 
+        ? { email, password, full_name: fullName, phone_number: phoneNumber, role, gender }
+        : { email, password, role };
+
       const response = await fetch(`${apiBaseUrl}${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(
-          mode === 'register'
-            ? {
-                email,
-                password,
-                full_name: fullName,
-                phone_number: phoneNumber || undefined,
-                role,
-              }
-            : {
-                email,
-                password,
-              }
-        ),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
       });
 
       const data = await response.json().catch(() => ({}));
 
-      if (data.verificationRequired) {
-        setVerificationEmail(data.email ?? email);
-        setVerificationMessage('Check your email for a verification link before logging in.');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(data.message ?? 'Authentication failed');
-      }
-
-      const session = data.session ?? {};
-      const accessToken = session.accessToken ?? session.access_token;
-      const refreshToken = session.refreshToken ?? session.refresh_token;
-      const expiresAt = session.expiresAt ?? session.expires_at ?? null;
-      if (accessToken && refreshToken) {
-        persistSession(accessToken, refreshToken, expiresAt);
-      }
+      if (!response.ok) throw new Error(data.message ?? 'Authentication failed');
 
       const resolvedRole = data.user?.role ?? role;
-      navigate(data.nextPath ?? resolveNextPath(resolvedRole) ?? fallbackNextPath);
+      navigate(resolveNextPath(resolvedRole));
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Authentication failed. Please try again.';
-      setErrorMessage(message);
+      setErrorMessage(error instanceof Error ? error.message : 'Authentication failed.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleResendVerification = async () => {
-    const targetEmail = verificationEmail ?? email;
-    if (!targetEmail) {
-      setErrorMessage('Please enter your email address first.');
-      return;
-    }
-
-    setIsResending(true);
-    setErrorMessage(null);
-    try {
-      const response = await fetch(`${apiBaseUrl}/api/auth/resend`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: targetEmail }),
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(data.message ?? 'Failed to resend verification email');
-      }
-      setVerificationMessage('Verification email sent. Check your inbox.');
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to resend verification email';
-      setErrorMessage(message);
-    } finally {
-      setIsResending(false);
-    }
-  };
-
   const handleGoogleAuth = () => {
-    setErrorMessage(null);
     sessionStorage.setItem('errandkart_oauth_role', role);
     window.location.href = `${apiBaseUrl}/api/auth/google/start?role=${role}`;
   };
 
   const theme = role === 'runner' ? 'green' : 'orange';
-  const accent = role === 'runner' ? 'text-market-green' : 'text-kart-orange';
-  const cardAccent = role === 'runner' ? 'bg-market-green' : 'bg-kart-orange';
-  const accentIcon = role === 'runner' ? 'text-market-green' : 'text-kart-orange';
+  const activeColor = role === 'runner' ? 'text-market-green border-market-green/50 bg-market-green/10' : 'text-kart-orange border-kart-orange/50 bg-kart-orange/10';
+  const inactiveColor = 'text-white/40 border-white/5 bg-white/5 hover:border-white/20';
 
   return (
-    <div className="flex min-h-screen w-full bg-[#0c0f14]">
-      <div className="relative hidden md:flex md:w-1/2 md:flex-col">
+    <div className="flex min-h-[100dvh] w-full bg-black text-white selection:bg-kart-orange selection:text-white">
+      {/* Desktop: Left side - Reusing the beautiful animated Onboarding component! */}
+      <div className="relative hidden lg:flex lg:w-[45%] xl:w-[50%] lg:flex-col border-r border-white/10 bg-black">
         <Onboarding isDesktopSidePanel={true} />
       </div>
 
-      <div className="flex w-full items-center justify-center overflow-y-auto px-6 py-10 md:w-1/2">
-        <div className="w-full max-w-md rounded-[32px] border border-white/10 bg-[#111822] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
-          <div className="mb-8 text-center md:text-left">
-            <div
-              className={`mx-auto mb-6 flex h-12 w-12 -rotate-6 items-center justify-center rounded-2xl shadow-[0_18px_40px_rgba(0,0,0,0.4)] transition-colors duration-300 md:mx-0 ${cardAccent}`}
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 p-1 shadow-sm">
-                <img src="/logo.png" alt="ErrandKart" className="h-full w-full object-contain" />
-              </div>
-            </div>
-            <h2 className="mb-2 text-3xl font-black text-white">
-              {mode === 'login' ? 'Welcome back' : 'Create your account'}
-            </h2>
-            <p className="font-medium text-slate-400">
-              {mode === 'login'
-                ? 'Sign in to continue with ErrandKart.'
-                : 'Start your errand journey in under a minute.'}
-            </p>
-          </div>
+      {/* Right side - Auth form */}
+      <div className="relative flex w-full flex-col items-center justify-center overflow-y-auto px-4 sm:px-6 py-8 sm:py-12 lg:w-[55%] xl:w-[50%] lg:px-16 bg-black">
+        
+        {/* Ambient Glows */}
+        <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-kart-orange/10 rounded-full blur-[100px] sm:blur-[150px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[200px] sm:w-[400px] h-[200px] sm:h-[400px] bg-market-green/10 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none"></div>
 
-          <form onSubmit={handleAuthAction}>
-            <div className="mb-6 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setRole('customer')}
-                className={`rounded-2xl border-2 p-4 text-center transition-all ${
-                  role === 'customer'
-                    ? 'border-kart-orange bg-kart-orange/15'
-                    : 'border-white/10 bg-white/5 hover:border-white/20'
-                }`}
-              >
-                <div
-                  className={`mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full ${
-                    role === 'customer' ? 'bg-kart-orange text-white' : 'bg-white/10 text-slate-400'
-                  }`}
-                >
-                  <User size={18} />
-                </div>
-                <p className="text-sm font-bold text-white">Customer</p>
-                <p className="mt-0.5 text-[11px] text-slate-400">I need errands run</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRole('runner')}
-                className={`rounded-2xl border-2 p-4 text-center transition-all ${
-                  role === 'runner'
-                    ? 'border-market-green bg-market-green/15'
-                    : 'border-white/10 bg-white/5 hover:border-white/20'
-                }`}
-              >
-                <div
-                  className={`mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full ${
-                    role === 'runner' ? 'bg-market-green text-white' : 'bg-white/10 text-slate-400'
-                  }`}
-                >
-                  <Truck size={18} />
-                </div>
-                <p className="text-sm font-bold text-white">Runner</p>
-                <p className="mt-0.5 text-[11px] text-slate-400">I want to run errands</p>
-              </button>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="relative z-10 w-full max-w-[440px]"
+        >
+          {/* Card Glass Container */}
+          <div className="rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 bg-black p-6 sm:p-8 md:p-10 shadow-[0_0_60px_rgba(0,0,0,0.8)] sm:shadow-[0_0_80px_rgba(0,0,0,0.8)] backdrop-blur-2xl">
+            
+            {/* Header */}
+            <div className="mb-8 sm:mb-10 text-center flex flex-col items-center">
+              <img src="/logo.png" alt="ErrandKart" className="h-10 w-10 sm:h-14 sm:w-14 object-contain brightness-0 invert mb-3 sm:mb-4" />
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter text-white mb-1.5 sm:mb-2">
+                {mode === 'login' ? 'Welcome Back.' : mode === 'register' ? 'Join the Network.' : 'Reset Password.'}
+              </h2>
+              <p className="text-xs sm:text-sm font-medium text-white/50 px-2">
+                {mode === 'login' ? 'Enter your credentials to continue.' : 'Create your account to start moving.'}
+              </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => navigate('/supermarket/register')}
-              className="mb-6 flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition-colors hover:border-white/20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
-                  <Store size={16} />
+            <form onSubmit={handleAuthAction}>
+              {/* Custom Animated Pill Role Switcher */}
+              {mode !== 'forgot_password' && (
+                <div className="mb-6 sm:mb-8 grid grid-cols-2 gap-2 sm:gap-3 p-1 rounded-2xl bg-white/5 border border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setRole('customer')}
+                    className={`flex flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-xl py-2 sm:py-3 transition-all duration-300 border ${role === 'customer' ? activeColor : inactiveColor}`}
+                  >
+                    <User className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Customer</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole('runner')}
+                    className={`flex flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-xl py-2 sm:py-3 transition-all duration-300 border ${role === 'runner' ? activeColor : inactiveColor}`}
+                  >
+                    <Truck className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Runner</span>
+                  </button>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-white">Register Supermarket Business</p>
-                  <p className="text-[11px] text-slate-400">Apply for verified dispatch account</p>
-                </div>
-              </div>
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-kart-orange">Apply</span>
-            </button>
+              )}
 
-            {mode === 'register' && (
+              {/* Form Fields */}
+              <AnimatePresence mode="wait">
+                {mode === 'register' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 sm:space-y-4 mb-3 sm:mb-4"
+                  >
+                    <Input label="Full Name" placeholder="John Doe" theme={theme} value={fullName} onChange={e => setFullName(e.target.value)} required />
+                    <Input label="Phone Number" placeholder="+234 80..." theme={theme} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value.replace(/[^\d+]/g, '').slice(0, 12))} />
+                    <div className="mb-4">
+                      <label className="mb-1.5 sm:mb-2 ml-1 block text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-white/50">Gender</label>
+                      <select value={gender} onChange={e => setGender(e.target.value)} required className="w-full appearance-none rounded-xl sm:rounded-2xl border border-white/20 bg-black px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-[15px] text-white outline-none transition-all focus:ring-1 focus:border-white/40">
+                        <option value="" disabled className="text-black bg-white">Select Gender</option>
+                        <option value="Male" className="text-black bg-white">Male</option>
+                        <option value="Female" className="text-black bg-white">Female</option>
+                        <option value="Prefer not to say" className="text-black bg-white">Prefer not to say</option>
+                      </select>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="space-y-3 sm:space-y-4">
+                <Input label="Email Address" type="email" placeholder="john@example.com" theme={theme} value={email} onChange={e => setEmail(e.target.value)} required />
+                
+                {mode !== 'forgot_password' && (
+                  <Input label="Password" type="password" placeholder="••••••••" theme={theme} value={password} onChange={e => setPassword(e.target.value)} required />
+                )}
+              </div>
+
+              {errorMessage && (
+                <div className="mt-3 sm:mt-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4 text-xs sm:text-sm font-medium text-red-400">
+                  {errorMessage}
+                </div>
+              )}
+
+              {mode === 'login' && (
+                <div className="mt-3 sm:mt-4 flex justify-end">
+                  <button type="button" onClick={() => setMode('forgot_password')} className={`text-[11px] sm:text-xs font-bold transition-colors hover:underline ${role === 'runner' ? 'text-market-green' : 'text-kart-orange'}`}>
+                    Forgot Password?
+                  </button>
+                </div>
+              )}
+
+              <Button fullWidth type="submit" theme={theme} disabled={isSubmitting} className="mt-6 sm:mt-8 py-3.5 sm:py-4 text-xs sm:text-sm font-black tracking-widest uppercase rounded-xl">
+                {isSubmitting ? 'Processing...' : mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : 'Send Reset Link'}
+              </Button>
+            </form>
+
+            {/* Footer / Social Auth */}
+            {mode === 'forgot_password' ? (
+              <div className="mt-6 sm:mt-8 text-center">
+                <button onClick={() => setMode('login')} className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-white/40 hover:text-white transition-colors">
+                  <ArrowLeft size={14} className="sm:w-4 sm:h-4" /> Back to login
+                </button>
+              </div>
+            ) : (
               <>
-                <Input
-                  label="Full Name"
-                  placeholder="John Doe"
-                  theme={theme}
-                  value={fullName}
-                  onChange={event => setFullName(event.target.value)}
-                  required
-                />
-                <Input
-                  label="Phone Number"
-                  placeholder="+234 80..."
-                  theme={theme}
-                  value={phoneNumber}
-                  onChange={event => setPhoneNumber(event.target.value)}
-                />
+                <div className="my-6 sm:my-8 flex items-center gap-3 sm:gap-4">
+                  <div className="h-px bg-white/10 flex-1"></div>
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-white/30">Or continue with</span>
+                  <div className="h-px bg-white/10 flex-1"></div>
+                </div>
+
+                <button type="button" onClick={handleGoogleAuth} disabled={isSubmitting} className="flex w-full items-center justify-center gap-2 sm:gap-3 rounded-xl border border-white/20 bg-white/5 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-bold text-white transition-all hover:bg-white/10 active:scale-[0.98]">
+                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Sign in with Google
+                </button>
+
+                <div className="mt-6 sm:mt-8 text-center">
+                  <span className="text-xs sm:text-sm font-medium text-white/40">{mode === 'login' ? "Don't have an account? " : "Already have an account? "}</span>
+                  <button onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setErrorMessage(null); }} className={`text-xs sm:text-sm font-bold hover:underline ${role === 'runner' ? 'text-market-green' : 'text-kart-orange'}`}>
+                    {mode === 'login' ? 'Register' : 'Log in'}
+                  </button>
+                </div>
+                
+                {/* Supermarket Banner */}
+                <button onClick={() => navigate('/supermarket/register')} className="mt-6 sm:mt-8 flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.05] p-3 sm:p-4 text-left transition-all hover:border-white/20 hover:bg-white/[0.08]">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-white/5 text-white/60">
+                      <Store className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                    </div>
+                    <div>
+                      <p className="text-xs sm:text-sm font-bold text-white">Register Supermarket</p>
+                      <p className="text-[9px] sm:text-[10px] text-white/40 mt-0.5">Apply for a verified merchant account</p>
+                    </div>
+                  </div>
+                </button>
               </>
             )}
-            <Input
-              label="Email Address"
-              type="email"
-              placeholder="john@example.com"
-              theme={theme}
-              value={email}
-              onChange={event => setEmail(event.target.value)}
-              required
-            />
-            <Input
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              theme={theme}
-              value={password}
-              onChange={event => setPassword(event.target.value)}
-              required
-            />
-
-            {errorMessage && (
-              <div className="mb-4 rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                {errorMessage}
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="mb-4 rounded-2xl border border-market-green/40 bg-market-green/10 px-4 py-3 text-sm text-market-green">
-                {successMessage}
-              </div>
-            )}
-
-            {verificationMessage && (
-              <div className="mb-4 rounded-2xl border border-kart-orange/40 bg-kart-orange/10 px-4 py-3 text-sm text-kart-orange">
-                <p>{verificationMessage}</p>
-                <button
-                  type="button"
-                  onClick={handleResendVerification}
-                  disabled={isResending}
-                  className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 hover:text-white"
-                >
-                  {isResending ? 'Sending...' : 'Resend verification email'}
-                </button>
-              </div>
-            )}
-
-            {mode === 'login' && (
-              <div className="mb-6 flex justify-end">
-                <button type="button" className={`text-sm font-semibold transition-colors hover:underline ${accent}`}>
-                  Forgot Password?
-                </button>
-              </div>
-            )}
-
-            <div className={mode === 'register' ? 'mt-6' : undefined}>
-              <Button fullWidth type="submit" theme={theme} disabled={isSubmitting}>
-                {isSubmitting ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Create Account'}
-              </Button>
-            </div>
-          </form>
-
-          <div className="mt-6 rounded-2xl border border-white/10 bg-[#0f141f] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Why ErrandKart</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              {[
-                { label: 'Live tracking', icon: <MapPin size={16} className={accentIcon} /> },
-                { label: 'Secure payments', icon: <ShieldCheck size={16} className={accentIcon} /> },
-                { label: 'Fast matching', icon: <Timer size={16} className={accentIcon} /> },
-              ].map(item => (
-                <div
-                  key={item.label}
-                  className="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-[#111822] px-3 py-3 text-xs font-semibold text-white/70"
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </div>
-              ))}
-            </div>
           </div>
-
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-[#111822] px-4 font-medium text-slate-400">Or continue with</span>
-            </div>
-          </div>
-
-          <Button variant="outline" fullWidth type="button" onClick={handleGoogleAuth} disabled={isSubmitting}>
-            {mode === 'login'
-              ? `Log in as ${role === 'runner' ? 'Runner' : 'Customer'} with Google`
-              : `Sign up as ${role === 'runner' ? 'Runner' : 'Customer'} with Google`}
-          </Button>
-
-          <div className="mt-8 text-center">
-            <span className="text-slate-400 text-sm">{mode === 'login' ? "Don't have an account? " : "Already have an account? "}</span>
-            <button
-              onClick={() => {
-                setMode(mode === 'login' ? 'register' : 'login');
-                setErrorMessage(null);
-                setVerificationEmail(null);
-                setVerificationMessage(null);
-                setSuccessMessage(null);
-              }}
-              className={`text-sm font-bold transition-colors hover:underline ${accent}`}
-            >
-              {mode === 'login' ? 'Register' : 'Log in'}
-            </button>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
