@@ -141,16 +141,15 @@ export const requireAuth = async (request: Request) => {
 const roleSchema = z.enum(['customer', 'runner', 'supermarket', 'admin']);
 
 const registerSchema = z.object({
-  full_name: z.string().trim().min(2, 'Full name is required'),
-  email: z.string().email().toLowerCase(),
+  full_name: z.string().trim().min(2, 'Full name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address').toLowerCase(),
   password: z.string()
     .min(8, 'Password must be at least 8 characters long')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number')
-    .regex(/[@$!%*?&#]/, 'Password must contain at least one special character'),
+    .regex(/[0-9]/, 'Password must contain at least one number'),
   role: z.enum(['customer', 'runner', 'supermarket']),
-  phone_number: z.string().max(12, 'Phone number must not exceed 12 digits').optional().or(z.literal('')),
+  phone_number: z.string().max(15, 'Phone number must not exceed 15 digits').optional().or(z.literal('')),
   gender: z.string().optional(),
 });
 

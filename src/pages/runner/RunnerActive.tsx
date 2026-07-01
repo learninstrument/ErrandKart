@@ -182,7 +182,7 @@ export const RunnerActive: React.FC = () => {
       map.remove();
       mapRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [!!errand]);
 
   useEffect(() => {

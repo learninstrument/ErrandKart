@@ -171,7 +171,23 @@ export const LoginScreen: React.FC = () => {
                 <Input label="Email Address" type="email" placeholder="john@example.com" theme={theme} value={email} onChange={e => setEmail(e.target.value)} required />
                 
                 {mode !== 'forgot_password' && (
-                  <Input label="Password" type="password" placeholder="••••••••" theme={theme} value={password} onChange={e => setPassword(e.target.value)} required />
+                  <div>
+                    <Input label="Password" type="password" placeholder="••••••••" theme={theme} value={password} onChange={e => setPassword(e.target.value)} required />
+                    {mode === 'register' && password.length > 0 && (
+                      <div className="-mt-1 mb-2 px-1 flex flex-wrap gap-x-3 gap-y-1">
+                        {[
+                          { label: '8+ chars', pass: password.length >= 8 },
+                          { label: 'Uppercase', pass: /[A-Z]/.test(password) },
+                          { label: 'Lowercase', pass: /[a-z]/.test(password) },
+                          { label: 'Number', pass: /[0-9]/.test(password) },
+                        ].map(rule => (
+                          <span key={rule.label} className={`text-[10px] font-bold flex items-center gap-1 transition-colors ${ rule.pass ? 'text-market-green' : 'text-white/30' }`}>
+                            <span>{rule.pass ? '✓' : '○'}</span>{rule.label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 

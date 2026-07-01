@@ -302,7 +302,7 @@ export const CustomerCheckout: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <span
               className="text-xs font-bold text-kart-orange tracking-widest uppercase flex items-center gap-1.5 transition-opacity"
-              style={{ opacity: 1 - slideX / (trackRef.current ? trackRef.current.clientWidth - 72 : 200) }}
+              style={{ opacity: 1 - slideX / 200 }}
             >
               Slide to Escrow Pay
               <span className="inline-block animate-pulse">➔</span>
