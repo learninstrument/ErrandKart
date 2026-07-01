@@ -200,7 +200,12 @@ const toNextPath = (role: string) => {
   }
 };
 
-const getApiBaseUrl = () => {
+const getApiBaseUrl = (request?: any) => {
+  if (request) {
+    const host = request.get('x-forwarded-host') || request.get('host');
+    const protocol = request.get('x-forwarded-proto') || request.protocol;
+    if (host && !host.includes('onrender.com')) return `${protocol}://${host}`;
+  }
   return env.API_BASE_URL ?? `http://localhost:${env.PORT}`;
 };
 
@@ -208,7 +213,7 @@ const getAppOrigin = (request?: any) => {
   if (request) {
     const host = request.get('x-forwarded-host') || request.get('host');
     const protocol = request.get('x-forwarded-proto') || request.protocol;
-    if (host) return `${protocol}://${host}`;
+    if (host && !host.includes('onrender.com')) return `${protocol}://${host}`;
   }
   return env.APP_ORIGIN ?? 'http://localhost:5173';
 };
@@ -643,7 +648,7 @@ authRouter.get(
     const role = resolveProfileRole(String(request.query.role ?? 'customer'));
     const host = request.get('x-forwarded-host') || request.get('host');
     const protocol = request.get('x-forwarded-proto') || request.protocol;
-    const base = host ? `${protocol}://${host}` : getApiBaseUrl();
+    const base = host && !host.includes('onrender.com') ? `${protocol}://${host}` : getApiBaseUrl(request);
     const redirectTo = `${base}/api/auth/google/callback`;
 
     let pkceVerifier = '';
