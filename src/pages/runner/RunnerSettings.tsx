@@ -3,7 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, ShieldCheck, MapPin, SlidersHorizontal, LifeBuoy, LogOut, Wallet, TrendingUp, User } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { RunnerBottomNav } from './RunnerBottomNav';
+import { ThemeSwitcher } from '../../components/UI/ThemeSwitcher';
 import { clearSession } from '../../utils/auth';
+
+const ToggleRow = ({ label, description, value, onToggle, accent = 'green' }: { label: string; description?: string; value: boolean; onToggle: () => void; accent?: 'green' | 'orange' }) => (
+  <div className="flex items-center justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-4 mb-3 transition-all hover:bg-black/10 dark:hover:bg-white/10">
+    <div>
+      <span className="text-sm font-semibold text-black dark:text-white">{label}</span>
+      {description && <p className="text-xs text-black/40 dark:text-white/40 mt-0.5">{description}</p>}
+    </div>
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${
+        value ? (accent === 'green' ? 'bg-market-green' : 'bg-kart-orange') : 'bg-black/20 dark:bg-white/10'
+      }`}
+    >
+      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${value ? 'translate-x-6' : 'translate-x-1'}`} />
+    </button>
+  </div>
+);
 
 export const RunnerSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -18,10 +37,7 @@ export const RunnerSettings: React.FC = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await fetch(`${apiBaseUrl}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      await fetch(`${apiBaseUrl}/api/auth/logout`, { method: 'POST', credentials: 'include' });
     } catch (error) {
       console.error('[Logout]', error);
     } finally {
@@ -32,197 +48,134 @@ export const RunnerSettings: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
-          <ArrowLeft size={24} />
+    <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/85 dark:bg-[#000000]/85 px-6 py-4 backdrop-blur-md md:px-10">
+        <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-all -ml-1">
+          <ArrowLeft size={18} />
         </button>
-        <h2 className="text-lg font-black text-white">Runner Settings</h2>
-        <div className="w-8" />
+        <h2 className="text-lg font-extrabold tracking-tight text-black dark:text-white">Runner Settings</h2>
+        <ThemeSwitcher />
       </header>
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:grid md:grid-cols-[1.15fr_0.85fr] md:gap-8 md:px-10 md:pb-10">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 lg:grid lg:items-start lg:grid-cols-[1.15fr_0.85fr] lg:gap-8 lg:px-10 lg:pb-10 animate-fade-in-up">
         <div className="flex flex-col gap-6">
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
-                <Bell size={18} />
+
+          {/* Notifications */}
+          <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <div className="mb-5 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-market-green/10 text-market-green">
+                <Bell size={20} />
               </div>
-              <h3 className="text-sm font-black tracking-[0.2em] text-white/70">NOTIFICATIONS</h3>
+              <div>
+                <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Notifications</h3>
+                <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">Control how we reach you</p>
+              </div>
             </div>
-
-            {[
-              { label: 'Push alerts', value: pushEnabled, setValue: setPushEnabled },
-              { label: 'SMS alerts', value: smsEnabled, setValue: setSmsEnabled },
-              { label: 'Priority job alerts', value: priorityAlerts, setValue: setPriorityAlerts },
-            ].map(setting => (
-              <div key={setting.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 mb-3">
-                <span className="text-sm text-white">{setting.label}</span>
-                <button
-                  type="button"
-                  onClick={() => setting.setValue(!setting.value)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    setting.value ? 'bg-market-green' : 'bg-white/10'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      setting.value ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-            ))}
-
-            <Button
-              variant="outline"
-              className="mt-4 w-full gap-2 text-xs"
-              onClick={() => navigate('/runner/notifications')}
-            >
-              Manage notification history
+            <ToggleRow label="Push alerts" description="In-app and device notifications" value={pushEnabled} onToggle={() => setPushEnabled(!pushEnabled)} />
+            <ToggleRow label="SMS alerts" description="Text messages for key events" value={smsEnabled} onToggle={() => setSmsEnabled(!smsEnabled)} />
+            <ToggleRow label="Priority job alerts" description="First to know about high-value errands" value={priorityAlerts} onToggle={() => setPriorityAlerts(!priorityAlerts)} />
+            <Button variant="outline" className="mt-2 w-full gap-2 h-12 border-black/10 dark:border-white/10 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5" onClick={() => navigate('/runner/notifications')}>
+              View notification history
             </Button>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white">
-                <SlidersHorizontal size={18} />
+          {/* Job Preferences */}
+          <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <div className="mb-5 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/5 dark:bg-white/10 text-black dark:text-white">
+                <SlidersHorizontal size={20} />
               </div>
-              <h3 className="text-sm font-black tracking-[0.2em] text-white/70">JOB PREFERENCES</h3>
+              <div>
+                <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Job Preferences</h3>
+                <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">Customize how you receive errands</p>
+              </div>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 mb-3">
-              <span className="text-sm text-white">Auto-accept nearby errands</span>
-              <button
-                type="button"
-                onClick={() => setAutoAccept(!autoAccept)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  autoAccept ? 'bg-market-green' : 'bg-white/10'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    autoAccept ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
+            <ToggleRow label="Auto-accept nearby errands" description="Automatically take jobs within 2 km" value={autoAccept} onToggle={() => setAutoAccept(!autoAccept)} />
+          </section>
+
+          {/* Safety */}
+          <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <div className="mb-5 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-market-green/10 text-market-green">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Safety</h3>
+                <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">Your security & privacy controls</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-4 mb-3 transition-all hover:bg-black/10 dark:hover:bg-white/10">
+              <div className="flex items-center gap-3">
+                <MapPin size={16} className="text-black/40 dark:text-white/40" />
+                <div>
+                  <span className="text-sm font-semibold text-black dark:text-white">Share live location</span>
+                  <p className="text-xs text-black/40 dark:text-white/40 mt-0.5">Visible to customer during delivery</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => setShareLocation(!shareLocation)}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${shareLocation ? 'bg-market-green' : 'bg-black/20 dark:bg-white/10'}`}>
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${shareLocation ? 'translate-x-6' : 'translate-x-1'}`} />
               </button>
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
-                <ShieldCheck size={18} />
+          {/* Support */}
+          <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <div className="mb-5 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-market-green/10 text-market-green">
+                <LifeBuoy size={20} />
               </div>
-              <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SAFETY</h3>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-              <div className="flex items-center gap-3 text-sm text-white">
-                <MapPin size={16} className="text-white/50" />
-                Share live location with customers
+              <div>
+                <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Support</h3>
+                <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">Report issues, disputes, or get help</p>
               </div>
-              <button
-                type="button"
-                onClick={() => setShareLocation(!shareLocation)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  shareLocation ? 'bg-market-green' : 'bg-white/10'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    shareLocation ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
             </div>
-          </section>
-
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
-                <LifeBuoy size={18} />
-              </div>
-              <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SUPPORT</h3>
-            </div>
-            <p className="text-sm text-white/50">
-              Report issues, disputes, or request account help.
-            </p>
-            <Button className="mt-4 w-full gap-2 text-xs" onClick={() => navigate('/runner/support')}>
+            <Button theme="green" className="w-full gap-2 h-12" onClick={() => navigate('/runner/support')}>
               Open help center
             </Button>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ACCOUNT</h3>
-            <Button variant="outline" className="w-full gap-2" onClick={handleLogout} disabled={isLoggingOut}>
-              <LogOut size={16} className="text-white/70" /> {isLoggingOut ? 'Signing out...' : 'Sign out'}
+          {/* Account */}
+          <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Account</h3>
+            <Button variant="outline" className="w-full gap-2 h-12 border-red-500/20 text-red-500 dark:text-red-400 hover:bg-red-500/5" onClick={handleLogout} disabled={isLoggingOut}>
+              <LogOut size={16} /> {isLoggingOut ? 'Signing out...' : 'Sign out'}
             </Button>
-          </section>
-
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
-            <h3 className="text-sm font-black tracking-[0.2em] text-white/70">QUICK ACTIONS</h3>
-            <div className="mt-4 flex flex-col gap-3">
-              <Button theme="green" className="w-full gap-2" onClick={() => navigate('/runner/wallet')}>
-                <Wallet size={16} /> Open wallet
-              </Button>
-              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/runner/earnings')}>
-                <TrendingUp size={16} className="text-white/70" /> View analytics
-              </Button>
-              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/runner/profile')}>
-                <User size={16} className="text-white/70" /> Update profile
-              </Button>
-            </div>
-          </section>
-
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
-            <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PREFERENCE SNAPSHOT</h3>
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <span>Auto-accept</span>
-                <span className="font-semibold text-white">{autoAccept ? 'On' : 'Off'}</span>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <span>Priority alerts</span>
-                <span className="font-semibold text-white">{priorityAlerts ? 'On' : 'Off'}</span>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <span>Share location</span>
-                <span className="font-semibold text-white">{shareLocation ? 'On' : 'Off'}</span>
-              </div>
-            </div>
           </section>
         </div>
 
-        <aside className="hidden flex-col gap-6 md:flex">
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <h3 className="text-sm font-black tracking-[0.2em] text-white/70">QUICK ACTIONS</h3>
+        {/* Sidebar */}
+        <aside className="flex flex-col gap-6">
+          <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Quick Actions</h3>
             <div className="mt-4 flex flex-col gap-3">
-              <Button theme="green" className="w-full gap-2" onClick={() => navigate('/runner/wallet')}>
+              <Button theme="green" className="w-full gap-2 h-11" onClick={() => navigate('/runner/wallet')}>
                 <Wallet size={16} /> Open wallet
               </Button>
-              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/runner/earnings')}>
-                <TrendingUp size={16} className="text-white/70" /> View analytics
+              <Button variant="outline" className="w-full gap-2 h-11 border-black/10 dark:border-white/10" onClick={() => navigate('/runner/earnings')}>
+                <TrendingUp size={16} /> View analytics
               </Button>
-              <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/runner/profile')}>
-                <User size={16} className="text-white/70" /> Update profile
+              <Button variant="outline" className="w-full gap-2 h-11 border-black/10 dark:border-white/10" onClick={() => navigate('/runner/profile')}>
+                <User size={16} /> Update profile
               </Button>
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PREFERENCE SNAPSHOT</h3>
+          <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Preference Snapshot</h3>
             <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <span>Auto-accept</span>
-                <span className="font-semibold text-white">{autoAccept ? 'On' : 'Off'}</span>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <span>Priority alerts</span>
-                <span className="font-semibold text-white">{priorityAlerts ? 'On' : 'Off'}</span>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <span>Share location</span>
-                <span className="font-semibold text-white">{shareLocation ? 'On' : 'Off'}</span>
-              </div>
+              {[
+                { label: 'Auto-accept', value: autoAccept },
+                { label: 'Priority alerts', value: priorityAlerts },
+                { label: 'Share location', value: shareLocation },
+              ].map(item => (
+                <div key={item.label} className="flex items-center justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3">
+                  <span className="text-sm text-black/70 dark:text-white/70">{item.label}</span>
+                  <span className={`text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${item.value ? 'bg-market-green/10 text-market-green' : 'bg-black/5 dark:bg-white/10 text-black/40 dark:text-white/40'}`}>
+                    {item.value ? 'On' : 'Off'}
+                  </span>
+                </div>
+              ))}
             </div>
           </section>
         </aside>

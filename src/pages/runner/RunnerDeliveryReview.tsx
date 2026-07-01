@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, FileImage, MapPin, Receipt, Upload, Wallet } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, FileImage, MapPin, Receipt, Upload, Wallet, AlertCircle } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { clearSession } from '../../utils/auth';
 
@@ -66,16 +66,30 @@ export const RunnerDeliveryReview: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
-        Loading delivery review details...
+      <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/85 dark:bg-[#000000]/85 px-6 py-4 backdrop-blur-md">
+          <div className="h-10 w-10 rounded-full bg-black/5 dark:bg-white/5 animate-pulse" />
+          <div className="h-5 w-32 rounded-lg bg-black/5 dark:bg-white/5 animate-pulse" />
+          <div className="w-10" />
+        </header>
+        <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-20 pt-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" style={{ height: i === 0 ? '160px' : '100px' }} />
+          ))}
+        </main>
       </div>
     );
   }
 
   if (!errand) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
-        Errand not found.
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white dark:bg-[#000000] text-black dark:text-white px-6">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+          <AlertCircle size={28} />
+        </div>
+        <p className="text-lg font-bold">Errand not found</p>
+        <p className="text-sm text-black/50 dark:text-white/50">This errand may have been completed or removed.</p>
+        <button onClick={() => navigate('/runner/dashboard')} className="mt-2 text-sm font-bold text-market-green hover:underline">Back to dashboard</button>
       </div>
     );
   }

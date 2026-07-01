@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, Calendar, Target, Wallet } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Calendar, Target, Wallet, ChevronRight } from 'lucide-react';
+import { ThemeSwitcher } from '../../components/UI/ThemeSwitcher';
 
 const WEEKLY = [
   { day: 'Mon', amount: 4200 },
@@ -19,99 +20,140 @@ const MONTHLY = [
   { label: 'Week 4', amount: 34400 },
 ];
 
+const TRANSACTIONS = [
+  { label: 'Grocery run – Lekki', amount: 3200, date: 'Today 10:45 AM' },
+  { label: 'Pharmacy pickup – VI', amount: 2800, date: 'Today 8:30 AM' },
+  { label: 'Restaurant delivery – Ajah', amount: 4100, date: 'Yesterday 7:14 PM' },
+  { label: 'Office supplies – Yaba', amount: 1900, date: 'Yesterday 2:00 PM' },
+];
+
 export const RunnerEarnings: React.FC = () => {
   const navigate = useNavigate();
   const maxWeekly = Math.max(...WEEKLY.map(item => item.amount));
   const maxMonthly = Math.max(...MONTHLY.map(item => item.amount));
+  const [activeTab, setActiveTab] = useState<'weekly' | 'monthly'>('weekly');
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
-          <ArrowLeft size={24} />
+    <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/85 dark:bg-[#000000]/85 px-6 py-4 backdrop-blur-md md:px-10">
+        <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-all -ml-1">
+          <ArrowLeft size={18} />
         </button>
-        <h2 className="text-lg font-black text-white">Earnings Analytics</h2>
-        <div className="w-8" />
+        <h2 className="text-lg font-extrabold tracking-tight text-black dark:text-white">Earnings</h2>
+        <ThemeSwitcher />
       </header>
 
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 pb-20 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+      <main className="mx-auto w-full max-w-5xl flex-1 flex flex-col gap-6 px-6 pb-20 pt-6 md:px-10 md:pb-10 animate-fade-in-up">
+
+        {/* Hero Total Card */}
+        <section className="rounded-3xl border border-market-green/20 bg-gradient-to-br from-market-green/15 via-market-green/5 to-transparent dark:from-[#0e1a14] dark:via-[#101f18] dark:to-[#050505] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Total earnings</p>
-              <h3 className="mt-3 text-3xl font-black">₦134,500</h3>
-              <p className="mt-2 text-sm text-white/70">+12% compared to last month</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl border border-market-green/40 bg-market-green/15 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-market-green">Trips</p>
-                <p className="mt-2 text-xl font-black text-white">48</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Total earnings · All time</p>
+              <h3 className="mt-2 text-4xl font-black tracking-tight text-black dark:text-white">₦134,500</h3>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="flex items-center gap-1 text-xs font-bold text-market-green bg-market-green/10 px-2.5 py-1 rounded-full">
+                  <TrendingUp size={12} /> +12% this month
+                </span>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Avg / trip</p>
-                <p className="mt-2 text-xl font-black text-white">₦2,800</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 md:flex md:gap-3">
+              <div className="rounded-2xl border border-market-green/20 bg-market-green/10 dark:bg-market-green/15 px-5 py-4 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-market-green/70 dark:text-market-green">Trips</p>
+                <p className="mt-1.5 text-2xl font-black text-black dark:text-white">48</p>
+              </div>
+              <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 px-5 py-4 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-black/40 dark:text-white/50">Avg / trip</p>
+                <p className="mt-1.5 text-2xl font-black text-black dark:text-white">₦2,800</p>
               </div>
             </div>
           </div>
         </section>
 
+        {/* Stat Cards */}
         <section className="grid gap-4 md:grid-cols-3">
           {[
-            { label: 'This week', value: '₦42,300', icon: <Calendar size={18} /> },
-            { label: 'Top day', value: '₦9,600', icon: <TrendingUp size={18} /> },
-            { label: 'Goal progress', value: '74%', icon: <Target size={18} /> },
+            { label: 'This week', value: '₦42,300', icon: <Calendar size={18} />, delta: '+8%' },
+            { label: 'Top day', value: '₦9,600', icon: <TrendingUp size={18} />, delta: 'Sat' },
+            { label: 'Goal progress', value: '74%', icon: <Target size={18} />, delta: 'of ₦57k goal' },
           ].map((item, index) => (
-            <div key={index} className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]">
-              <div className="flex items-center gap-3 text-white/70">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
+            <div key={index} className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-xl backdrop-blur-md">
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/10 text-market-green">
                   {item.icon}
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">{item.label}</p>
+                <span className="text-[10px] font-bold text-black/40 dark:text-white/40">{item.delta}</span>
               </div>
-              <p className="mt-3 text-2xl font-black text-white">{item.value}</p>
+              <p className="mt-3 text-xs font-bold uppercase tracking-widest text-black/40 dark:text-white/40">{item.label}</p>
+              <p className="mt-1 text-2xl font-black text-black dark:text-white">{item.value}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-black tracking-[0.2em] text-white/70">WEEKLY PERFORMANCE</h3>
-            <div className="flex items-center gap-2 text-xs text-white/50">
-              <Wallet size={14} /> NGN
+        {/* Chart */}
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Performance</h3>
+            <div className="flex gap-1 rounded-xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 p-1">
+              {(['weekly', 'monthly'] as const).map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  className={`rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide transition-all ${activeTab === tab ? 'bg-white dark:bg-[#1a1a1a] text-black dark:text-white shadow-sm' : 'text-black/40 dark:text-white/40'}`}>
+                  {tab}
+                </button>
+              ))}
             </div>
           </div>
-          <div className="grid grid-cols-7 gap-3">
-            {WEEKLY.map(day => (
-              <div key={day.day} className="flex flex-col items-center gap-2">
-                <div className="relative h-28 w-4 rounded-full bg-white/5">
-                  <div
-                    className="absolute bottom-0 w-full rounded-full bg-market-green"
-                    style={{ height: `${(day.amount / maxWeekly) * 100}%` }}
-                  />
-                </div>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
-                  {day.day}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">MONTHLY SUMMARY</h3>
-          <div className="space-y-3">
-            {MONTHLY.map(week => (
-              <div key={week.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <span className="text-sm font-semibold text-white">{week.label}</span>
-                <div className="flex items-center gap-3">
-                  <div className="h-2 w-40 rounded-full bg-white/10">
+          {activeTab === 'weekly' ? (
+            <div className="flex items-end justify-between gap-2 h-36">
+              {WEEKLY.map(day => (
+                <div key={day.day} className="flex flex-1 flex-col items-center gap-2">
+                  <div className="relative w-full rounded-xl bg-black/5 dark:bg-white/5 overflow-hidden" style={{ height: '100px' }}>
                     <div
-                      className="h-2 rounded-full bg-market-green"
-                      style={{ width: `${(week.amount / maxMonthly) * 100}%` }}
+                      className="absolute bottom-0 w-full rounded-xl bg-market-green transition-all duration-500"
+                      style={{ height: `${(day.amount / maxWeekly) * 100}%` }}
                     />
                   </div>
-                  <span className="text-sm font-bold text-white">₦{week.amount.toLocaleString()}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-black/40 dark:text-white/40">{day.day}</span>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {MONTHLY.map(week => (
+                <div key={week.label} className="flex items-center justify-between gap-4 rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3.5">
+                  <span className="text-sm font-semibold text-black dark:text-white w-16">{week.label}</span>
+                  <div className="flex-1 h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                    <div className="h-2 rounded-full bg-market-green transition-all duration-500" style={{ width: `${(week.amount / maxMonthly) * 100}%` }} />
+                  </div>
+                  <span className="text-sm font-bold text-black dark:text-white w-24 text-right">₦{week.amount.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Recent Transactions */}
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Recent Transactions</h3>
+            <button className="flex items-center gap-1 text-[11px] font-bold text-market-green hover:underline">
+              View all <ChevronRight size={12} />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {TRANSACTIONS.map((tx, i) => (
+              <div key={i} className="flex items-center justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3.5 transition-all hover:bg-black/10 dark:hover:bg-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-market-green/10 text-market-green">
+                    <Wallet size={15} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-black dark:text-white">{tx.label}</p>
+                    <p className="text-[10px] text-black/40 dark:text-white/40">{tx.date}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-black text-market-green">+₦{tx.amount.toLocaleString()}</span>
               </div>
             ))}
           </div>
