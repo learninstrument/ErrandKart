@@ -131,7 +131,7 @@ errandsRouter.get(
     const { id } = request.params;
     const { data, error } = await supabaseAdmin
       .from('errands')
-      .select('*, customer:customer_id(id, full_name, phone_number), runner:runner_id(id, full_name, phone_number)')
+      .select('*, customer:customer_id(id, full_name, phone_number), runner:runner_id(id, full_name, phone_number, vehicle_type)')
       .eq('id', id)
       .single();
 

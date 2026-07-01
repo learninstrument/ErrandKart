@@ -171,7 +171,7 @@ export const TrackErrand: React.FC = () => {
         <div className="flex items-center gap-4">
           <div className="relative">
             <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${order?.runner_id ? 'Michael' : 'Pending'}`}
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${order?.runner?.full_name || 'Pending'}`}
               alt="Runner"
               className="w-14 h-14 rounded-full object-cover border-2 border-[#FF6600]"
             />
@@ -184,9 +184,9 @@ export const TrackErrand: React.FC = () => {
             )}
           </div>
           <div>
-            <h2 className="text-lg font-bold text-black dark:text-white">{order?.runner_id ? 'Michael B.' : 'Searching...'}</h2>
-            <p className="text-sm text-black/60 dark:text-white/60 flex items-center gap-1">
-              🛵 Honda PCX • ABC-123
+            <h2 className="text-lg font-bold text-black dark:text-white">{order?.runner?.full_name || 'Searching...'}</h2>
+            <p className="text-sm text-black/60 dark:text-white/60 flex items-center gap-1 capitalize">
+              {order?.runner?.vehicle_type ? `🚙 ${order.runner.vehicle_type}` : '🛵 Motorbike'}
             </p>
           </div>
         </div>
@@ -237,48 +237,38 @@ export const TrackErrand: React.FC = () => {
       </div>
 
       {/* Action Area */}
-      <div className="px-5 pt-2 mt-auto mb-4">
+      <div className="px-5 pt-2 mt-auto mb-4 flex flex-col gap-3">
         <button className="w-full bg-kart-orange text-white dark:text-black text-[16px] font-bold py-4 rounded-xl hover:bg-kart-orangeHover transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,102,0,0.25)]">
           View Order Details
         </button>
+        {status !== 'completed' && status !== 'cancelled' && (
+          <button 
+            onClick={() => {
+              if (window.confirm("Are you sure you want to cancel this errand?")) {
+                fetch(`${apiBaseUrl}/api/errands/${order?.id}/status`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({ status: 'cancelled' }),
+                }).then(() => window.location.reload());
+              }
+            }}
+            className="w-full bg-transparent border-2 border-red-500/50 text-red-500 text-[16px] font-bold py-4 rounded-xl hover:bg-red-500/10 transition-colors flex items-center justify-center"
+          >
+            Cancel Order
+          </button>
+        )}
       </div>
     </div>
   );
 
   const MobileBottomSheet = () => {
-    const controls = useAnimation();
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    // Initial state: collapse the sheet to show the map
-    useEffect(() => {
-      controls.start({ y: "60%" });
-    }, [controls]);
-
-    const handleDragEnd = (_event: any, info: any) => {
-      // Swipe down
-      if (info.offset.y > 50 || info.velocity.y > 500) {
-        controls.start({ y: "60%" });
-        setIsExpanded(false);
-      } 
-      // Swipe up
-      else if (info.offset.y < -50 || info.velocity.y < -500) {
-        controls.start({ y: "0%" });
-        setIsExpanded(true);
-      } else {
-        // Snap back to nearest
-        controls.start({ y: isExpanded ? "0%" : "60%" });
-      }
-    };
-
     return (
       <motion.div
         drag="y"
-        dragConstraints={{ top: 0, bottom: 400 }}
-        dragElastic={0.05}
-        onDragEnd={handleDragEnd}
-        animate={controls}
-        initial={{ y: "60%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        dragConstraints={{ top: 0, bottom: 500 }}
+        dragElastic={0.1}
+        initial={{ y: "40%" }}
         className="absolute bottom-0 left-0 z-40 flex h-[75%] w-full flex-col rounded-t-[2rem] bg-white/95 dark:bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
       >
         <div className="flex w-full justify-center pb-3 pt-4 cursor-grab active:cursor-grabbing">
