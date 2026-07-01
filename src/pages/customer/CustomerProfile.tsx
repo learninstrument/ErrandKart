@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, MapPin, Plus, Settings, Trash2, X, Navigation } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
-import { TextArea } from '../../components/UI/TextArea';
+
 import { BottomNav } from './BottomNav';
 import { clearSession } from '../../utils/auth';
 
@@ -275,7 +275,7 @@ const AddLocationModal = ({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
 
   if (!isOpen) return null;
 

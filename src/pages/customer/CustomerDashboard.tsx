@@ -4,7 +4,6 @@ import {
   Search,
   MapPin,
   Plus,
-  ShoppingBasket,
   Store,
   Wallet,
   LifeBuoy,
