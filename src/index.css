@@ -189,7 +189,7 @@ body {
 }
 
 .dark .leaflet-container .leaflet-tile {
-  filter: grayscale(80%) invert(90%) brightness(80%) contrast(120%) sepia(20%) hue-rotate(180deg);
+  filter: grayscale(40%) invert(85%) brightness(110%) contrast(110%) sepia(10%) hue-rotate(180deg);
 }
 
 .leaflet-container img {

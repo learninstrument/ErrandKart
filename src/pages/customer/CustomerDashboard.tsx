@@ -53,19 +53,25 @@ export const CustomerDashboard: React.FC = () => {
       })
       .catch(console.error);
 
-    // 2. Fetch customer errands
-    fetch(`${apiBaseUrl}/api/errands`, { method: 'GET', credentials: 'include' })
-      .then(res => {
-        if (res.ok) return res.json();
-        return { errands: [] };
-      })
-      .then(data => {
-        if (data.errands) {
-          setErrands(data.errands);
-        }
-      })
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
+    // 2. Fetch customer errands (poll every 10 seconds for live map updates)
+    const fetchErrands = () => {
+      fetch(`${apiBaseUrl}/api/errands`, { method: 'GET', credentials: 'include' })
+        .then(res => {
+          if (res.ok) return res.json();
+          return { errands: [] };
+        })
+        .then(data => {
+          if (data.errands) {
+            setErrands(data.errands);
+          }
+        })
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
+    };
+
+    fetchErrands();
+    const interval = setInterval(fetchErrands, 10000);
+    return () => clearInterval(interval);
   }, [apiBaseUrl, navigate]);
 
   const nameParts = fullName.trim().split(' ');

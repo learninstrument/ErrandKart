@@ -202,14 +202,14 @@ export const TrackErrand: React.FC = () => {
 
       {/* Vertical Timeline */}
       <div className="px-5 py-4 flex-grow overflow-y-auto custom-scrollbar">
-        <div className="relative pl-10 space-y-8 before:content-[''] before:absolute before:left-[19px] before:top-2 before:bottom-4 before:w-[2px] before:bg-black/10 before:dark:bg-white/10">
+        <div className="relative pl-14 space-y-8 before:content-[''] before:absolute before:left-[27px] before:top-2 before:bottom-4 before:w-[2px] before:bg-black/10 before:dark:bg-white/10">
           {steps.map((step, index) => {
             const isCompleted = step.completed && !step.active;
             const isActive = step.active;
             
             return (
               <div key={index} className="relative">
-                <div className="absolute -left-[35px] w-8 h-8 flex items-center justify-center bg-white dark:bg-[#0A0A0A] rounded-full z-10">
+                <div className="absolute -left-[43px] w-8 h-8 flex items-center justify-center bg-white dark:bg-[#0A0A0A] rounded-full z-10">
                   {isActive ? (
                     <div className="w-3 h-3 rounded-full bg-[#FF6600] shadow-[0_0_10px_rgba(255,102,0,0.8)]"></div>
                   ) : isCompleted ? (
