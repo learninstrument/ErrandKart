@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search,
   MapPin,
-  Clock,
   Plus,
   ShoppingBasket,
   Store,
@@ -17,8 +16,6 @@ import {
   Settings,
   User,
   Bell,
-  ChevronRight,
-  Zap,
   ArrowUpDown,
 } from 'lucide-react';
 import { BottomNav } from './BottomNav';
@@ -78,9 +75,6 @@ export const CustomerDashboard: React.FC = () => {
   const initials = (firstName[0] || 'C').toUpperCase() + (lastInitial || '');
 
   // Calculate metrics
-  const activeCount = useMemo(() => {
-    return errands.filter((e: any) => ['active', 'shopping', 'en_route', 'arrived'].includes(e.status)).length;
-  }, [errands]);
 
   const completedCount = useMemo(() => {
     return errands.filter((e: any) => e.status === 'completed').length;

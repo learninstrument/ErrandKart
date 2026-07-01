@@ -13,7 +13,7 @@ export const AdminUserDetails: React.FC = () => {
   if (!user) {
     return (
       <AdminLayout title="User Details" active="users">
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-6 text-white/70">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-6 text-white/70">
           User not found.
           <Button className="mt-4" onClick={() => navigate('/admin/users')}>
             Back to users
@@ -35,7 +35,7 @@ export const AdminUserDetails: React.FC = () => {
         </Button>
       </div>
 
-      <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <img src={user.avatarUrl} alt={user.fullName} className="h-16 w-16 rounded-2xl border border-white/10 bg-white/5" />
@@ -76,48 +76,48 @@ export const AdminUserDetails: React.FC = () => {
       </section>
 
       <section className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PROFILE INFORMATION</h3>
           <div className="mt-4 space-y-3 text-sm text-white/70">
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Gender</span>
               <span className="font-semibold text-white">{user.gender}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Date of birth</span>
               <span className="font-semibold text-white">{user.dateOfBirth}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>State / Country</span>
               <span className="font-semibold text-white">{user.state}, {user.country}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Joined</span>
               <span className="font-semibold text-white">{user.joinedAt}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Last seen</span>
               <span className="font-semibold text-white">{user.lastSeen}</span>
             </div>
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="text-sm font-black tracking-[0.2em] text-white/70">ACCOUNT SNAPSHOT</h3>
           <div className="mt-4 space-y-3 text-sm text-white/70">
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Total errands</span>
               <span className="font-semibold text-white">{user.totalErrands}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Spend / earnings</span>
               <span className="font-semibold text-white">{user.totalSpendOrEarnings}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Wallet balance</span>
               <span className="font-semibold text-white">{user.walletBalance}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <span>Rating</span>
               <span className="font-semibold text-white">{user.rating}</span>
             </div>
@@ -125,18 +125,18 @@ export const AdminUserDetails: React.FC = () => {
         </div>
       </section>
 
-      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="mb-4 flex items-center gap-2">
           <ShieldCheck size={16} className="text-market-green" />
           <h3 className="text-sm font-black tracking-[0.2em] text-white/70">KYC / IDENTITY DOCUMENTS</h3>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-[#0f141f] p-4 text-sm text-white/70">
+          <div className="rounded-2xl border border-white/10 bg-[#121212] p-4 text-sm text-white/70">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">NIN</p>
             <p className="mt-2 font-semibold text-white">{user.ninNumber}</p>
             <p className="mt-1 text-xs text-market-green">{user.ninStatus}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-[#0f141f] p-4 text-sm text-white/70">
+          <div className="rounded-2xl border border-white/10 bg-[#121212] p-4 text-sm text-white/70">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Government ID</p>
             <p className="mt-2 font-semibold text-white">{user.govIdType}</p>
             <p className="mt-1">{user.govIdNumber}</p>
@@ -144,15 +144,15 @@ export const AdminUserDetails: React.FC = () => {
         </div>
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f141f]">
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121212]">
             <img src={user.govIdFrontImage} alt="Government ID front" className="h-40 w-full object-cover" />
             <div className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">ID Front</div>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f141f]">
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121212]">
             <img src={user.govIdBackImage} alt="Government ID back" className="h-40 w-full object-cover" />
             <div className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">ID Back</div>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f141f]">
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121212]">
             <img src={user.selfieImage} alt="KYC selfie" className="h-40 w-full object-cover" />
             <div className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Selfie</div>
           </div>
@@ -160,25 +160,25 @@ export const AdminUserDetails: React.FC = () => {
       </section>
 
       {user.runnerInfo && (
-        <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="mb-4 flex items-center gap-2">
             <Truck size={16} className="text-market-green" />
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">RUNNER OPERATION DETAILS</h3>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+            <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
               <span className="text-white/50">Vehicle Type</span>
               <p className="mt-1 font-semibold text-white">{user.runnerInfo.vehicleType}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+            <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
               <span className="text-white/50">License Plate</span>
               <p className="mt-1 font-semibold text-white">{user.runnerInfo.licensePlate}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+            <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
               <span className="text-white/50">Bank Name</span>
               <p className="mt-1 font-semibold text-white">{user.runnerInfo.bankName}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+            <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
               <span className="text-white/50">Account Number</span>
               <p className="mt-1 font-semibold text-white">{user.runnerInfo.accountNumber}</p>
             </div>
@@ -186,7 +186,7 @@ export const AdminUserDetails: React.FC = () => {
         </section>
       )}
 
-      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="mb-4 flex items-center gap-2">
           <Navigation size={16} className="text-kart-orange" />
           <h3 className="text-sm font-black tracking-[0.2em] text-white/70">ACTIVE ERRAND TRACKING LINKS</h3>
@@ -196,7 +196,7 @@ export const AdminUserDetails: React.FC = () => {
         ) : (
           <div className="space-y-3">
             {activeErrands.map(errand => (
-              <div key={errand.orderId} className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div key={errand.orderId} className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="text-sm font-bold text-white">{errand.orderId} · {errand.status}</p>
@@ -212,21 +212,21 @@ export const AdminUserDetails: React.FC = () => {
         )}
       </section>
 
-      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="mb-4 flex items-center gap-2">
           <FileText size={16} className="text-kart-orange" />
           <h3 className="text-sm font-black tracking-[0.2em] text-white/70">EMERGENCY CONTACT</h3>
         </div>
         <div className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+          <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
             <span className="text-white/50">Name</span>
             <p className="mt-1 font-semibold text-white">{user.emergencyContactName}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+          <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
             <span className="text-white/50">Phone</span>
             <p className="mt-1 font-semibold text-white">{user.emergencyContactPhone}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+          <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
             <span className="text-white/50">Relation</span>
             <p className="mt-1 font-semibold text-white">{user.emergencyContactRelation}</p>
           </div>

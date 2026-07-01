@@ -70,7 +70,7 @@ export const AdminDashboard: React.FC = () => {
         {stats.map(stat => (
           <div
             key={stat.label}
-            className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
+            className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
           >
             <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 ${stat.tone}`}>
               {stat.icon}
@@ -82,7 +82,7 @@ export const AdminDashboard: React.FC = () => {
       </section>
 
       <section className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Real-time payments</p>
@@ -92,7 +92,7 @@ export const AdminDashboard: React.FC = () => {
               Live
             </span>
           </div>
-          <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-[#0f141f] p-4">
+          <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-[#121212] p-4">
             <svg viewBox="0 0 320 120" className="h-32 w-full">
               <path d={paymentPath} fill="none" stroke="#FF6600" strokeWidth="3" />
               <path
@@ -114,7 +114,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Active users</p>
@@ -124,7 +124,7 @@ export const AdminDashboard: React.FC = () => {
               Live
             </span>
           </div>
-          <div className="mt-4 grid grid-cols-12 items-end gap-2 rounded-2xl border border-white/10 bg-[#0f141f] p-4">
+          <div className="mt-4 grid grid-cols-12 items-end gap-2 rounded-2xl border border-white/10 bg-[#121212] p-4">
             {userSeries.map((value, index) => (
               <div key={`${value}-${index}`} className="flex h-24 items-end">
                 <div
@@ -142,7 +142,7 @@ export const AdminDashboard: React.FC = () => {
       </section>
 
       <section className="mt-6 grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">LIVE ACTIVITY</h3>
             <Button variant="outline" className="gap-2 text-xs" onClick={() => navigate('/admin/activity')}>
@@ -151,7 +151,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
           <div className="mt-4 space-y-3">
             {FEED.map(item => (
-              <div key={item.id} className="rounded-2xl border border-white/10 bg-[#0f141f] p-4">
+              <div key={item.id} className="rounded-2xl border border-white/10 bg-[#121212] p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-bold text-white">{item.title}</p>
                   <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">{item.time}</span>
@@ -163,7 +163,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
                 <Bell size={18} />
@@ -174,22 +174,22 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
             <div className="mt-4 space-y-3 text-sm text-white/70">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Payment failures</span>
                 <span className="font-semibold text-white">7</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Pending disputes</span>
                 <span className="font-semibold text-white">4</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>KYC reviews</span>
                 <span className="font-semibold text-white">21</span>
               </div>
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">QUICK ACTIONS</h3>
             <div className="mt-4 flex flex-col gap-3">
               <Button className="w-full gap-2" onClick={() => navigate('/admin/activity')}>

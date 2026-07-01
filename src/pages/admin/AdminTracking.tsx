@@ -162,7 +162,7 @@ export const AdminTracking: React.FC = () => {
   return (
     <AdminLayout title="Live Errand Tracking" active="tracking">
       {isLoading ? (
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-6 text-white/70">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-6 text-white/70">
           Loading active errands...
         </div>
       ) : errorMessage ? (
@@ -170,12 +170,12 @@ export const AdminTracking: React.FC = () => {
           {errorMessage}
         </div>
       ) : !selectedErrand ? (
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-6 text-white/70">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-6 text-white/70">
           No active errands to track.
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-[1.25fr_0.75fr]">
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
             <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Tracking Order</p>
@@ -189,26 +189,26 @@ export const AdminTracking: React.FC = () => {
               </span>
             </div>
 
-            <div className="h-[48vh] overflow-hidden rounded-2xl border border-white/10 bg-[#0f141f] md:h-[62vh]">
+            <div className="h-[48vh] overflow-hidden rounded-2xl border border-white/10 bg-[#121212] md:h-[62vh]">
               <div ref={mapContainerRef} className="h-full w-full" />
             </div>
 
             <div className="mt-4 grid gap-3 md:grid-cols-4">
-              <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+              <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
                 <div className="flex items-center gap-2">
                   <Timer size={14} className="text-kart-orange" />
                   ETA
                 </div>
                 <p className="mt-1 text-lg font-black text-white">{selectedErrand.etaMinutes} min</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+              <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
                 <div className="flex items-center gap-2">
                   <Wallet size={14} className="text-kart-orange" />
                   Runner payout
                 </div>
                 <p className="mt-1 text-lg font-black text-white">{selectedErrand.payout}</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+              <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
                 <div className="flex items-center gap-2">
                   <Store size={14} className="text-kart-orange" />
                   Dispatch source
@@ -217,7 +217,7 @@ export const AdminTracking: React.FC = () => {
                   {selectedErrand.source === 'supermarket-dispatch' ? 'Supermarket' : 'Customer'}
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+              <div className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
                 <div className="flex items-center gap-2">
                   <Navigation size={14} className="text-market-green" />
                   Status
@@ -227,7 +227,7 @@ export const AdminTracking: React.FC = () => {
             </div>
 
             {selectedErrand.source === 'supermarket-dispatch' && (
-              <div className="mt-3 rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/70">
+              <div className="mt-3 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
                 <div className="flex items-center gap-2">
                   <Store size={14} className="text-kart-orange" />
                   Supermarket contact
@@ -247,7 +247,7 @@ export const AdminTracking: React.FC = () => {
                 className={`rounded-2xl border p-4 text-left shadow-[0_14px_34px_rgba(0,0,0,0.35)] ${
                   selectedOrderId === errand.orderId
                     ? 'border-kart-orange/40 bg-kart-orange/10'
-                    : 'border-white/10 bg-[#111722]'
+                    : 'border-white/10 bg-[#0A0A0A]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -269,11 +269,11 @@ export const AdminTracking: React.FC = () => {
                     <Navigation size={13} className="text-market-green" />
                     {errand.dropoffAddress}
                   </div>
-                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#0f141f] px-3 py-2">
+                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#121212] px-3 py-2">
                     <span>Runner: {errand.runnerName}</span>
                     <span>{errand.etaMinutes} min</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#0f141f] px-3 py-2">
+                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#121212] px-3 py-2">
                     <span className="flex items-center gap-1"><Phone size={12} /> {errand.runnerPhone}</span>
                     <span>{errand.payout}</span>
                   </div>

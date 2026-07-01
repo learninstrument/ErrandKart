@@ -54,7 +54,7 @@ export const CustomerOrderDetails: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -63,7 +63,7 @@ export const CustomerOrderDetails: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-20 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#111722] via-[#121826] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0A0A0A] via-[#121826] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">{order.displayId}</p>
@@ -84,14 +84,14 @@ export const CustomerOrderDetails: React.FC = () => {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">ITEM LIST</h3>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{order.items.length} items</span>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {order.items.map((item: string, index: number) => (
-              <div key={index} className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/80">
+              <div key={index} className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/80">
                 <PackageCheck size={14} className="mr-2 inline text-kart-orange" />
                 {item}
               </div>
@@ -101,7 +101,7 @@ export const CustomerOrderDetails: React.FC = () => {
 
         {order.status === 'completed' && (
           <section className="grid gap-4 md:grid-cols-[1.2fr_1fr]">
-            <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+            <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
               <div className="flex items-center gap-2 text-white/70">
                 <Receipt size={16} />
                 <p className="text-xs font-semibold uppercase tracking-[0.2em]">Receipt breakdown</p>
@@ -117,7 +117,7 @@ export const CustomerOrderDetails: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[#111722] shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+            <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[#0A0A0A] shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
               {order.receiptUrl && (
                 <img src={order.receiptUrl} alt="Receipt" className="h-44 w-full object-cover" />
               )}
@@ -129,12 +129,12 @@ export const CustomerOrderDetails: React.FC = () => {
         )}
 
         {order.status === 'cancelled' && (
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 text-sm text-white/60 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/60 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             This errand was cancelled. No charges were applied.
           </section>
         )}
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Runner</p>

@@ -72,7 +72,7 @@ export const CustomerOrders: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -82,7 +82,7 @@ export const CustomerOrders: React.FC = () => {
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:grid md:grid-cols-[1.15fr_0.85fr] md:gap-8 md:px-10 md:pb-10">
         <div className="flex flex-col gap-6">
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <div className="grid grid-cols-3 gap-2">
               {(['active', 'completed', 'cancelled'] as OrderStatus[]).map(status => (
                 <button
@@ -105,7 +105,7 @@ export const CustomerOrders: React.FC = () => {
               <div
                 key={order.id}
                 onClick={() => navigate(`/customer/orders/${order.id}`)}
-                className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] cursor-pointer transition-all hover:border-white/20"
+                className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] cursor-pointer transition-all hover:border-white/20"
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
@@ -153,7 +153,7 @@ export const CustomerOrders: React.FC = () => {
 
                 {order.status === 'completed' && (
                   <div className="mt-5 grid gap-4 md:grid-cols-[1.2fr_1fr]">
-                    <div className="rounded-2xl border border-white/10 bg-[#0f141f] p-4">
+                    <div className="rounded-2xl border border-white/10 bg-[#121212] p-4">
                       <div className="flex items-center gap-2 text-white/70">
                         <Receipt size={16} />
                         <p className="text-xs font-semibold uppercase tracking-[0.2em]">Receipt breakdown</p>
@@ -169,7 +169,7 @@ export const CustomerOrders: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f141f]">
+                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121212]">
                       <img src={order.receiptUrl} alt="Receipt" className="h-36 w-full object-cover" />
                       <div className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
                         Proof of purchase
@@ -187,7 +187,7 @@ export const CustomerOrders: React.FC = () => {
             ))}
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">ORDER OVERVIEW</h3>
             <div className="mt-4 grid grid-cols-3 gap-3">
               {([
@@ -197,7 +197,7 @@ export const CustomerOrders: React.FC = () => {
               ] as const).map(stat => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl border border-white/10 bg-[#0f141f] px-3 py-4 text-center"
+                  className="rounded-2xl border border-white/10 bg-[#121212] px-3 py-4 text-center"
                 >
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">{stat.label}</p>
                   <p className="mt-2 text-lg font-black text-white">{stat.value}</p>
@@ -217,10 +217,10 @@ export const CustomerOrders: React.FC = () => {
             </Button>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PAYMENTS</h3>
             <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Wallet balance</span>
                 <span className="font-semibold text-white">₦48,200</span>
               </div>
@@ -232,7 +232,7 @@ export const CustomerOrders: React.FC = () => {
         </div>
 
         <aside className="hidden flex-col gap-6 md:flex">
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">ORDER OVERVIEW</h3>
             <div className="mt-4 grid grid-cols-3 gap-3">
               {([
@@ -242,7 +242,7 @@ export const CustomerOrders: React.FC = () => {
               ] as const).map(stat => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl border border-white/10 bg-[#0f141f] px-3 py-4 text-center"
+                  className="rounded-2xl border border-white/10 bg-[#121212] px-3 py-4 text-center"
                 >
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">{stat.label}</p>
                   <p className="mt-2 text-lg font-black text-white">{stat.value}</p>
@@ -262,10 +262,10 @@ export const CustomerOrders: React.FC = () => {
             </Button>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PAYMENTS</h3>
             <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Wallet balance</span>
                 <span className="font-semibold text-white">₦48,200</span>
               </div>

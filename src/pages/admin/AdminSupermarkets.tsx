@@ -84,7 +84,7 @@ export const AdminSupermarkets: React.FC = () => {
   return (
     <AdminLayout title="Supermarket Verification" active="supermarkets">
       <section className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
             <Store size={18} />
           </div>
@@ -92,7 +92,7 @@ export const AdminSupermarkets: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{supermarkets.length}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
             <Clock3 size={18} />
           </div>
@@ -100,7 +100,7 @@ export const AdminSupermarkets: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{pendingCount}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
             <ShieldCheck size={18} />
           </div>
@@ -108,7 +108,7 @@ export const AdminSupermarkets: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{verifiedCount}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white/80">
             <FileCheck2 size={18} />
           </div>
@@ -117,7 +117,7 @@ export const AdminSupermarkets: React.FC = () => {
         </div>
       </section>
 
-      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="relative w-full md:max-w-sm">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
@@ -125,7 +125,7 @@ export const AdminSupermarkets: React.FC = () => {
               value={query}
               onChange={event => setQuery(event.target.value)}
               placeholder="Search store, manager, or CAC..."
-              className="w-full rounded-2xl border border-white/10 bg-[#0f141f] py-3 pl-9 pr-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-kart-orange/25"
+              className="w-full rounded-2xl border border-white/10 bg-[#121212] py-3 pl-9 pr-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-kart-orange/25"
             />
           </div>
 
@@ -149,7 +149,7 @@ export const AdminSupermarkets: React.FC = () => {
 
       <section className="mt-6 space-y-4">
         {isLoading ? (
-          <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 text-sm text-white/70">
+          <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 text-sm text-white/70">
             Loading supermarkets...
           </div>
         ) : errorMessage ? (
@@ -160,7 +160,7 @@ export const AdminSupermarkets: React.FC = () => {
           filteredSupermarkets.map(store => (
             <div
               key={store.id}
-              className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
+              className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
             >
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
@@ -188,19 +188,19 @@ export const AdminSupermarkets: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs text-white/65">
-                  <div className="rounded-xl border border-white/10 bg-[#0f141f] px-3 py-2">
+                  <div className="rounded-xl border border-white/10 bg-[#121212] px-3 py-2">
                     <p className="text-white/50">CAC Number</p>
                     <p className="mt-1 font-semibold text-white">{store.cacNumber}</p>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#0f141f] px-3 py-2">
+                  <div className="rounded-xl border border-white/10 bg-[#121212] px-3 py-2">
                     <p className="text-white/50">Tax ID</p>
                     <p className="mt-1 font-semibold text-white">{store.taxId}</p>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#0f141f] px-3 py-2">
+                  <div className="rounded-xl border border-white/10 bg-[#121212] px-3 py-2">
                     <p className="text-white/50">Dispatch Orders</p>
                     <p className="mt-1 font-semibold text-white">{store.dispatchOrders}</p>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#0f141f] px-3 py-2">
+                  <div className="rounded-xl border border-white/10 bg-[#121212] px-3 py-2">
                     <p className="text-white/50">Active Runners</p>
                     <p className="mt-1 font-semibold text-white">{store.activeRunners}</p>
                   </div>
@@ -283,7 +283,7 @@ const formatDate = (value: string | null) => {
 };
 
 const renderDocument = (url: string, alt: string, label: string) => (
-  <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f141f]">
+  <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121212]">
     {url ? (
       <img src={url} alt={alt} className="h-28 w-full object-cover" />
     ) : (

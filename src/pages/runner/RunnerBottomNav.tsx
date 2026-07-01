@@ -6,7 +6,7 @@ export const RunnerBottomNav = ({ activeTab }: { activeTab: 'available' | 'activ
   const baseClass = 'flex flex-col items-center gap-1 transition-colors';
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 flex w-[calc(100%-24px)] max-w-md -translate-x-1/2 items-center justify-around rounded-3xl border border-white/10 bg-[#0d1117]/90 px-6 py-3 backdrop-blur-md shadow-[0_16px_40px_rgba(0,0,0,0.45)]">
+    <div className="fixed bottom-4 left-1/2 z-50 flex w-[calc(100%-24px)] max-w-md -translate-x-1/2 items-center justify-around rounded-3xl border border-white/10 bg-[#050505]/90 px-6 py-3 backdrop-blur-md shadow-[0_16px_40px_rgba(0,0,0,0.45)]">
       <button
         onClick={() => navigate('/runner/dashboard')}
         className={`${baseClass} ${activeTab === 'available' ? 'text-market-green' : 'text-white/50 hover:text-white'}`}

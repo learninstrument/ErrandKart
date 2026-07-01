@@ -26,7 +26,7 @@ export const RunnerEarnings: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -35,7 +35,7 @@ export const RunnerEarnings: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 pb-20 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Total earnings</p>
@@ -61,7 +61,7 @@ export const RunnerEarnings: React.FC = () => {
             { label: 'Top day', value: '₦9,600', icon: <TrendingUp size={18} /> },
             { label: 'Goal progress', value: '74%', icon: <Target size={18} /> },
           ].map((item, index) => (
-            <div key={index} className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]">
+            <div key={index} className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]">
               <div className="flex items-center gap-3 text-white/70">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
                   {item.icon}
@@ -73,7 +73,7 @@ export const RunnerEarnings: React.FC = () => {
           ))}
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">WEEKLY PERFORMANCE</h3>
             <div className="flex items-center gap-2 text-xs text-white/50">
@@ -97,11 +97,11 @@ export const RunnerEarnings: React.FC = () => {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">MONTHLY SUMMARY</h3>
           <div className="space-y-3">
             {MONTHLY.map(week => (
-              <div key={week.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div key={week.label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span className="text-sm font-semibold text-white">{week.label}</span>
                 <div className="flex items-center gap-3">
                   <div className="h-2 w-40 rounded-full bg-white/10">

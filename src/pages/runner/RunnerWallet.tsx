@@ -15,7 +15,7 @@ export const RunnerWallet: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -25,7 +25,7 @@ export const RunnerWallet: React.FC = () => {
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:grid md:grid-cols-[1.15fr_0.85fr] md:gap-8 md:px-10 md:pb-10">
         <div className="flex flex-col gap-6">
-          <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+          <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Available for Withdrawal</p>
@@ -44,7 +44,7 @@ export const RunnerWallet: React.FC = () => {
           </section>
 
           <section className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+            <div className="rounded-2xl border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
                   <Wallet size={18} />
@@ -55,7 +55,7 @@ export const RunnerWallet: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+            <div className="rounded-2xl border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white">
                   <Banknote size={18} />
@@ -74,13 +74,13 @@ export const RunnerWallet: React.FC = () => {
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">TRANSACTIONS</h3>
             <div className="space-y-3">
               {transactions.map(tx => (
                 <div
                   key={tx.id}
-                  className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3"
+                  className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -103,7 +103,7 @@ export const RunnerWallet: React.FC = () => {
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PAYOUT ACTIONS</h3>
             <div className="mt-4 flex flex-col gap-3">
               <Button theme="green" className="w-full gap-2">
@@ -118,14 +118,14 @@ export const RunnerWallet: React.FC = () => {
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PAYOUT STATUS</h3>
             <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Pending escrow</span>
                 <span className="font-semibold text-white">₦7,500</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Next payout</span>
                 <span className="font-semibold text-white">Today</span>
               </div>
@@ -137,7 +137,7 @@ export const RunnerWallet: React.FC = () => {
         </div>
 
         <aside className="hidden flex-col gap-6 md:flex">
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PAYOUT ACTIONS</h3>
             <div className="mt-4 flex flex-col gap-3">
               <Button theme="green" className="w-full gap-2">
@@ -152,14 +152,14 @@ export const RunnerWallet: React.FC = () => {
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">PAYOUT STATUS</h3>
             <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Pending escrow</span>
                 <span className="font-semibold text-white">₦7,500</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <span>Next payout</span>
                 <span className="font-semibold text-white">Today</span>
               </div>

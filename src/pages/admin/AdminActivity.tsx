@@ -22,7 +22,7 @@ export const AdminActivity: React.FC = () => {
 
   return (
     <AdminLayout title="Activity Log" active="activity">
-      <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="flex flex-wrap gap-2">
           {(['all', 'auth', 'payment', 'errand', 'support', 'admin'] as const).map(type => (
             <button
@@ -44,7 +44,7 @@ export const AdminActivity: React.FC = () => {
         {filtered.map(item => (
           <div
             key={item.id}
-            className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
+            className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>

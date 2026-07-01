@@ -53,7 +53,7 @@ export const RunnerProfile: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -67,7 +67,7 @@ export const RunnerProfile: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
               <img
@@ -87,7 +87,7 @@ export const RunnerProfile: React.FC = () => {
                 Upload
                 <input type="file" className="hidden" />
               </label>
-              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Status</div>
                 <button
                   type="button"
@@ -108,7 +108,7 @@ export const RunnerProfile: React.FC = () => {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">PERSONAL INFO</h3>
           <Input 
             label="Full Name" 
@@ -153,7 +153,7 @@ export const RunnerProfile: React.FC = () => {
           </Button>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SETTINGS</h3>
@@ -165,9 +165,9 @@ export const RunnerProfile: React.FC = () => {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">KYC VERIFICATION</h3>
-          <div className="rounded-2xl border border-white/10 bg-[#0f141f] p-4 text-white/70">
+          <div className="rounded-2xl border border-white/10 bg-[#121212] p-4 text-white/70">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
                 <ShieldCheck size={18} />
@@ -184,7 +184,7 @@ export const RunnerProfile: React.FC = () => {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">VEHICLE INFO</h3>
           <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Vehicle Type</label>
           <select className="mb-4 mt-1 w-full rounded-2xl border border-[#253043] bg-[#111621] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-market-green focus:ring-4 focus:ring-market-green/25">
@@ -203,7 +203,7 @@ export const RunnerProfile: React.FC = () => {
           ].map((stat, index) => (
             <div
               key={index}
-              className="rounded-2xl border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
+              className="rounded-2xl border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
             >
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
               <p className="mt-2 text-2xl font-black text-white">{stat.value}</p>
@@ -211,7 +211,7 @@ export const RunnerProfile: React.FC = () => {
           ))}
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">BANK DETAILS</h3>
           <Input label="Bank Name" placeholder="GTBank" theme="green" />
           <Input label="Account Number" placeholder="0123456789" theme="green" />

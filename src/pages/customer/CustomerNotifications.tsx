@@ -44,7 +44,7 @@ export const CustomerNotifications: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -57,7 +57,7 @@ export const CustomerNotifications: React.FC = () => {
           {NOTIFICATIONS.map(notification => (
             <div
               key={notification.id}
-              className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
+              className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
             >
               <div className="flex items-start gap-4">
                 <div
@@ -82,7 +82,7 @@ export const CustomerNotifications: React.FC = () => {
             </div>
           ))}
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">NOTIFICATION CONTROLS</h3>
             <p className="mt-2 text-sm text-white/70">
               Manage alerts for new runners, payments, and delivery updates.
@@ -97,7 +97,7 @@ export const CustomerNotifications: React.FC = () => {
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:hidden">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">QUICK ACTIONS</h3>
             <div className="mt-4 flex flex-col gap-3">
               <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/customer/track')}>
@@ -111,7 +111,7 @@ export const CustomerNotifications: React.FC = () => {
         </div>
 
         <aside className="hidden flex-col gap-6 md:flex">
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">NOTIFICATION CONTROLS</h3>
             <p className="mt-2 text-sm text-white/70">
               Manage alerts for new runners, payments, and delivery updates.
@@ -126,7 +126,7 @@ export const CustomerNotifications: React.FC = () => {
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">QUICK ACTIONS</h3>
             <div className="mt-4 flex flex-col gap-3">
               <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/customer/track')}>

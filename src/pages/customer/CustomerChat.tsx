@@ -17,7 +17,7 @@ export const CustomerChat: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -31,8 +31,8 @@ export const CustomerChat: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:grid md:grid-cols-[1.15fr_0.85fr] md:gap-8 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
-          <div className="rounded-[22px] border border-white/10 bg-[#0f141f] p-4 text-xs text-white/60">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+          <div className="rounded-[22px] border border-white/10 bg-[#121212] p-4 text-xs text-white/60">
             You are chatting with Michael B. Replies typically arrive in under 2 minutes.
           </div>
 
@@ -46,7 +46,7 @@ export const CustomerChat: React.FC = () => {
                   className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-[0_12px_28px_rgba(0,0,0,0.35)] ${
                     msg.from === 'customer'
                       ? 'bg-kart-orange text-white'
-                      : 'bg-[#0f141f] text-white/85'
+                      : 'bg-[#121212] text-white/85'
                   }`}
                 >
                   <p>{msg.text}</p>
@@ -59,7 +59,7 @@ export const CustomerChat: React.FC = () => {
           </div>
 
           <div className="mt-6 hidden border-t border-white/10 pt-5 md:block">
-            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <button className="text-white/60 hover:text-white">
                 <Paperclip size={18} />
               </button>
@@ -77,7 +77,7 @@ export const CustomerChat: React.FC = () => {
         </section>
 
         <div className="flex flex-col gap-6 md:hidden">
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/70">Order Snapshot</h3>
               <span className="text-xs font-semibold text-white/50">{displayOrderId}</span>
@@ -101,7 +101,7 @@ export const CustomerChat: React.FC = () => {
             </Button>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <div className="flex items-center gap-4">
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"
@@ -126,7 +126,7 @@ export const CustomerChat: React.FC = () => {
         </div>
 
         <aside className="hidden flex-col gap-6 md:flex">
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/70">Order Snapshot</h3>
               <span className="text-xs font-semibold text-white/50">{displayOrderId}</span>
@@ -150,7 +150,7 @@ export const CustomerChat: React.FC = () => {
             </Button>
           </section>
 
-          <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
             <div className="flex items-center gap-4">
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"
@@ -175,8 +175,8 @@ export const CustomerChat: React.FC = () => {
         </aside>
       </main>
 
-      <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-3xl -translate-x-1/2 border-t border-white/5 bg-[#0d1117]/95 p-4 backdrop-blur-md md:hidden">
-        <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#111722] px-4 py-2">
+      <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-3xl -translate-x-1/2 border-t border-white/5 bg-[#050505]/95 p-4 backdrop-blur-md md:hidden">
+        <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#0A0A0A] px-4 py-2">
           <button className="text-white/60 hover:text-white">
             <Paperclip size={18} />
           </button>

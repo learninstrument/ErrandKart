@@ -30,7 +30,7 @@ export const Button = ({
         ? 'bg-kart-orange text-white shadow-[0_0_15px_rgba(255,102,0,0.2)] hover:shadow-[0_0_25px_rgba(255,102,0,0.4)] hover:brightness-110'
         : 'bg-market-green text-white shadow-[0_0_15px_rgba(46,139,87,0.2)] hover:shadow-[0_0_25px_rgba(46,139,87,0.4)] hover:brightness-110',
     outline:
-      'border border-[#1e293b] bg-[#111722]/80 text-white shadow-lg backdrop-blur-md hover:border-kart-orange/50 hover:bg-[#111722]',
+      'border border-[#1e293b] bg-[#0A0A0A]/80 text-white shadow-lg backdrop-blur-md hover:border-kart-orange/50 hover:bg-[#0A0A0A]',
     ghost: 
       'bg-transparent text-white/60 hover:bg-white/10 hover:text-white',
   };

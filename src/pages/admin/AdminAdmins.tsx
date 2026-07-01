@@ -17,7 +17,7 @@ export const AdminAdmins: React.FC = () => {
   return (
     <AdminLayout title="Admin Management" active="admins">
       <section className="grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-black tracking-[0.2em] text-white/70">ACTIVE ADMINS</h3>
             <Button variant="outline" className="gap-2 text-xs" onClick={() => navigate('/admin/activity')}>
@@ -28,7 +28,7 @@ export const AdminAdmins: React.FC = () => {
             {ADMINS.map(admin => (
               <div
                 key={admin.id}
-                className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-4"
+                className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-4"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -47,7 +47,7 @@ export const AdminAdmins: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
               <UserPlus size={18} />

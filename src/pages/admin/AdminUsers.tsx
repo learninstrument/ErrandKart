@@ -31,7 +31,7 @@ export const AdminUsers: React.FC = () => {
   return (
     <AdminLayout title="User Monitoring" active="users">
       <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
             <Users size={18} />
           </div>
@@ -39,7 +39,7 @@ export const AdminUsers: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{totalUsers.toLocaleString()}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
             <UserCheck size={18} />
           </div>
@@ -47,7 +47,7 @@ export const AdminUsers: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{activeUsers.toLocaleString()}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
             <UserPlus size={18} />
           </div>
@@ -56,7 +56,7 @@ export const AdminUsers: React.FC = () => {
         </div>
       </section>
 
-      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="relative w-full md:max-w-sm">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
@@ -64,7 +64,7 @@ export const AdminUsers: React.FC = () => {
               value={query}
               onChange={event => setQuery(event.target.value)}
               placeholder="Search by name, email, or ID..."
-              className="w-full rounded-2xl border border-white/10 bg-[#0f141f] py-3 pl-9 pr-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-kart-orange/25"
+              className="w-full rounded-2xl border border-white/10 bg-[#121212] py-3 pl-9 pr-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-kart-orange/25"
             />
           </div>
 
@@ -91,7 +91,7 @@ export const AdminUsers: React.FC = () => {
           <button
             key={user.id}
             onClick={() => navigate(`/admin/users/${user.id}`)}
-            className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
+            className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>

@@ -44,7 +44,7 @@ export const AdminLogin: React.FC = () => {
           </Button>
         </form>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-[#0f141f] p-4 text-xs text-white/60">
+        <div className="mt-6 rounded-2xl border border-white/10 bg-[#121212] p-4 text-xs text-white/60">
           Only authorized admins can access this portal. If you need access, contact a super admin.
         </div>
       </div>

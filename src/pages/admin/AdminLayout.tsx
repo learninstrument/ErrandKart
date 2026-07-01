@@ -59,7 +59,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, childre
 
   return (
     <div className="flex min-h-screen w-full bg-[#0b0f14] text-white">
-      <aside className="hidden w-64 flex-col border-r border-white/10 bg-[#0d1117] p-6 md:flex">
+      <aside className="hidden w-64 flex-col border-r border-white/10 bg-[#050505] p-6 md:flex">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 p-1">
             <img src="/logo.png" alt="ErrandKart" className="h-full w-full object-contain" />
@@ -98,7 +98,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, childre
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 p-1 md:hidden">
               <img src="/logo.png" alt="ErrandKart" className="h-full w-full object-contain" />

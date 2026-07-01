@@ -8,7 +8,7 @@ export const NotFound: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-transparent px-6 py-12">
-      <div className="w-full max-w-xl rounded-[32px] border border-white/10 bg-[#111722] p-8 text-center shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+      <div className="w-full max-w-xl rounded-[32px] border border-white/10 bg-[#0A0A0A] p-8 text-center shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-kart-orange/15 text-kart-orange">
           <AlertTriangle size={28} />
         </div>

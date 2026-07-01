@@ -63,7 +63,7 @@ export const RunnerErrandDetails: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 px-6 py-4 backdrop-blur-md md:px-10">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
           <ArrowLeft size={24} />
         </button>
@@ -72,7 +72,7 @@ export const RunnerErrandDetails: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Order #{errand.id.split('-')[0].toUpperCase()}</p>
@@ -96,25 +96,25 @@ export const RunnerErrandDetails: React.FC = () => {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">CUSTOMER NOTES</h3>
           <p className="text-sm text-white/70">{errand.description || 'No specific instructions provided.'}</p>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">CHECKLIST</h3>
           <div className="grid gap-3 md:grid-cols-2">
             {checklistItems.map((item: string) => (
-              <div key={item} className="rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white/80">
+              <div key={item} className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/80">
                 {item}
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ROUTE PREVIEW</h3>
-          <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-4">
+          <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Pickup</p>
               <p className="text-sm font-bold text-white">{errand.pickup_address}</p>

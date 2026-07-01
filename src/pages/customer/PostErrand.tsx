@@ -147,7 +147,7 @@ export const PostErrand: React.FC = () => {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#0d1117]/90 p-6 backdrop-blur-md">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 p-6 backdrop-blur-md">
         <button
           onClick={() => navigate(-1)}
           className="p-2 -ml-2 text-white/60 transition-colors hover:text-white"
@@ -159,7 +159,7 @@ export const PostErrand: React.FC = () => {
       </header>
 
       <main className="p-6 pb-36 md:p-8">
-        <div className="mb-6 rounded-[28px] border border-white/10 bg-gradient-to-br from-[#111722] via-[#121826] to-[#0d1117] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+        <div className="mb-6 rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0A0A0A] via-[#121826] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/60">Create request</p>
           <h3 className="mb-1 text-2xl font-black">Describe your errand clearly</h3>
           <p className="text-sm text-white/70">Set details, pickup & delivery points, and runner fee.</p>
@@ -167,7 +167,7 @@ export const PostErrand: React.FC = () => {
 
         <div className="grid gap-6 md:grid-cols-[1.25fr_0.75fr]">
           <div className="flex flex-col gap-5">
-            <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+            <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
               <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ERRAND DETAILS</h3>
               <Input 
                 label="Title" 
@@ -248,7 +248,7 @@ export const PostErrand: React.FC = () => {
             </section>
 
             {(category === 'Supermarket' || fulfillmentMode === 'supermarket-dispatch') && (
-              <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+              <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
                 <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">SUPERMARKET DETAILS</h3>
                 <Input 
                   label="Supermarket name" 
@@ -275,7 +275,7 @@ export const PostErrand: React.FC = () => {
               </section>
             )}
 
-            <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+            <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
               <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">LOCATIONS</h3>
               
               <div className="relative z-20 mb-4">
@@ -336,7 +336,7 @@ export const PostErrand: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-5">
-            <section className="rounded-[28px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
+            <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
               <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">BUDGET</h3>
               <p className="mb-2 ml-1 text-xs text-slate-400">How much are you paying the runner for this errand?</p>
 
@@ -344,7 +344,7 @@ export const PostErrand: React.FC = () => {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-black text-white">₦</div>
                 <input
                   type="number"
-                  className="w-full rounded-2xl border border-[#253043] bg-[#0f141f] py-4 pl-10 pr-4 text-2xl font-black text-white shadow-[0_10px_24px_rgba(0,0,0,0.25)] outline-none transition-all placeholder:text-slate-500 focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/20"
+                  className="w-full rounded-2xl border border-[#253043] bg-[#121212] py-4 pl-10 pr-4 text-2xl font-black text-white shadow-[0_10px_24px_rgba(0,0,0,0.25)] outline-none transition-all placeholder:text-slate-500 focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/20"
                   placeholder="0.00"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
@@ -352,7 +352,7 @@ export const PostErrand: React.FC = () => {
               </div>
             </section>
 
-            <section className="hidden rounded-[28px] border border-white/10 bg-[#111722] p-5 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:block md:p-6">
+            <section className="hidden rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 text-sm text-white/70 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:block md:p-6">
               <h3 className="mb-3 text-sm font-black tracking-[0.2em] text-white/70">SUMMARY</h3>
               <p className="text-sm text-white/70">
                 Review your details, then continue to checkout to confirm pricing and priority options.
@@ -372,7 +372,7 @@ export const PostErrand: React.FC = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-3xl -translate-x-1/2 border-t border-white/5 bg-[#0d1117]/95 p-5 backdrop-blur-md md:hidden">
+      <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-3xl -translate-x-1/2 border-t border-white/5 bg-[#050505]/95 p-5 backdrop-blur-md md:hidden">
         {error && (
           <div className="mb-4 rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
             {error}
@@ -391,7 +391,7 @@ const AddressDropdown = ({ results, savedLocations, onSelect }: { results: any[]
   const hasResults = results.length > 0;
 
   return (
-    <div className="absolute top-full mt-1 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#111722] shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
+    <div className="absolute top-full mt-1 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0A] shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
       {hasSaved && (
         <>
           <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Saved Locations</p>

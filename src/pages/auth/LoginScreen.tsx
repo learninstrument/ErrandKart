@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, User, Truck, Store, MapPin, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowLeft, User, Truck, Store } from 'lucide-react';
 import { Input } from '../../components/UI/Input';
 import { Button } from '../../components/UI/Button';
 import { Onboarding } from '../Onboarding';

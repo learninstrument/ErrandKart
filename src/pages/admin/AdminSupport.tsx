@@ -130,13 +130,13 @@ export const AdminSupport: React.FC = () => {
 
   return (
     <AdminLayout title="Support & Ratings" active="support">
-      <section className="mb-4 rounded-2xl border border-white/10 bg-[#111722] px-4 py-3 text-sm text-white/75">
+      <section className="mb-4 rounded-2xl border border-white/10 bg-[#0A0A0A] px-4 py-3 text-sm text-white/75">
         This queue contains support requests from both <span className="font-semibold text-white">customers</span> and{' '}
         <span className="font-semibold text-white">runners</span>.
       </section>
 
       <section className="grid gap-4 md:grid-cols-5">
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
             <LifeBuoy size={18} />
           </div>
@@ -144,7 +144,7 @@ export const AdminSupport: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{openTickets}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/15 text-red-300">
             <ShieldAlert size={18} />
           </div>
@@ -152,7 +152,7 @@ export const AdminSupport: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{escalatedTickets}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-400/15 text-blue-300">
             <User size={18} />
           </div>
@@ -160,7 +160,7 @@ export const AdminSupport: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{customerTickets}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
             <Bike size={18} />
           </div>
@@ -168,7 +168,7 @@ export const AdminSupport: React.FC = () => {
           <p className="mt-2 text-2xl font-black text-white">{runnerTickets}</p>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
             <Star size={18} />
           </div>
@@ -177,14 +177,14 @@ export const AdminSupport: React.FC = () => {
         </div>
       </section>
 
-      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="relative w-full md:max-w-md">
             <input
               value={query}
               onChange={event => setQuery(event.target.value)}
               placeholder="Search tickets by ID, order, user, category..."
-              className="w-full rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-kart-orange/25"
+              className="w-full rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-kart-orange/25"
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -223,7 +223,7 @@ export const AdminSupport: React.FC = () => {
 
       <section className="mt-6 space-y-3">
         {isLoading && (
-          <div className="rounded-[24px] border border-white/10 bg-[#111722] p-5 text-sm text-white/70">
+          <div className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 text-sm text-white/70">
             Loading support tickets...
           </div>
         )}
@@ -239,7 +239,7 @@ export const AdminSupport: React.FC = () => {
           return (
             <div
               key={ticket.id}
-              className="rounded-[24px] border border-white/10 bg-[#111722] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
+              className="rounded-[24px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_14px_34px_rgba(0,0,0,0.35)]"
             >
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
@@ -276,7 +276,7 @@ export const AdminSupport: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="w-full rounded-2xl border border-white/10 bg-[#0f141f] p-3 md:w-[280px]">
+                <div className="w-full rounded-2xl border border-white/10 bg-[#121212] p-3 md:w-[280px]">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Requester</p>
                   <p className="mt-2 text-sm font-bold text-white">{ticket.requesterName}</p>
                   <p className="text-xs text-white/60">{ticket.requesterEmail ?? 'no email'}</p>
@@ -287,20 +287,20 @@ export const AdminSupport: React.FC = () => {
               </div>
 
               {rating && (
-                <div className="mt-4 rounded-2xl border border-white/10 bg-[#0f141f] px-4 py-3">
+                <div className="mt-4 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Order rating</p>
                     <span className="text-xs text-white/50">{rating.submittedAt}</span>
                   </div>
                   <div className="mt-2 grid gap-2 text-sm text-white/70 md:grid-cols-2">
-                    <div className="rounded-xl border border-white/10 bg-[#111722] px-3 py-2">
+                    <div className="rounded-xl border border-white/10 bg-[#0A0A0A] px-3 py-2">
                       <p className="text-xs text-white/50">Customer → Runner</p>
                       <div className="mt-1 flex items-center gap-2">
                         {renderStars(rating.customerToRunnerRating)}
                         <span className="text-white">{rating.customerToRunnerRating}/5</span>
                       </div>
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-[#111722] px-3 py-2">
+                    <div className="rounded-xl border border-white/10 bg-[#0A0A0A] px-3 py-2">
                       <p className="text-xs text-white/50">Runner → Customer</p>
                       <div className="mt-1 flex items-center gap-2">
                         {renderStars(rating.runnerToCustomerRating)}
@@ -326,7 +326,7 @@ export const AdminSupport: React.FC = () => {
         })}
       </section>
 
-      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#111722] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <section className="mt-6 rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <h3 className="text-sm font-black tracking-[0.2em] text-white/70">ORDER RATINGS</h3>
           <div className="flex gap-2">
@@ -353,14 +353,14 @@ export const AdminSupport: React.FC = () => {
               : null;
 
             return (
-              <div key={item.orderId} className="rounded-2xl border border-white/10 bg-[#0f141f] p-4">
+              <div key={item.orderId} className="rounded-2xl border border-white/10 bg-[#121212] p-4">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                   <p className="text-sm font-bold text-white">{item.orderId}</p>
                   <span className="text-xs text-white/50">{item.submittedAt}</span>
                 </div>
 
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-white/10 bg-[#111722] p-3">
+                  <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-3">
                     <p className="text-xs text-white/50">
                       {item.customerName} rated {item.runnerName}
                     </p>
@@ -371,7 +371,7 @@ export const AdminSupport: React.FC = () => {
                     <p className="mt-2 text-sm text-white/65">{item.customerComment}</p>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-[#111722] p-3">
+                  <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-3">
                     <p className="text-xs text-white/50">
                       {item.runnerName} rated {item.customerName}
                     </p>
@@ -384,7 +384,7 @@ export const AdminSupport: React.FC = () => {
                 </div>
 
                 {linkedTicket && (
-                  <div className="mt-3 rounded-xl border border-white/10 bg-[#111722] px-3 py-2 text-xs text-white/65">
+                  <div className="mt-3 rounded-xl border border-white/10 bg-[#0A0A0A] px-3 py-2 text-xs text-white/65">
                     Linked ticket: {linkedTicket.id} · {linkedTicket.status}
                   </div>
                 )}
