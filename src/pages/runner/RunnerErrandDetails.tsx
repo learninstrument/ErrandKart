@@ -11,7 +11,7 @@ export const RunnerErrandDetails: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAccepting, setIsAccepting] = useState(false);
   const [error, setError] = useState('');
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   useEffect(() => {
     if (!id) return;

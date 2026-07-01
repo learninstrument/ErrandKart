@@ -15,7 +15,7 @@ export const RunnerProfile: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/auth/me`, { method: 'GET', credentials: 'include' })

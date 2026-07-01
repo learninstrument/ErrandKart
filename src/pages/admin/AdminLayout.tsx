@@ -27,7 +27,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ title, active, childre
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/auth/me`, { method: 'GET', credentials: 'include' })

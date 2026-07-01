@@ -13,7 +13,7 @@ export const RunnerSettings: React.FC = () => {
   const [priorityAlerts, setPriorityAlerts] = useState(true);
   const [shareLocation, setShareLocation] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   const handleLogout = async () => {
     setIsLoggingOut(true);

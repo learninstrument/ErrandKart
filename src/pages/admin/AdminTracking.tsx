@@ -10,7 +10,7 @@ export const AdminTracking: React.FC = () => {
   const [selectedOrderId, setSelectedOrderId] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const pickupMarkerRef = useRef<L.Marker | null>(null);

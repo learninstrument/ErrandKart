@@ -19,7 +19,7 @@ export const UpdatePasswordScreen: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:4000');
 
   useEffect(() => {
     if (!tokenHash) {

@@ -8,7 +8,7 @@ export const CustomerOrderDetails: React.FC = () => {
   const { orderId = '' } = useParams();
   const [order, setOrder] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/errands/${orderId}`, { method: 'GET', credentials: 'include' })

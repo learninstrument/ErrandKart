@@ -12,7 +12,7 @@ export const CustomerOrders: React.FC = () => {
   const [filter, setFilter] = useState<OrderStatus>('active');
   const [orders, setOrders] = useState<any[]>([]);
   const [_isLoading, setIsLoading] = useState(true);
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/errands`, { method: 'GET', credentials: 'include' })

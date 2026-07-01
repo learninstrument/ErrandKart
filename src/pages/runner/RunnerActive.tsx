@@ -21,7 +21,7 @@ export const RunnerActive: React.FC = () => {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [error, setError] = useState('');
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   // Fallback coordinates for map initialization
   const [runnerLocation, setRunnerLocation] = useState<[number, number]>([6.4408, 3.4469]);

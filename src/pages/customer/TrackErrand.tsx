@@ -15,7 +15,7 @@ export const TrackErrand: React.FC = () => {
 
   const [order, setOrder] = useState<any>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   // Dynamic Coordinates from the Database (with Lagos fallbacks so map doesn't crash while loading)
   const pickupLocation = useMemo<[number, number]>(() => [Number(order?.pickup_lat || 6.4474), Number(order?.pickup_lng || 3.4558)], [order?.pickup_lat, order?.pickup_lng]);

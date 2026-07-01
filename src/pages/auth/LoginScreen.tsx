@@ -29,7 +29,7 @@ export const LoginScreen: React.FC = () => {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:4000');
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);

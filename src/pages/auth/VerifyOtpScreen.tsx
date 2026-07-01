@@ -37,7 +37,7 @@ export const VerifyOtpScreen: React.FC = () => {
   const [currentVerifier, setCurrentVerifier] = useState(initialVerifier);
   const [currentVerifierKey, setCurrentVerifierKey] = useState(initialVerifierKey);
   
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:4000');
 
   // Redirect back to login if someone accesses this page directly without an email
   useEffect(() => {

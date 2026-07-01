@@ -18,7 +18,7 @@ export const AdminSupermarkets: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | SupermarketVerificationStatus>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   useEffect(() => {
     let mounted = true;
