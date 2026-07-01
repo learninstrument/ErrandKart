@@ -23,17 +23,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="mb-4 flex w-full flex-col gap-1.5 text-left">
         {label && (
-          <label className="ml-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white/50">
+          <label className="ml-1 text-[11px] font-bold uppercase tracking-[0.14em] text-black/50 dark:text-white/50">
             {label}
           </label>
         )}
         <div className="relative group">
-          {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 transition-colors group-focus-within:text-kart-orange">{icon}</div>}
+          {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40 transition-colors group-focus-within:text-kart-orange">{icon}</div>}
           <input
             type={type}
             ref={ref}
             className={cn(
-              'flex h-12 w-full rounded-2xl border border-white/20 bg-black px-4 py-2 text-[15px] text-white shadow-inner transition-all placeholder:text-white/30 focus:outline-none focus:ring-1 hover:border-white/40',
+              'flex h-12 w-full rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 px-4 py-2 text-[15px] font-semibold text-black dark:text-white shadow-inner transition-all placeholder:text-black/30 dark:placeholder:text-white/30 focus:outline-none focus:ring-1 hover:border-black/20 dark:hover:border-white/20 focus:bg-white dark:focus:bg-[#000000]',
               icon ? 'pl-11 pr-4' : 'px-4',
               accent,
               error && 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20',
@@ -42,7 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
         </div>
-        {error && <span className="ml-1 text-xs font-semibold text-red-400">{error}</span>}
+        {error && <span className="ml-1 text-xs font-semibold text-red-500 dark:text-red-400">{error}</span>}
       </div>
     );
   }
