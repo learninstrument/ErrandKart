@@ -447,6 +447,14 @@ export const RunnerDashboard: React.FC = () => {
           markersLayerRef.current?.addLayer(marker);
         }
       });
+      
+      // Auto-zoom map to show all available errands
+      if (availableErrands.length > 0) {
+        const bounds = L.featureGroup(markersLayerRef.current.getLayers()).getBounds();
+        if (bounds.isValid()) {
+          mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        }
+      }
     }, [availableErrands, navigate]);
 
     const handleLocateMe = () => {

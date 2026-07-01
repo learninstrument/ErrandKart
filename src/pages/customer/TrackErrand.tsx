@@ -305,6 +305,27 @@ export const TrackErrand: React.FC = () => {
             Post an Errand
           </button>
         </div>
+      ) : status === 'cancelled' ? (
+        <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center">
+          <header className="absolute top-0 left-0 w-full z-20 flex items-center px-5 pt-6 pb-4">
+            <button onClick={() => navigate('/customer/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
+              <ArrowLeft size={20} className="text-red-500" />
+            </button>
+          </header>
+          <div className="w-24 h-24 mb-6 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20">
+            <CheckCircle size={40} className="text-red-500 opacity-50" />
+          </div>
+          <h2 className="text-2xl font-black mb-2 text-red-500">Order Cancelled</h2>
+          <p className="text-black/50 dark:text-white/50 mb-8 max-w-sm">
+            This errand has been successfully cancelled. It will no longer be assigned to a runner.
+          </p>
+          <button 
+            onClick={() => navigate('/customer/dashboard')}
+            className="bg-red-500 text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_15px_rgba(239,68,68,0.3)] hover:scale-105 transition-transform"
+          >
+            Return to Dashboard
+          </button>
+        </div>
       ) : (
       <>
         {/* Center Map */}
