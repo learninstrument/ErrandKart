@@ -114,7 +114,7 @@ export const RunnerChat: React.FC = () => {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Customer</p>
                 <p className="text-lg font-bold text-white">Sarah Daniels</p>
-                <p className="text-xs text-slate-400">+234 801 234 5678</p>
+                <p className="text-xs text-white/50">+234 801 234 5678</p>
               </div>
             </div>
             <div className="mt-4 flex gap-3">
@@ -163,7 +163,7 @@ export const RunnerChat: React.FC = () => {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Customer</p>
                 <p className="text-lg font-bold text-white">Sarah Daniels</p>
-                <p className="text-xs text-slate-400">+234 801 234 5678</p>
+                <p className="text-xs text-white/50">+234 801 234 5678</p>
               </div>
             </div>
             <div className="mt-4 flex gap-3">

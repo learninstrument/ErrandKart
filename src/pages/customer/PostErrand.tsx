@@ -159,7 +159,7 @@ export const PostErrand: React.FC = () => {
       </header>
 
       <main className="p-6 pb-36 md:p-8">
-        <div className="mb-6 rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0A0A0A] via-[#121826] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+        <div className="mb-6 rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0A0A0A] via-[#111111] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/60">Create request</p>
           <h3 className="mb-1 text-2xl font-black">Describe your errand clearly</h3>
           <p className="text-sm text-white/70">Set details, pickup & delivery points, and runner fee.</p>
@@ -184,7 +184,7 @@ export const PostErrand: React.FC = () => {
               />
 
               <div>
-                <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
                   Category
                 </label>
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -203,7 +203,7 @@ export const PostErrand: React.FC = () => {
                       className={`flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 px-2 py-3 text-xs font-semibold transition-all ${
                         category === cat.id
                           ? 'border-kart-orange bg-kart-orange/15 text-kart-orange'
-                          : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20'
+                          : 'border-white/10 bg-white/5 text-white/50 hover:border-white/20'
                       }`}
                     >
                       {cat.icon}
@@ -214,7 +214,7 @@ export const PostErrand: React.FC = () => {
               </div>
 
               <div className="mt-4">
-                <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
                   Fulfillment mode
                 </label>
                 <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -268,7 +268,7 @@ export const PostErrand: React.FC = () => {
                   value={supermarketContact}
                   onChange={(e) => setSupermarketContact(e.target.value)}
                 />
-                <label className="ml-1 flex items-center gap-2 text-sm text-slate-400">
+                <label className="ml-1 flex items-center gap-2 text-sm text-white/50">
                   <input type="checkbox" className="h-4 w-4 rounded accent-kart-orange" defaultChecked />
                   Supermarket will dispatch a runner to deliver items
                 </label>
@@ -322,7 +322,7 @@ export const PostErrand: React.FC = () => {
                 )}
               </div>
 
-              <label className="ml-1 flex items-center gap-2 text-sm text-slate-400">
+              <label className="ml-1 flex items-center gap-2 text-sm text-white/50">
                 <input 
                   type="checkbox" 
                   id="saveLoc" 
@@ -338,13 +338,13 @@ export const PostErrand: React.FC = () => {
           <div className="flex flex-col gap-5">
             <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)] md:p-6">
               <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">BUDGET</h3>
-              <p className="mb-2 ml-1 text-xs text-slate-400">How much are you paying the runner for this errand?</p>
+              <p className="mb-2 ml-1 text-xs text-white/50">How much are you paying the runner for this errand?</p>
 
               <div className="relative mb-2">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-black text-white">₦</div>
                 <input
                   type="number"
-                  className="w-full rounded-2xl border border-[#253043] bg-[#121212] py-4 pl-10 pr-4 text-2xl font-black text-white shadow-[0_10px_24px_rgba(0,0,0,0.25)] outline-none transition-all placeholder:text-slate-500 focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/20"
+                  className="w-full rounded-2xl border border-[#222222] bg-[#121212] py-4 pl-10 pr-4 text-2xl font-black text-white shadow-[0_10px_24px_rgba(0,0,0,0.25)] outline-none transition-all placeholder:text-white/30 focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/20"
                   placeholder="0.00"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
@@ -394,7 +394,7 @@ const AddressDropdown = ({ results, savedLocations, onSelect }: { results: any[]
     <div className="absolute top-full mt-1 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0A] shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
       {hasSaved && (
         <>
-          <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Saved Locations</p>
+          <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/50">Saved Locations</p>
           {savedLocations.map((loc: any) => (
             <div key={`saved-${loc.id}`} className="cursor-pointer border-b border-white/5 px-4 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/10 hover:text-white" onClick={() => onSelect(loc.address)}>
               <span className="font-bold text-kart-orange">{loc.label}:</span> {loc.address}
@@ -405,7 +405,7 @@ const AddressDropdown = ({ results, savedLocations, onSelect }: { results: any[]
       {hasResults && (
         <>
           {hasSaved && <div className="h-2 bg-black/20"></div>}
-          <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Suggestions</p>
+          <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/50">Suggestions</p>
           {results.map((res: any, idx: number) => (
             <div key={idx} className="cursor-pointer border-b border-white/5 px-4 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/10 hover:text-white" onClick={() => onSelect(res.display_name)}>
               {res.display_name}

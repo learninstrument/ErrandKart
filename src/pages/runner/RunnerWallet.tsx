@@ -25,7 +25,7 @@ export const RunnerWallet: React.FC = () => {
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:grid md:grid-cols-[1.15fr_0.85fr] md:gap-8 md:px-10 md:pb-10">
         <div className="flex flex-col gap-6">
-          <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+          <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0A0A0A] via-[#111111] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Available for Withdrawal</p>
@@ -92,7 +92,7 @@ export const RunnerWallet: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">{tx.title}</p>
-                      <p className="text-xs text-slate-400">{tx.date}</p>
+                      <p className="text-xs text-white/50">{tx.date}</p>
                     </div>
                   </div>
                   <span className={`text-sm font-bold ${tx.type === 'credit' ? 'text-market-green' : 'text-red-400'}`}>

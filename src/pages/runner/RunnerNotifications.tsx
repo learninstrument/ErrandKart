@@ -76,7 +76,7 @@ export const RunnerNotifications: React.FC = () => {
                       {notification.time}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm text-slate-400">{notification.description}</p>
+                  <p className="mt-2 text-sm text-white/50">{notification.description}</p>
                 </div>
               </div>
             </div>

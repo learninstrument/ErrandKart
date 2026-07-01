@@ -117,7 +117,7 @@ export const RunnerSettings: React.FC = () => {
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
               <div className="flex items-center gap-3 text-sm text-white">
-                <MapPin size={16} className="text-slate-400" />
+                <MapPin size={16} className="text-white/50" />
                 Share live location with customers
               </div>
               <button
@@ -143,7 +143,7 @@ export const RunnerSettings: React.FC = () => {
               </div>
               <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SUPPORT</h3>
             </div>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-white/50">
               Report issues, disputes, or request account help.
             </p>
             <Button className="mt-4 w-full gap-2 text-xs" onClick={() => navigate('/runner/support')}>

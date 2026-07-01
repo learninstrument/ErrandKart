@@ -301,7 +301,7 @@ export const TrackErrand: React.FC = () => {
           
           {/* Mobile Header Over Map */}
           <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 bg-gradient-to-b from-[#0A0A0A]/80 to-transparent backdrop-blur-xl pointer-events-none">
-            <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1c2026] hover:bg-[#262a31] transition-colors pointer-events-auto">
+            <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors pointer-events-auto">
               <ArrowLeft size={20} className="text-[#FF6600]" />
             </button>
             <h1 className="text-2xl font-black text-[#FF6600] tracking-tight">ErrandKart</h1>
@@ -310,7 +310,7 @@ export const TrackErrand: React.FC = () => {
 
           {/* Floating Action Buttons */}
           <div className="absolute top-24 right-5 flex flex-col gap-2 z-20">
-            <button className="w-10 h-10 rounded-full bg-[#1c2026] shadow-lg flex items-center justify-center border border-white/10 hover:bg-[#262a31] transition-colors">
+            <button className="w-10 h-10 rounded-full bg-white/10 shadow-lg flex items-center justify-center border border-white/10 hover:bg-white/20 transition-colors">
               <Navigation size={18} className="text-white" />
             </button>
           </div>

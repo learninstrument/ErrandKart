@@ -67,7 +67,7 @@ export const RunnerSupport: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-sm font-bold text-white">{item.title}</h4>
-                    <p className="mt-2 text-sm text-slate-400">{item.description}</p>
+                    <p className="mt-2 text-sm text-white/50">{item.description}</p>
                   </div>
                 </div>
               </div>

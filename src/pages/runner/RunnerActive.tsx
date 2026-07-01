@@ -402,7 +402,7 @@ export const RunnerActive: React.FC = () => {
           
           {/* Mobile Header Over Map */}
           <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 bg-gradient-to-b from-[#0A0A0A]/80 to-transparent backdrop-blur-xl pointer-events-none lg:hidden">
-            <button onClick={() => navigate('/runner/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1c2026] hover:bg-[#262a31] transition-colors pointer-events-auto">
+            <button onClick={() => navigate('/runner/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors pointer-events-auto">
               <ArrowLeft size={20} className="text-white" />
             </button>
             <div className="flex items-center gap-2 rounded-full border border-market-green/30 bg-market-green/10 px-4 py-2 backdrop-blur-md pointer-events-auto shadow-[0_0_20px_rgba(46,139,87,0.2)]">
@@ -414,7 +414,7 @@ export const RunnerActive: React.FC = () => {
           
           {/* Floating Location Button */}
           <div className="absolute top-24 right-5 flex flex-col gap-2 z-20 lg:hidden">
-            <button className="w-10 h-10 rounded-full bg-[#1c2026] shadow-lg flex items-center justify-center border border-white/10 hover:bg-[#262a31] transition-colors pointer-events-auto" onClick={() => mapRef.current?.panTo(runnerLocation)}>
+            <button className="w-10 h-10 rounded-full bg-white/10 shadow-lg flex items-center justify-center border border-white/10 hover:bg-white/20 transition-colors pointer-events-auto" onClick={() => mapRef.current?.panTo(runnerLocation)}>
               <MapPin size={18} className="text-white" />
             </button>
           </div>

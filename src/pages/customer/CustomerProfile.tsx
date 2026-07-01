@@ -137,7 +137,7 @@ export const CustomerProfile: React.FC = () => {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Profile photo</p>
                 <p className="text-lg font-bold text-white">{fullName || 'Loading...'}</p>
-                <p className="text-sm text-slate-400">{email || 'Loading...'}</p>
+                <p className="text-sm text-white/50">{email || 'Loading...'}</p>
               </div>
             </div>
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/70 transition-colors hover:text-white">
@@ -173,11 +173,11 @@ export const CustomerProfile: React.FC = () => {
           />
 
           <div>
-            <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Gender</label>
+            <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Gender</label>
             <select 
               value={gender}
               onChange={e => setGender(e.target.value)}
-              className="mb-6 mt-1 w-full rounded-2xl border border-[#253043] bg-[#111621] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/25"
+              className="mb-6 mt-1 w-full rounded-2xl border border-[#222222] bg-[#121212] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/25"
             >
               <option value="" disabled>Select Gender</option>
               <option value="Male">Male</option>
@@ -201,7 +201,7 @@ export const CustomerProfile: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SETTINGS</h3>
-              <p className="mt-2 text-sm text-slate-400">Notifications, privacy, and preferences.</p>
+              <p className="mt-2 text-sm text-white/50">Notifications, privacy, and preferences.</p>
             </div>
             <Button onClick={() => navigate('/customer/settings')} className="gap-2 text-xs">
               <Settings size={14} /> Manage
@@ -218,9 +218,9 @@ export const CustomerProfile: React.FC = () => {
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {isLocationsLoading ? (
-              <p className="text-sm text-slate-400">Loading locations...</p>
+              <p className="text-sm text-white/50">Loading locations...</p>
             ) : savedLocations.length === 0 ? (
-              <p className="text-sm text-slate-400 col-span-full">You have no saved locations.</p>
+              <p className="text-sm text-white/50 col-span-full">You have no saved locations.</p>
             ) : (
               savedLocations.map((location) => (
                 <div
@@ -233,9 +233,9 @@ export const CustomerProfile: React.FC = () => {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-bold text-white">{location.label}</p>
-                      <p className="text-xs text-slate-400">{location.address}</p>
+                      <p className="text-xs text-white/50">{location.address}</p>
                     </div>
-                    <button onClick={() => handleDeleteLocation(location.id)} className="p-1 text-slate-500 hover:text-red-400">
+                    <button onClick={() => handleDeleteLocation(location.id)} className="p-1 text-white/40 hover:text-red-400">
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -339,10 +339,10 @@ const AddLocationModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#111822] p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0A0A0A] p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-white">Add New Location</h3>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-white">
+          <button onClick={onClose} className="p-2 text-white/50 hover:text-white">
             <X size={20} />
           </button>
         </div>

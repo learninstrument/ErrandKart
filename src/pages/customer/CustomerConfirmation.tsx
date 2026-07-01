@@ -84,7 +84,7 @@ export const CustomerConfirmation: React.FC = () => {
       {/* Top Header */}
       <header className="sticky top-0 z-50 flex items-center justify-between border-b border-white/5 bg-[#0A0A0A]/85 px-6 py-4 backdrop-blur-xl">
         <div className="text-lg font-black tracking-tight text-[#ff6600]">ErrandKart</div>
-        <div className="h-8 w-8 rounded-full border border-white/10 bg-[#0f0f0f] flex items-center justify-center overflow-hidden">
+        <div className="h-8 w-8 rounded-full border border-white/10 bg-[#0A0A0A] flex items-center justify-center overflow-hidden">
           <span className="text-xs text-[#ff6600] font-bold">EK</span>
         </div>
       </header>
@@ -104,14 +104,14 @@ export const CustomerConfirmation: React.FC = () => {
           {/* Success Title */}
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-black text-white tracking-tight">Errand Posted Successfully</h2>
-            <p className="text-sm text-[#e3bfb1]/70 leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-sm text-white/50 leading-relaxed max-w-[280px] mx-auto">
               Your request is live. Professional runners in your area have been notified.
             </p>
           </div>
 
           {/* Bento Card 1: Order Reference */}
-          <div className="w-full rounded-3xl border border-white/5 bg-[#0f0f0f]/80 p-6 flex flex-col items-center text-center shadow-lg backdrop-blur-md">
-            <span className="text-[10px] font-black tracking-widest text-[#aa8a7d] uppercase">Order Reference</span>
+          <div className="w-full rounded-3xl border border-white/5 bg-[#0A0A0A]/80 p-6 flex flex-col items-center text-center shadow-lg backdrop-blur-md">
+            <span className="text-[10px] font-black tracking-widest text-white/40 uppercase">Order Reference</span>
             <div className="text-3xl font-black text-[#ff6600] tracking-tighter mt-1">{displayOrderId}</div>
             <div className="mt-4 w-full h-[1px] bg-white/5"></div>
             <div className="mt-4 flex items-center gap-2 text-[#7ed99e] text-xs">
@@ -121,17 +121,17 @@ export const CustomerConfirmation: React.FC = () => {
           </div>
 
           {/* Bento Card 2: Routing / Details */}
-          <div className="w-full rounded-2xl border border-white/5 bg-[#0f0f0f]/80 p-5 shadow-lg backdrop-blur-md">
-            <span className="text-[10px] font-black tracking-widest text-[#aa8a7d] uppercase flex items-center gap-1.5">
+          <div className="w-full rounded-2xl border border-white/5 bg-[#0A0A0A]/80 p-5 shadow-lg backdrop-blur-md">
+            <span className="text-[10px] font-black tracking-widest text-white/40 uppercase flex items-center gap-1.5">
               <MapPin size={12} className="text-[#ff6600]" /> Route Details
             </span>
             <div className="mt-3 space-y-2 text-xs">
               <div className="flex gap-2">
-                <span className="text-[#e3bfb1]/50 font-bold w-12">Pickup:</span>
+                <span className="text-white/50 font-bold w-12">Pickup:</span>
                 <span className="text-white font-medium truncate flex-grow text-left">{errand.pickup_address}</span>
               </div>
               <div className="flex gap-2">
-                <span className="text-[#e3bfb1]/50 font-bold w-12">Dropoff:</span>
+                <span className="text-white/50 font-bold w-12">Dropoff:</span>
                 <span className="text-white font-medium truncate flex-grow text-left">{errand.dropoff_address}</span>
               </div>
             </div>
@@ -139,14 +139,14 @@ export const CustomerConfirmation: React.FC = () => {
 
           {/* Bento Card 3: Status and Pickup Estimate */}
           <div className="grid grid-cols-2 gap-4 w-full">
-            <div className="rounded-2xl border border-white/5 bg-[#0f0f0f]/80 p-4 shadow-lg backdrop-blur-md">
-              <span className="text-[10px] font-black tracking-widest text-[#aa8a7d] uppercase flex items-center gap-1">
+            <div className="rounded-2xl border border-white/5 bg-[#0A0A0A]/80 p-4 shadow-lg backdrop-blur-md">
+              <span className="text-[10px] font-black tracking-widest text-white/40 uppercase flex items-center gap-1">
                 <Clock size={11} className="text-[#ff6600]" /> Est. Match
               </span>
               <p className="text-base font-extrabold text-white mt-1.5">Under 5m</p>
             </div>
-            <div className="rounded-2xl border border-white/5 bg-[#0f0f0f]/80 p-4 shadow-lg backdrop-blur-md">
-              <span className="text-[10px] font-black tracking-widest text-[#aa8a7d] uppercase flex items-center gap-1">
+            <div className="rounded-2xl border border-white/5 bg-[#0A0A0A]/80 p-4 shadow-lg backdrop-blur-md">
+              <span className="text-[10px] font-black tracking-widest text-white/40 uppercase flex items-center gap-1">
                 <RefreshCw size={11} className="text-[#7ed99e] animate-spin" style={{ animationDuration: '3s' }} /> Matching
               </span>
               <p className="text-base font-extrabold text-[#7ed99e] mt-1.5">Active</p>

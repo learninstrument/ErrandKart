@@ -78,7 +78,7 @@ export const RunnerProfile: React.FC = () => {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Runner profile</p>
                 <p className="text-lg font-bold text-white">{fullName || 'Loading...'}</p>
-                <p className="text-sm text-slate-400">{email || 'Loading...'}</p>
+                <p className="text-sm text-white/50">{email || 'Loading...'}</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -129,7 +129,7 @@ export const RunnerProfile: React.FC = () => {
           />
 
           <div>
-            <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Gender</label>
+            <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Gender</label>
             <select 
               value={gender}
               onChange={e => setGender(e.target.value)}
@@ -157,7 +157,7 @@ export const RunnerProfile: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SETTINGS</h3>
-              <p className="mt-2 text-sm text-slate-400">Notifications, safety, and job preferences.</p>
+              <p className="mt-2 text-sm text-white/50">Notifications, safety, and job preferences.</p>
             </div>
             <Button onClick={() => navigate('/runner/settings')} className="gap-2 text-xs">
               <Settings size={14} /> Manage
@@ -174,7 +174,7 @@ export const RunnerProfile: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-bold text-white">Government ID</p>
-                <p className="text-xs text-slate-400">Upload your NIN or Driver's License</p>
+                <p className="text-xs text-white/50">Upload your NIN or Driver's License</p>
               </div>
             </div>
             <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/70 transition-colors hover:text-white">
@@ -186,8 +186,8 @@ export const RunnerProfile: React.FC = () => {
 
         <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
           <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">VEHICLE INFO</h3>
-          <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Vehicle Type</label>
-          <select className="mb-4 mt-1 w-full rounded-2xl border border-[#253043] bg-[#111621] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-market-green focus:ring-4 focus:ring-market-green/25">
+          <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Vehicle Type</label>
+          <select className="mb-4 mt-1 w-full rounded-2xl border border-[#222222] bg-[#121212] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-market-green focus:ring-4 focus:ring-market-green/25">
             <option>Bicycle</option>
             <option>Motorbike</option>
             <option>Car</option>
@@ -205,7 +205,7 @@ export const RunnerProfile: React.FC = () => {
               key={index}
               className="rounded-2xl border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
             >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">{stat.label}</p>
               <p className="mt-2 text-2xl font-black text-white">{stat.value}</p>
             </div>
           ))}

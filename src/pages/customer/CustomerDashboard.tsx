@@ -236,7 +236,7 @@ export const CustomerDashboard: React.FC = () => {
           {/* Quick Category Grid (Responsive gaps) */}
           <div className="grid grid-cols-4 gap-2 sm:gap-3">
             {[
-              { label: 'Groceries', icon: <ShoppingCart size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-sky-400', bg: 'bg-sky-500/15' },
+              { label: 'Groceries', icon: <ShoppingCart size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-white', bg: 'bg-white/15' },
               { label: 'Courier', icon: <Truck size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-market-green', bg: 'bg-market-green/15' },
               { label: 'Store', icon: <Store size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-kart-orange', bg: 'bg-kart-orange/15' },
               { label: 'More', icon: <Plus size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-white/50', bg: 'bg-white/5' },

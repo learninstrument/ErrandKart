@@ -12,7 +12,7 @@ export const BottomNav = ({ activeTab }: { activeTab: 'home' | 'orders' | 'walle
   ] as const;
 
   return (
-    <nav className="fixed bottom-0 left-0 z-50 flex w-full max-w-full items-center justify-around border-t border-white/[0.06] bg-[#1a1410]/90 px-4 pb-8 pt-3 backdrop-blur-2xl lg:hidden">
+    <nav className="fixed bottom-0 left-0 z-50 flex w-full max-w-full items-center justify-around border-t border-white/[0.06] bg-[#0A0A0A]/90 px-4 pb-8 pt-3 backdrop-blur-2xl lg:hidden">
       {tabs.map(tab => {
         const isActive = activeTab === tab.key;
         const Icon = tab.icon;
