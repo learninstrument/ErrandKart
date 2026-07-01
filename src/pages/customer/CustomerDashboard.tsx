@@ -240,20 +240,20 @@ export const CustomerDashboard: React.FC = () => {
           {/* Quick Category Grid (Responsive gaps) */}
           <div className="grid grid-cols-4 gap-2 sm:gap-3">
             {[
-              { label: 'Groceries', icon: <ShoppingCart size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-black dark:text-white', bg: 'bg-black/5 dark:bg-white/15' },
-              { label: 'Courier', icon: <Truck size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-market-green', bg: 'bg-market-green/15' },
-              { label: 'Store', icon: <Store size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-kart-orange', bg: 'bg-kart-orange/15' },
-              { label: 'More', icon: <Plus size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-black/50 dark:text-white/50', bg: 'bg-black/5 dark:bg-white/5' },
+              { label: 'Groceries', icon: <ShoppingCart size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-black dark:text-white', bg: 'bg-black/5 dark:bg-white/15', href: '/customer/post-errand' },
+              { label: 'Courier', icon: <Truck size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-market-green', bg: 'bg-market-green/15', href: '/customer/post-errand' },
+              { label: 'Store', icon: <Store size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-kart-orange', bg: 'bg-kart-orange/15', href: '/customer/post-errand' },
+              { label: 'Track Live', icon: <MapPin size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-500/15', href: '/customer/track' },
             ].map(cat => (
               <button
                 key={cat.label}
-                onClick={() => navigate('/customer/post-errand')}
+                onClick={() => navigate(cat.href)}
                 className="flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 p-2 sm:p-3 transition-colors hover:border-black/10 dark:hover:border-white/20 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95"
               >
                 <div className={`flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full ${cat.bg} ${cat.color}`}>
                   {cat.icon}
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-bold text-black dark:text-white">{cat.label}</span>
+                <span className="text-[10px] sm:text-[11px] font-bold text-black dark:text-white text-center leading-tight">{cat.label}</span>
               </button>
             ))}
           </div>

@@ -146,7 +146,7 @@ export const PostErrand: React.FC = () => {
   ];
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
+    <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/90 dark:bg-[#050505]/90 p-6 backdrop-blur-xl">
         <button
           onClick={() => navigate(-1)}
@@ -158,7 +158,7 @@ export const PostErrand: React.FC = () => {
         <div className="w-10" />
       </header>
 
-      <main className="p-6 pb-36 animate-fade-in-up">
+      <main className="mx-auto w-full max-w-2xl p-6 pb-36 animate-fade-in-up">
         <div className="mb-6 rounded-[28px] border border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] p-6 text-black dark:text-white shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl">
           <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-kart-orange">Create request</p>
           <h3 className="mb-1 text-2xl font-black tracking-tight">Describe your errand</h3>

@@ -125,7 +125,7 @@ export const CustomerProfile: React.FC = () => {
         <div className="w-8" />
       </header>
 
-      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-6 pb-28 pt-8 md:px-10 md:pb-10 animate-fade-in-up">
+      <main className="mx-auto flex w-full max-w-lg md:max-w-2xl lg:max-w-4xl flex-1 flex-col gap-8 px-6 pb-28 pt-8 md:px-10 md:pb-10 animate-fade-in-up">
         {/* Avatar Section */}
         <div className="flex flex-col items-center justify-center mt-2 relative">
           <div className="relative">
