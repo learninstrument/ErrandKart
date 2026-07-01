@@ -66,7 +66,7 @@ export const RunnerDeliveryReview: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-white bg-[#0c0f14]">
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
         Loading delivery review details...
       </div>
     );
@@ -74,7 +74,7 @@ export const RunnerDeliveryReview: React.FC = () => {
 
   if (!errand) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-white bg-[#0c0f14]">
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
         Errand not found.
       </div>
     );
@@ -83,52 +83,52 @@ export const RunnerDeliveryReview: React.FC = () => {
   const orderDisplayId = `EK-${errand.id.split('-')[0].toUpperCase()}`;
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/85 dark:bg-[#000000]/85 px-6 py-4 backdrop-blur-md md:px-10">
+        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white">
           <ArrowLeft size={24} />
         </button>
-        <h2 className="text-lg font-black text-white">Delivery Review</h2>
+        <h2 className="text-lg font-extrabold tracking-tight text-black dark:text-white">Delivery Review</h2>
         <div className="w-8" />
       </header>
 
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-20 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0e1a14] via-[#101f18] to-[#050505] p-6 text-white shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-20 pt-6 md:px-10 md:pb-10 animate-fade-in-up">
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-gradient-to-br from-market-green/10 via-black/5 dark:via-white/5 to-transparent dark:from-[#0e1a14] dark:via-[#101f18] dark:to-[#050505] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">Order #{orderDisplayId}</p>
-              <h3 className="mt-2 text-2xl font-black">{errand.title}</h3>
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70">
-                <span className="flex items-center gap-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Order #{orderDisplayId}</p>
+              <h3 className="mt-2 text-2xl font-black tracking-tight text-black dark:text-white">{errand.title}</h3>
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-semibold text-black/70 dark:text-white/70">
+                <span className="flex items-center gap-1.5 rounded-full border border-black/5 dark:border-white/5 bg-white/50 dark:bg-black/50 px-3 py-1.5 backdrop-blur-md">
                   <MapPin size={14} className="text-market-green" /> {errand.pickup_address}
                 </span>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5 rounded-full border border-black/5 dark:border-white/5 bg-white/50 dark:bg-black/50 px-3 py-1.5 backdrop-blur-md">
                   <Wallet size={14} className="text-market-green" /> ₦{Number(errand.budget_customer_fee).toLocaleString()} payout
                 </span>
               </div>
             </div>
-            <div className="rounded-2xl border border-market-green/40 bg-market-green/15 px-5 py-4 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-market-green">Customer</p>
-              <p className="mt-2 text-lg font-black text-white">{errand.customer?.full_name || 'Customer'}</p>
+            <div className="rounded-2xl border border-market-green/20 bg-market-green/10 dark:bg-market-green/15 px-6 py-5 text-center shadow-inner">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-market-green/70 dark:text-market-green">Customer</p>
+              <p className="mt-1 text-lg font-black text-black dark:text-white">{errand.customer?.full_name || 'Customer'}</p>
             </div>
           </div>
         </section>
 
         {error && (
-          <div className="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+          <div className="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-500 dark:text-red-400">
             {error}
           </div>
         )}
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">ITEM SUMMARY</h3>
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+          <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">ITEM SUMMARY</h3>
           {checklistItems.length === 0 ? (
-            <p className="text-sm text-white/50">No items specified.</p>
+            <p className="text-sm font-medium text-black/50 dark:text-white/50">No items specified.</p>
           ) : (
             <div className="grid gap-3 md:grid-cols-2">
               {checklistItems.map((item: any, idx: number) => (
-                <div key={idx} className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/80">
-                  <CheckCircle2 size={14} className="mr-2 inline text-market-green" />
+                <div key={idx} className="flex items-center rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3.5 text-sm font-semibold text-black/80 dark:text-white/80 transition-colors hover:bg-black/10 dark:hover:bg-white/10">
+                  <CheckCircle2 size={16} className="mr-3 flex-shrink-0 text-market-green" />
                   {item}
                 </div>
               ))}
@@ -137,45 +137,48 @@ export const RunnerDeliveryReview: React.FC = () => {
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center gap-3 text-white/70">
-              <Receipt size={18} />
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]">Receipt upload</p>
+          <div className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kart-orange/10 text-kart-orange">
+                <Receipt size={18} />
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Receipt upload</p>
             </div>
-            <label className="mt-4 flex cursor-pointer items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
+            <label className="mt-4 flex cursor-pointer items-center justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-4 text-sm font-semibold text-black/70 dark:text-white/70 transition-colors hover:border-black/10 dark:hover:border-white/20">
               <span>Receipt image attached</span>
-              <span className="flex items-center gap-2 text-market-green">
-                <Upload size={16} /> Replace
+              <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-market-green">
+                <Upload size={14} /> Replace
               </span>
               <input type="file" className="hidden" />
             </label>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center gap-3 text-white/70">
-              <FileImage size={18} />
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]">Proof of delivery</p>
+          <div className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/10 text-market-green">
+                <FileImage size={18} />
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Proof of delivery</p>
             </div>
-            <label className="mt-4 flex cursor-pointer items-center justify-between rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/70">
+            <label className="mt-4 flex cursor-pointer items-center justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-4 text-sm font-semibold text-black/70 dark:text-white/70 transition-colors hover:border-black/10 dark:hover:border-white/20">
               <span>Delivery photo attached</span>
-              <span className="flex items-center gap-2 text-market-green">
-                <Upload size={16} /> Replace
+              <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-market-green">
+                <Upload size={14} /> Replace
               </span>
               <input type="file" className="hidden" />
             </label>
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 text-sm text-white/60 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          Confirm the receipt and delivery proof are clear before final submission. Once submitted, the
-          payout is moved to pending escrow release.
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 p-5 text-sm font-medium text-black/60 dark:text-white/60 text-center shadow-inner">
+          Confirm the receipt and delivery proof are clear before final submission. Once submitted, the payout is moved to pending escrow release.
         </section>
 
-        <section className="flex flex-col gap-3 md:flex-row">
-          <Button variant="outline" className="w-full" onClick={() => navigate('/runner/dashboard')}>
+        <section className="flex flex-col gap-3 md:flex-row mt-4">
+          <Button variant="outline" className="w-full h-14 border-black/10 dark:border-white/10 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5" onClick={() => navigate('/runner/dashboard')}>
             Cancel
           </Button>
-          <Button theme="green" className="w-full" onClick={handleSubmit} disabled={isSubmitting}>
+          <Button theme="green" className="w-full h-14 shadow-[0_4px_20px_rgba(46,139,87,0.2)]" onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? 'Submitting...' : 'Submit for review'}
           </Button>
         </section>
