@@ -36,10 +36,13 @@ export const TrackErrand: React.FC = () => {
         return res.json();
       })
       .then(data => {
-        const active = data?.errands?.find((o: any) => o.status === 'active' || o.status === 'pending') || data?.errands?.[0];
+        const active = data?.errands?.find((o: any) => ['pending', 'active', 'shopping', 'en_route', 'arrived'].includes(o.status));
         if (active) {
           setOrder(active);
           setActiveOrderId(active.id);
+        } else {
+          setOrder(null);
+          setActiveOrderId(null);
         }
       })
       .catch(console.error)

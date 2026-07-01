@@ -231,17 +231,7 @@ export const CustomerDashboard: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-4 sm:gap-5 px-4 sm:px-5 pt-1">
-          {/* Search Input */}
-          <div className="relative w-full">
-            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40" />
-            <input
-              type="text"
-              placeholder="Where are we running today?"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full rounded-2xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 py-3.5 sm:py-4 pl-12 pr-4 text-sm text-black dark:text-white shadow-inner outline-none transition-colors placeholder:text-black/30 dark:placeholder:text-white/30 focus:border-black/20 dark:focus:border-white/30 focus:ring-1 focus:ring-black/10 dark:focus:ring-white/20"
-            />
-          </div>
+          {/* Search Input Removed as per user request */}
 
           {/* Quick Category Grid (Responsive gaps) */}
           <div className="grid grid-cols-4 gap-2 sm:gap-3">
