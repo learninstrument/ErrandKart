@@ -87,6 +87,8 @@ export const RunnerDashboard: React.FC = () => {
     title: errand.title,
     price: `₦${Number(errand.budget_customer_fee || 0).toLocaleString()}`,
     location: errand.pickup_address,
+    lat: errand.pickup_lat,
+    lng: errand.pickup_lng,
     time: new Date(errand.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
     distance: 'Nearby',
     items: `${errand.description?.split('\n').length || 1} items`,
@@ -369,8 +371,20 @@ export const RunnerDashboard: React.FC = () => {
 
       mapRef.current = map;
 
-      // Auto-locate runner on load
+      // Auto-locate runner on load with dual-fetch for instant UI feedback + precision
       if (navigator.geolocation) {
+        // 1. Instant rough location (Cell Tower/Wi-Fi)
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            map.setView([latitude, longitude], 14, { animate: false });
+            runnerMarker.setLatLng([latitude, longitude]);
+          },
+          (err) => console.warn('[Fast Geolocation]', err.message),
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+        );
+
+        // 2. High precision location (GPS Satellites)
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
@@ -388,8 +402,8 @@ export const RunnerDashboard: React.FC = () => {
             });
             L.marker([latitude, longitude], { icon: pulseIcon }).addTo(map);
           },
-          (err) => console.warn('[Geolocation]', err.message),
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+          (err) => console.warn('[Geolocation High Acc]', err.message),
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
       }
 
@@ -399,14 +413,55 @@ export const RunnerDashboard: React.FC = () => {
       };
     }, []);
 
+    // Effect to render available errands on the map
+    const markersLayerRef = React.useRef<L.LayerGroup | null>(null);
+    React.useEffect(() => {
+      if (!mapRef.current) return;
+      
+      if (!markersLayerRef.current) {
+        markersLayerRef.current = L.layerGroup().addTo(mapRef.current);
+      }
+      
+      markersLayerRef.current.clearLayers();
+      
+      availableErrands.forEach(errand => {
+        if (errand.lat && errand.lng) {
+          const icon = L.divIcon({
+            className: '',
+            html: `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 18],
+          });
+          
+          const marker = L.marker([Number(errand.lat), Number(errand.lng)], { icon });
+          
+          // Clicking marker navigates to errand details
+          marker.on('click', () => navigate(`/runner/errand/${errand.id}`));
+          
+          markersLayerRef.current?.addLayer(marker);
+        }
+      });
+    }, [availableErrands, navigate]);
+
     const handleLocateMe = () => {
       if (!navigator.geolocation || !mapRef.current) return;
       setIsLocating(true);
+      
+      // Fast location snap
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          mapRef.current!.flyTo([latitude, longitude], 16, { animate: true, duration: 1.2 });
+          mapRef.current!.flyTo([latitude, longitude], 15, { animate: true, duration: 1.0 });
           setIsLocating(false);
+          
+          // Background refine high-accuracy
+          navigator.geolocation.getCurrentPosition(
+            (hPos) => {
+               mapRef.current!.flyTo([hPos.coords.latitude, hPos.coords.longitude], 16, { animate: true, duration: 0.8 });
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
         },
         (err) => {
           console.warn('[Locate Me]', err.message);

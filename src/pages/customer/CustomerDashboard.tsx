@@ -464,14 +464,31 @@ export const CustomerDashboard: React.FC = () => {
       mapRef.current = map;
 
       // Auto-locate user on load
+      // Initial Location Lock (Fast vs High Accuracy)
       if (navigator.geolocation) {
+        // Fast snap (cell towers/wi-fi)
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            map.setView([latitude, longitude], 14, { animate: false });
+          },
+          (err) => console.warn('[Fast Geolocation]', err.message),
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+        );
+
+        // High accuracy refine (GPS Satellites)
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
             map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.5 });
+          },
+          (err) => console.warn('[Geolocation High Acc]', err.message),
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+      }
 
-            // Add a pulsing blue dot for the user's real position
-            const userIcon = L.divIcon({
+      // Add a pulsing blue dot for the user's real position (Placeholder for logic)
+      const userIcon = L.divIcon({
               className: '',
               html: `<div style="position:relative;width:20px;height:20px;">
                 <div style="position:absolute;inset:0;border-radius:999px;background:rgba(59,130,246,0.25);animation:ping 1.5s ease-out infinite;"></div>
@@ -536,11 +553,22 @@ export const CustomerDashboard: React.FC = () => {
     const handleLocateMe = () => {
       if (!navigator.geolocation || !mapRef.current) return;
       setIsLocating(true);
+      
+      // Fast location snap
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          mapRef.current!.flyTo([latitude, longitude], 16, { animate: true, duration: 1.2 });
+          mapRef.current!.flyTo([latitude, longitude], 15, { animate: true, duration: 1.0 });
           setIsLocating(false);
+          
+          // Background refine high-accuracy
+          navigator.geolocation.getCurrentPosition(
+            (hPos) => {
+               mapRef.current!.flyTo([hPos.coords.latitude, hPos.coords.longitude], 16, { animate: true, duration: 0.8 });
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
         },
         (err) => {
           console.warn('[Locate Me]', err.message);
