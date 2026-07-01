@@ -38,14 +38,52 @@ export const LoginScreen: React.FC = () => {
     const oauthErrorDescription = params.get('oauth_error_description');
     const oauthProvider = params.get('oauth_provider');
     const nextPath = params.get('next_path');
+    const code = params.get('code');
+    const verified = params.get('verified');
+    
+    // Check hash for implicit flow (e.g. #access_token=...)
+    const hash = window.location.hash.substring(1);
+    const hashParams = new URLSearchParams(hash);
+    const accessToken = hashParams.get('access_token');
 
     if (oauthError) {
       setErrorMessage(oauthErrorDescription || 'Authentication failed. Please try again.');
       window.history.replaceState({}, '', '/login');
     } else if (oauthProvider && nextPath) {
       navigate(nextPath);
+    } else if (code) {
+      // PKCE flow email confirmation
+      setSuccessMessage('Verifying your email...');
+      setIsSubmitting(true);
+      fetch(`${apiBaseUrl}/api/auth/callback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ code })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) {
+          navigate(data.nextPath);
+        } else {
+          setErrorMessage(data.message || 'Verification failed. Please try again.');
+          setSuccessMessage(null);
+        }
+      })
+      .catch(err => {
+        setErrorMessage(err.message || 'Verification failed.');
+        setSuccessMessage(null);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        window.history.replaceState({}, '', '/login');
+      });
+    } else if (verified === '1' || accessToken) {
+      // Implicit flow or direct redirect meaning email was confirmed by Supabase
+      setSuccessMessage('Email confirmed successfully! You can now log in.');
+      window.history.replaceState({}, '', '/login');
     }
-  }, [location, navigate]);
+  }, [location, navigate, apiBaseUrl]);
 
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();

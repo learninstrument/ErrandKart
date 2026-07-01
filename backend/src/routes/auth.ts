@@ -444,6 +444,36 @@ authRouter.post(
 );
 
 authRouter.post(
+  '/callback',
+  asyncHandler(async (request, response) => {
+    const { code } = request.body;
+    if (!code) throw new HttpError(400, 'Authorization code is required');
+
+    const { data, error } = await supabaseAuth.auth.exchangeCodeForSession(code);
+    
+    if (error || !data.session || !data.user) {
+      console.error('[Auth Error - Callback]:', error);
+      throw new HttpError(400, 'Invalid or expired confirmation link. Please request a new one.');
+    }
+
+    const profile = await ensureUserProfile({
+      id: data.user.id,
+      email: data.user.email,
+      full_name: data.user.user_metadata?.full_name,
+      role: data.user.user_metadata?.role,
+    });
+
+    setAuthCookies(response, data.session);
+    await registerDevice(data.user.id, response);
+
+    response.json({
+      user: profile,
+      nextPath: toNextPath(profile.role),
+    });
+  })
+);
+
+authRouter.post(
   '/login',
   asyncHandler(async (request, response) => {
     const payload = loginSchema.parse(request.body);
