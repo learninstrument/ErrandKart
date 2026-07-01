@@ -25,6 +25,7 @@ export const RunnerActive: React.FC = () => {
 
   // Fallback coordinates for map initialization
   const [runnerLocation, setRunnerLocation] = useState<[number, number]>([6.4408, 3.4469]);
+  const pickupLocation = useMemo<[number, number]>(() => [Number(errand?.pickup_lat || 6.4474), Number(errand?.pickup_lng || 3.4558)], [errand?.pickup_lat, errand?.pickup_lng]);
   const dropoffLocation = useMemo<[number, number]>(() => [Number(errand?.dropoff_lat || 6.4281), Number(errand?.dropoff_lng || 3.4219)], [errand?.dropoff_lat, errand?.dropoff_lng]);
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export const RunnerActive: React.FC = () => {
 
   // Geolocation watch stream
   useEffect(() => {
-    if (!errand || !['shopping', 'en_route'].includes(errand.status)) return;
+    if (!errand || !['active', 'shopping', 'en_route'].includes(errand.status)) return;
     if (!navigator.geolocation) return;
 
     const successCallback = (position: GeolocationPosition) => {
@@ -72,7 +73,7 @@ export const RunnerActive: React.FC = () => {
 
     const watchId = navigator.geolocation.watchPosition(successCallback, (err) => console.warn(err.message), {
       enableHighAccuracy: true,
-      timeout: 10000,
+      timeout: 20000,
       maximumAge: 0,
     });
 
@@ -151,6 +152,17 @@ export const RunnerActive: React.FC = () => {
     []
   );
 
+  const pickupIcon = useMemo(
+    () =>
+      L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      }),
+    []
+  );
+
   useEffect(() => {
     if (!errand || !mapContainerRef.current || mapRef.current) return;
 
@@ -163,19 +175,20 @@ export const RunnerActive: React.FC = () => {
       maxZoom: 19,
     }).addTo(map);
 
+    L.marker(pickupLocation, { icon: pickupIcon }).addTo(map);
     L.marker(dropoffLocation, { icon: dropoffIcon }).addTo(map);
 
     const runnerMarker = L.marker(runnerLocation, { icon: runnerIcon }).addTo(map);
     runnerMarkerRef.current = runnerMarker;
 
-    const routeLine = L.polyline([runnerLocation, dropoffLocation], {
+    const routeLine = L.polyline([runnerLocation, pickupLocation, dropoffLocation], {
       color: '#2E8B57',
       weight: 4,
       dashArray: '8 10',
     }).addTo(map);
     routeLineRef.current = routeLine;
 
-    map.fitBounds([runnerLocation, dropoffLocation], { padding: [60, 60] });
+    map.fitBounds([runnerLocation, pickupLocation, dropoffLocation], { padding: [60, 60] });
     mapRef.current = map;
 
     return () => {
@@ -188,10 +201,10 @@ export const RunnerActive: React.FC = () => {
   useEffect(() => {
     if (!mapRef.current || !runnerMarkerRef.current || !routeLineRef.current) return;
     runnerMarkerRef.current.setLatLng(runnerLocation);
-    routeLineRef.current.setLatLngs([runnerLocation, dropoffLocation]);
+    routeLineRef.current.setLatLngs([runnerLocation, pickupLocation, dropoffLocation]);
     // Optionally pan map to runner
     // mapRef.current.panTo(runnerLocation);
-  }, [runnerLocation, dropoffLocation]);
+  }, [runnerLocation, pickupLocation, dropoffLocation]);
 
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center bg-black text-white">Loading radar...</div>;

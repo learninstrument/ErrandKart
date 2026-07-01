@@ -425,7 +425,7 @@ export const RunnerDashboard: React.FC = () => {
       markersLayerRef.current.clearLayers();
       
       availableErrands.forEach(errand => {
-        if (errand.lat && errand.lng) {
+        if (errand.pickup_lat && errand.pickup_lng) {
           const icon = L.divIcon({
             className: '',
             html: `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`,
@@ -433,7 +433,7 @@ export const RunnerDashboard: React.FC = () => {
             iconAnchor: [18, 18],
           });
           
-          const marker = L.marker([Number(errand.lat), Number(errand.lng)], { icon });
+          const marker = L.marker([Number(errand.pickup_lat), Number(errand.pickup_lng)], { icon });
           
           // Clicking marker navigates to errand details
           marker.on('click', () => navigate(`/runner/errand/${errand.id}`));

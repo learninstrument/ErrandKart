@@ -109,6 +109,16 @@ export const PostErrand: React.FC = () => {
         console.warn('Free Geocoding failed, falling back to null coordinates', geoErr);
       }
 
+      // Fallbacks if OpenStreetMap couldn't find the address (puts them in Lagos so they show up on the map)
+      if (!pickupLat) {
+        pickupLat = 6.4474 + (Math.random() * 0.02 - 0.01);
+        pickupLng = 3.4558 + (Math.random() * 0.02 - 0.01);
+      }
+      if (!dropoffLat) {
+        dropoffLat = 6.4281 + (Math.random() * 0.02 - 0.01);
+        dropoffLng = 3.4219 + (Math.random() * 0.02 - 0.01);
+      }
+
       const res = await fetch(`${apiBaseUrl}/api/errands`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
