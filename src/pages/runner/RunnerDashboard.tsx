@@ -418,15 +418,17 @@ export const RunnerDashboard: React.FC = () => {
         {/* Ambient overlay to blend with dark mode */}
         <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,0.8)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-white/10 dark:bg-black/20" />
 
-        {/* Locate Me Button */}
+        {/* Locate Me Button - visible above mobile bottom sheet */}
         <button
           onClick={handleLocateMe}
           title="Go to my location"
-          className="absolute bottom-8 left-8 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/90 dark:bg-[#0A0A0A]/90 text-black/70 dark:text-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.15)] backdrop-blur-md transition-all hover:scale-105 hover:text-market-green dark:hover:text-market-green active:scale-95"
+          className="absolute right-5 z-30 flex items-center gap-2 rounded-full border border-black/10 dark:border-white/20 bg-white dark:bg-[#111] text-black dark:text-white px-4 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.18)] backdrop-blur-md transition-all hover:scale-105 hover:border-market-green/50 active:scale-95"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 100px)' }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" opacity="0.2"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-market-green">
+            <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
           </svg>
+          <span className="text-xs font-bold">My Location</span>
         </button>
 
       {/* Mobile: Top Header bar over Map */}
