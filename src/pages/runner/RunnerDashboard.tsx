@@ -424,12 +424,12 @@ export const RunnerDashboard: React.FC = () => {
         {/* Ambient overlay to blend with dark mode */}
         <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,0.8)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-white/10 dark:bg-black/20" />
 
-        {/* Locate Me Button - Positioned top-right below the mobile header */}
+        {/* Locate Me Button - Positioned bottom-left to avoid any overlaps */}
         <button
           onClick={handleLocateMe}
           disabled={isLocating}
           title="Go to my location"
-          className="absolute right-5 top-24 lg:top-8 lg:right-8 z-[1000] flex items-center justify-center gap-2 rounded-full border border-black/10 dark:border-white/20 bg-white dark:bg-[#111] text-black dark:text-white px-3 py-2 sm:px-4 sm:py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.18)] backdrop-blur-md transition-all hover:scale-105 hover:border-market-green/50 active:scale-95 disabled:opacity-70 disabled:hover:scale-100"
+          className="absolute left-5 bottom-32 z-[1000] flex items-center justify-center gap-2 rounded-full border border-black/10 dark:border-white/20 bg-white dark:bg-[#111] text-black dark:text-white px-3 py-2 sm:px-4 sm:py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.18)] backdrop-blur-md transition-all hover:scale-105 hover:border-market-green/50 active:scale-95 disabled:opacity-70 disabled:hover:scale-100"
         >
           {isLocating ? (
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-market-green border-t-transparent" />
