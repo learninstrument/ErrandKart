@@ -109,16 +109,27 @@ export const PostErrand: React.FC = () => {
         console.warn('Free Geocoding failed, falling back to null coordinates', geoErr);
       }
 
-      // Fallbacks if OpenStreetMap couldn't find the address (puts them in Lagos so they show up on the map)
-      if (!pickupLat) {
-        pickupLat = 6.4474 + (Math.random() * 0.02 - 0.01);
-        pickupLng = 3.4558 + (Math.random() * 0.02 - 0.01);
+      // Fallback to real GPS if OpenStreetMap couldn't find the text address
+      if (!pickupLat || !dropoffLat) {
+        try {
+          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          });
+          if (!pickupLat) {
+            pickupLat = pos.coords.latitude;
+            pickupLng = pos.coords.longitude;
+          }
+          if (!dropoffLat) {
+            // Dropoff defaults to slightly away from pickup to simulate travel distance
+            dropoffLat = pos.coords.latitude + (Math.random() * 0.01 - 0.005);
+            dropoffLng = pos.coords.longitude + (Math.random() * 0.01 - 0.005);
+          }
+        } catch (err) {
+          console.warn('Geolocation fallback failed, using Abuja default', err);
+          if (!pickupLat) { pickupLat = 9.0579; pickupLng = 7.4951; }
+          if (!dropoffLat) { dropoffLat = 9.0579; dropoffLng = 7.4951; }
+        }
       }
-      if (!dropoffLat) {
-        dropoffLat = 6.4281 + (Math.random() * 0.02 - 0.01);
-        dropoffLng = 3.4219 + (Math.random() * 0.02 - 0.01);
-      }
-
       const res = await fetch(`${apiBaseUrl}/api/errands`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
