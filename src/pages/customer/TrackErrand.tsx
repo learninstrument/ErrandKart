@@ -22,6 +22,8 @@ export const TrackErrand: React.FC = () => {
   const dropoffLocation = useMemo<[number, number]>(() => [Number(order?.dropoff_lat || 6.4281), Number(order?.dropoff_lng || 3.4219)], [order?.dropoff_lat, order?.dropoff_lng]);
   const [runnerLocation, setRunnerLocation] = useState<[number, number]>([6.4408, 3.4469]);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   // 1. SMART POLLING ENGINE: Find the active order ONCE on page load
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/errands`, { method: 'GET', credentials: 'include' })
@@ -40,7 +42,8 @@ export const TrackErrand: React.FC = () => {
           setActiveOrderId(active.id);
         }
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, [apiBaseUrl, navigate]);
 
   // 2. SMART POLLING ENGINE: Fetch ONLY the active order row. STOP fetching if completed!
@@ -199,14 +202,14 @@ export const TrackErrand: React.FC = () => {
 
       {/* Vertical Timeline */}
       <div className="px-5 py-4 flex-grow overflow-y-auto custom-scrollbar">
-        <div className="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-4 before:w-[2px] before:bg-black/10 before:dark:bg-white/10">
+        <div className="relative pl-10 space-y-8 before:content-[''] before:absolute before:left-[19px] before:top-2 before:bottom-4 before:w-[2px] before:bg-black/10 before:dark:bg-white/10">
           {steps.map((step, index) => {
             const isCompleted = step.completed && !step.active;
             const isActive = step.active;
             
             return (
               <div key={index} className="relative">
-                <div className="absolute -left-[27px] w-8 h-8 flex items-center justify-center bg-white dark:bg-[#0A0A0A] rounded-full z-10">
+                <div className="absolute -left-[35px] w-8 h-8 flex items-center justify-center bg-white dark:bg-[#0A0A0A] rounded-full z-10">
                   {isActive ? (
                     <div className="w-3 h-3 rounded-full bg-[#FF6600] shadow-[0_0_10px_rgba(255,102,0,0.8)]"></div>
                   ) : isCompleted ? (
@@ -215,17 +218,17 @@ export const TrackErrand: React.FC = () => {
                     <div className="w-2 h-2 rounded-full border-2 border-black/20 dark:border-white/20 bg-transparent"></div>
                   )}
                 </div>
-                <div className={`flex justify-between items-start ${!isActive && !isCompleted ? 'opacity-50' : ''}`}>
-                  <div>
-                    <h3 className={`text-[16px] font-bold ${isActive ? 'text-kart-orange' : isCompleted ? 'text-market-green' : 'text-black dark:text-white'}`}>
+                <div className={`flex justify-between items-start gap-3 ${!isActive && !isCompleted ? 'opacity-50' : ''}`}>
+                  <div className="flex-1">
+                    <h3 className={`text-[16px] font-bold leading-tight ${isActive ? 'text-kart-orange' : isCompleted ? 'text-market-green' : 'text-black dark:text-white'}`}>
                       {step.title}
                     </h3>
-                    <p className={`text-sm mt-1 ${isActive ? 'text-black/80 dark:text-white/80' : isCompleted ? 'text-black/60 dark:text-white/60' : 'text-black/40 dark:text-white/40'}`}>
+                    <p className={`text-sm mt-1.5 leading-snug ${isActive ? 'text-black/80 dark:text-white/80' : isCompleted ? 'text-black/60 dark:text-white/60' : 'text-black/40 dark:text-white/40'}`}>
                       {step.subtitle}
                     </p>
                   </div>
-                  {isActive && <span className="text-xs font-bold text-kart-orange">Now</span>}
-                  {isCompleted && <span className="text-xs font-bold text-market-green">Done</span>}
+                  {isActive && <span className="text-xs font-bold text-kart-orange shrink-0 bg-kart-orange/10 px-2 py-1 rounded-md">Now</span>}
+                  {isCompleted && <span className="text-xs font-bold text-market-green shrink-0 bg-market-green/10 px-2 py-1 rounded-md">Done</span>}
                 </div>
               </div>
             );
@@ -290,7 +293,31 @@ export const TrackErrand: React.FC = () => {
 
   return (
     <div className="flex h-[100dvh] w-full overflow-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-kart-orange selection:text-white transition-colors duration-300">
-      {/* Center Map */}
+      
+      {!isLoading && !order ? (
+        <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center">
+          <header className="absolute top-0 left-0 w-full z-20 flex items-center px-5 pt-6 pb-4">
+            <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
+              <ArrowLeft size={20} className="text-[#FF6600]" />
+            </button>
+          </header>
+          <div className="w-24 h-24 mb-6 rounded-full bg-kart-orange/10 flex items-center justify-center border border-kart-orange/20">
+            <Navigation size={40} className="text-kart-orange opacity-50" />
+          </div>
+          <h2 className="text-2xl font-black mb-2">No Active Errands</h2>
+          <p className="text-black/50 dark:text-white/50 mb-8 max-w-sm">
+            You don't have any active errands right now. Once you post an errand, you can track it here in real-time.
+          </p>
+          <button 
+            onClick={() => navigate('/customer/post-errand')}
+            className="bg-kart-orange text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_15px_rgba(255,102,0,0.3)] hover:scale-105 transition-transform"
+          >
+            Post an Errand
+          </button>
+        </div>
+      ) : (
+      <>
+        {/* Center Map */}
       <main className="relative flex-1">
         <div className="relative h-full w-full bg-white dark:bg-black">
           {/* Real Leaflet Map Container */}
@@ -330,10 +357,12 @@ export const TrackErrand: React.FC = () => {
         <MobileBottomSheet />
       </main>
 
-      {/* Desktop Sidebar (Right Panel) */}
-      <aside className="hidden lg:flex lg:w-[35%] lg:min-w-[380px] lg:max-w-[420px] h-full flex-col border-l border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] overflow-y-auto shadow-2xl z-30 pt-10">
-        <StatusAndDetails />
-      </aside>
+        {/* Desktop Sidebar (Right Panel) */}
+        <aside className="hidden lg:flex lg:w-[35%] lg:min-w-[380px] lg:max-w-[420px] h-full flex-col border-l border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] overflow-y-auto shadow-2xl z-30 pt-10">
+          <StatusAndDetails />
+        </aside>
+      </>
+      )}
     </div>
   );
 };
