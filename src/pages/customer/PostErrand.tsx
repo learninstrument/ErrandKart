@@ -25,7 +25,7 @@ export const PostErrand: React.FC = () => {
   const [dropoffResults, setDropoffResults] = useState<any[]>([]);
   const [savedLocations, setSavedLocations] = useState<any[]>([]);
   const [activeInput, setActiveInput] = useState<'pickup' | 'dropoff' | null>(null);
-  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
