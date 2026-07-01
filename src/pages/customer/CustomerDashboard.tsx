@@ -556,8 +556,7 @@ export const CustomerDashboard: React.FC = () => {
         <button
           onClick={handleLocateMe}
           title="Go to my location"
-          className="absolute right-5 z-30 flex items-center gap-2 rounded-full border border-black/10 dark:border-white/20 bg-white dark:bg-[#111] text-black dark:text-white px-4 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.18)] backdrop-blur-md transition-all hover:scale-105 hover:border-kart-orange/50 active:scale-95"
-          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 100px)' }}
+          className="absolute right-5 bottom-28 z-[1000] flex items-center gap-2 rounded-full border border-black/10 dark:border-white/20 bg-white dark:bg-[#111] text-black dark:text-white px-4 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.18)] backdrop-blur-md transition-all hover:scale-105 hover:border-kart-orange/50 active:scale-95"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-kart-orange">
             <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
