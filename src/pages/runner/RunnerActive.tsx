@@ -299,7 +299,7 @@ export const RunnerActive: React.FC = () => {
       controls.start({ y: "60%" });
     }, [controls]);
 
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (_event: any, info: any) => {
       // Swipe down
       if (info.offset.y > 50 || info.velocity.y > 500) {
         controls.start({ y: "60%" });

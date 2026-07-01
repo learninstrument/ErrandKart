@@ -126,7 +126,7 @@ export const RunnerDeliveryReview: React.FC = () => {
             <p className="text-sm text-white/50">No items specified.</p>
           ) : (
             <div className="grid gap-3 md:grid-cols-2">
-              {checklistItems.map((item, idx) => (
+              {checklistItems.map((item: any, idx: number) => (
                 <div key={idx} className="rounded-2xl border border-white/10 bg-[#121212] px-4 py-3 text-sm text-white/80">
                   <CheckCircle2 size={14} className="mr-2 inline text-market-green" />
                   {item}

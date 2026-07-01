@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, MessageSquare, CheckCircle, Circle, Navigation, Wallet, MapPin, ShieldCheck, Timer, PackageCheck } from 'lucide-react';
+import { ArrowLeft, Phone, MessageSquare, CheckCircle, Circle, Navigation, Wallet, MapPin } from 'lucide-react';
 import * as L from 'leaflet';
 import { motion, useAnimation } from 'framer-motion';
-import { Button } from '../../components/UI/Button';
+
 import { clearSession } from '../../utils/auth';
 
 export const TrackErrand: React.FC = () => {
@@ -70,7 +70,7 @@ export const TrackErrand: React.FC = () => {
 
   const status = order?.status || 'pending';
   const displayOrderId = order && order.id ? `EK-${String(order.id).split('-')[0].toUpperCase()}` : '...';
-  const payout = order ? `₦${(Number(order.budget_customer_fee || 0)).toLocaleString()}` : '...';
+
 
   const steps = [
     { title: 'Order Posted', subtitle: 'Request sent to ErrandKart', completed: true, active: status === 'pending' },
@@ -251,7 +251,7 @@ export const TrackErrand: React.FC = () => {
       controls.start({ y: "60%" });
     }, [controls]);
 
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (_event: any, info: any) => {
       // Swipe down
       if (info.offset.y > 50 || info.velocity.y > 500) {
         controls.start({ y: "60%" });

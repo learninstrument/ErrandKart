@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Store, FileCheck2, ShieldCheck, UploadCloud } from 'lucide-react';
+import { ArrowLeft, Store, ShieldCheck, UploadCloud } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { TextArea } from '../../components/UI/TextArea';

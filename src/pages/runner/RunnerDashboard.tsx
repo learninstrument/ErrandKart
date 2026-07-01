@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search,
   MapPin,
-  Clock,
   SlidersHorizontal,
   ShoppingBasket,
   Pill,
@@ -14,10 +13,8 @@ import {
   CheckSquare,
   TrendingUp,
   LifeBuoy,
-  Home,
   User,
   Settings,
-  Bell,
   Navigation
 } from 'lucide-react';
 import { RunnerBottomNav } from './RunnerBottomNav';
@@ -161,7 +158,7 @@ export const RunnerDashboard: React.FC = () => {
   const MobileBottomSheet = () => {
     const controls = useAnimation();
 
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (_event: any, info: any) => {
       // If dragged down significantly, collapse it slightly
       if (info.offset.y > 50) {
         controls.start({ y: "55%" });
