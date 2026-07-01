@@ -464,13 +464,28 @@ export const CustomerDashboard: React.FC = () => {
       mapRef.current = map;
 
       // Auto-locate user on load
-      // Initial Location Lock (Fast vs High Accuracy)
+      let userMarker: L.Marker | null = null;
+      const userIcon = L.divIcon({
+        className: '',
+        html: `<div style="position:relative;width:20px;height:20px;">
+          <div style="position:absolute;inset:0;border-radius:999px;background:rgba(59,130,246,0.25);animation:ping 1.5s ease-out infinite;"></div>
+          <div style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:999px;background:#3b82f6;border:2px solid white;box-shadow:0 0 8px rgba(59,130,246,0.6);"></div>
+        </div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      });
+
       if (navigator.geolocation) {
         // Fast snap (cell towers/wi-fi)
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
             map.setView([latitude, longitude], 14, { animate: false });
+            if (!userMarker) {
+              userMarker = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
+            } else {
+              userMarker.setLatLng([latitude, longitude]);
+            }
           },
           (err) => console.warn('[Fast Geolocation]', err.message),
           { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
@@ -481,28 +496,14 @@ export const CustomerDashboard: React.FC = () => {
           (pos) => {
             const { latitude, longitude } = pos.coords;
             map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.5 });
+            if (!userMarker) {
+              userMarker = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
+            } else {
+              userMarker.setLatLng([latitude, longitude]);
+            }
           },
           (err) => console.warn('[Geolocation High Acc]', err.message),
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-        );
-      }
-
-      // Add a pulsing blue dot for the user's real position (Placeholder for logic)
-      const userIcon = L.divIcon({
-              className: '',
-              html: `<div style="position:relative;width:20px;height:20px;">
-                <div style="position:absolute;inset:0;border-radius:999px;background:rgba(59,130,246,0.25);animation:ping 1.5s ease-out infinite;"></div>
-                <div style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:999px;background:#3b82f6;border:2px solid white;box-shadow:0 0 8px rgba(59,130,246,0.6);"></div>
-              </div>`,
-              iconSize: [20, 20],
-              iconAnchor: [10, 10],
-            });
-            L.marker([latitude, longitude], { icon: userIcon })
-              .bindPopup('📍 You are here')
-              .addTo(map);
-          },
-          (err) => console.warn('[Geolocation]', err.message),
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
         );
       }
 
