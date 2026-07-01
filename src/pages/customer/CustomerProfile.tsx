@@ -116,127 +116,125 @@ export const CustomerProfile: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/85 dark:bg-[#000000]/85 px-6 py-4 backdrop-blur-md md:px-10">
+        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white">
           <ArrowLeft size={24} />
         </button>
-        <h2 className="text-lg font-black text-white">Profile</h2>
+        <h2 className="text-lg font-extrabold tracking-tight text-black dark:text-white">Profile</h2>
         <div className="w-8" />
       </header>
 
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-4">
+      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-6 pb-28 pt-8 md:px-10 md:pb-10 animate-fade-in-up">
+        {/* Avatar Section */}
+        <div className="flex flex-col items-center justify-center mt-2 relative">
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-lg relative bg-black/5 dark:bg-white/5">
               <img
                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fullName || 'Sarah')}`}
                 alt="Profile"
-                className="h-16 w-16 rounded-2xl border border-white/10 bg-white/5"
+                className="w-full h-full object-cover"
               />
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Profile photo</p>
-                <p className="text-lg font-bold text-white">{fullName || 'Loading...'}</p>
-                <p className="text-sm text-white/50">{email || 'Loading...'}</p>
-              </div>
             </div>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/70 transition-colors hover:text-white">
-              <Camera size={16} />
-              Upload
+            <label className="absolute bottom-0 right-0 bg-kart-orange text-white rounded-full p-2.5 shadow-[0_4px_20px_rgba(255,102,0,0.3)] hover:scale-105 transition-transform flex items-center justify-center border-2 border-white dark:border-[#000000] cursor-pointer">
+              <Camera size={16} className="text-white" />
               <input type="file" className="hidden" />
             </label>
           </div>
-        </section>
+          <h2 className="mt-4 text-xl font-bold text-black dark:text-white">{fullName || 'Loading...'}</h2>
+          <p className="text-sm text-black/50 dark:text-white/50">{email || 'Loading...'}</p>
+        </div>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">PERSONAL INFO</h3>
-          <Input 
-            label="Full Name" 
-            placeholder="Your Name" 
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-          />
-          <Input 
-            label="Email Address" 
-            type="email" 
-            placeholder="your@email.com" 
-            value={email}
-            disabled
-          />
-          
-          <Input 
-            label="Phone Number" 
-            type="tel" 
-            placeholder="+234 801 234 5678" 
-            value={phoneNumber} 
-            onChange={e => setPhoneNumber(e.target.value)}
-          />
+        <form className="flex flex-col gap-6 w-full" onSubmit={(e) => { e.preventDefault(); handleSaveProfile(); }}>
+          <div className="flex flex-col gap-4">
+            <Input 
+              label="Full Name" 
+              placeholder="Your Name" 
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+            <Input 
+              label="Email Address" 
+              type="email" 
+              placeholder="your@email.com" 
+              value={email}
+              disabled
+            />
+            
+            <Input 
+              label="Phone Number" 
+              type="tel" 
+              placeholder="+234 801 234 5678" 
+              value={phoneNumber} 
+              onChange={e => setPhoneNumber(e.target.value)}
+            />
 
-          <div>
-            <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Gender</label>
-            <select 
-              value={gender}
-              onChange={e => setGender(e.target.value)}
-              className="mb-6 mt-1 w-full rounded-2xl border border-[#222222] bg-[#121212] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/25"
-            >
-              <option value="" disabled>Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Prefer not to say">Prefer not to say</option>
-            </select>
+            <div>
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-black/50 dark:text-white/50">Gender</label>
+              <select 
+                value={gender}
+                onChange={e => setGender(e.target.value)}
+                className="mt-1 w-full rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 px-4 py-4 text-sm text-black dark:text-white outline-none focus:border-kart-orange focus:ring-4 focus:ring-kart-orange/25 transition-colors"
+              >
+                <option value="" disabled>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
           </div>
 
           {message.text && (
-            <div className={`mb-4 rounded-2xl border px-4 py-3 text-sm ${message.type === 'error' ? 'border-red-500/40 bg-red-500/10 text-red-200' : 'border-kart-orange/40 bg-kart-orange/10 text-kart-orange'}`}>
+            <div className={`mt-2 rounded-2xl border px-4 py-3 text-sm ${message.type === 'error' ? 'border-red-500/40 bg-red-500/10 text-red-200' : 'border-market-green/40 bg-market-green/10 text-market-green'}`}>
               {message.text}
             </div>
           )}
 
-          <Button className="w-full" onClick={handleSaveProfile} disabled={isSaving}>
-            {isSaving ? 'Saving...' : 'Save Profile'}
+          <Button type="submit" className="w-full h-14 text-base font-bold shadow-[0_4px_20px_rgba(255,102,0,0.2)] mt-2" disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </section>
+        </form>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SETTINGS</h3>
-              <p className="mt-2 text-sm text-white/50">Notifications, privacy, and preferences.</p>
+              <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">SETTINGS</h3>
+              <p className="mt-1 text-xs text-black/50 dark:text-white/50">Notifications, privacy, and preferences.</p>
             </div>
-            <Button onClick={() => navigate('/customer/settings')} className="gap-2 text-xs">
+            <Button variant="outline" onClick={() => navigate('/customer/settings')} className="gap-2 text-xs border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5">
               <Settings size={14} /> Manage
             </Button>
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SAVED LOCATIONS</h3>
-            <Button variant="outline" className="gap-2 text-xs" onClick={() => setIsModalOpen(true)}>
+            <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">SAVED LOCATIONS</h3>
+            <Button variant="outline" className="gap-2 text-xs border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5" onClick={() => setIsModalOpen(true)}>
               <Plus size={14} /> Add
             </Button>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3">
             {isLocationsLoading ? (
-              <p className="text-sm text-white/50">Loading locations...</p>
+              <p className="text-sm text-black/50 dark:text-white/50">Loading locations...</p>
             ) : savedLocations.length === 0 ? (
-              <p className="text-sm text-white/50 col-span-full">You have no saved locations.</p>
+              <p className="text-sm text-black/50 dark:text-white/50">You have no saved locations.</p>
             ) : (
               savedLocations.map((location) => (
                 <div
                   key={location.id}
-                  className="rounded-2xl border border-white/10 bg-[#121212] p-4 shadow-[0_10px_24px_rgba(0,0,0,0.25)]"
+                  className="rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 p-4 transition-all hover:bg-black/10 dark:hover:bg-white/10"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-kart-orange/15 text-kart-orange">
                       <MapPin size={18} />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-bold text-white">{location.label}</p>
-                      <p className="text-xs text-white/50">{location.address}</p>
+                      <p className="text-sm font-bold text-black dark:text-white">{location.label}</p>
+                      <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">{location.address}</p>
                     </div>
-                    <button onClick={() => handleDeleteLocation(location.id)} className="p-1 text-white/40 hover:text-red-400">
-                      <Trash2 size={14} />
+                    <button onClick={() => handleDeleteLocation(location.id)} className="p-2 -mr-2 text-black/30 dark:text-white/30 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
@@ -338,34 +336,34 @@ const AddLocationModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0A0A0A] p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-white">Add New Location</h3>
-          <button onClick={onClose} className="p-2 text-white/50 hover:text-white">
-            <X size={20} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md px-4" onClick={onClose}>
+      <div className="w-full max-w-md rounded-3xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] p-6 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-black dark:text-white tracking-tight">Add New Location</h3>
+          <button onClick={onClose} className="p-2 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors bg-black/5 dark:bg-white/5 rounded-full">
+            <X size={18} />
           </button>
         </div>
         <div className="mt-4 space-y-4">
-          <Input label="1. Location Nickname" placeholder="e.g., Home, Office, Mom's House" value={label} onChange={e => setLabel(e.target.value)} />
-          <Input label="2. Full Map Address" placeholder="Enter the full physical address" value={address} onChange={e => setAddress(e.target.value)} />
+          <Input label="Location Nickname" placeholder="e.g., Home, Office" value={label} onChange={e => setLabel(e.target.value)} />
+          <Input label="Full Map Address" placeholder="Enter the full physical address" value={address} onChange={e => setAddress(e.target.value)} />
           
-          <div className="-mt-2 flex justify-end">
+          <div className="-mt-1 flex justify-end">
             <button
               type="button"
               onClick={handleGetCurrentLocation}
               disabled={isFetchingLocation || isSaving}
-              className="flex items-center gap-1 text-xs font-bold text-kart-orange transition-colors hover:text-white disabled:opacity-50"
+              className="flex items-center gap-1.5 text-xs font-bold text-kart-orange transition-colors hover:text-kart-orange/80 disabled:opacity-50"
             >
-              <Navigation size={12} />
+              <Navigation size={14} />
               {isFetchingLocation ? 'Locating...' : 'Use current location'}
             </button>
           </div>
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          <div className="flex justify-end gap-3 pt-2">
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSave} disabled={isSaving}>
+          {error && <p className="text-sm text-red-500 dark:text-red-400 bg-red-500/10 p-3 rounded-xl">{error}</p>}
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-black/5 dark:border-white/5 mt-4">
+            <Button variant="outline" onClick={onClose} className="w-full sm:w-auto border-black/10 dark:border-white/10">Cancel</Button>
+            <Button onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto">
               {isSaving ? 'Saving...' : 'Save Location'}
             </Button>
           </div>
