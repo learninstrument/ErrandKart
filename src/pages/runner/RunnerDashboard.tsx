@@ -43,20 +43,26 @@ export const RunnerDashboard: React.FC = () => {
       })
       .catch(console.error);
 
-    fetch(`${apiBaseUrl}/api/errands/available`, { method: 'GET', credentials: 'include' })
-      .then(res => {
-        if (res.status === 401) {
-          clearSession();
-          navigate('/login');
-          throw new Error('Session expired');
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (data.errands) setErrands(data.errands);
-      })
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
+    const fetchErrands = () => {
+      fetch(`${apiBaseUrl}/api/errands/available`, { method: 'GET', credentials: 'include' })
+        .then(res => {
+          if (res.status === 401) {
+            clearSession();
+            navigate('/login');
+            throw new Error('Session expired');
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.errands) setErrands(data.errands);
+        })
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
+    };
+
+    fetchErrands();
+    const interval = setInterval(fetchErrands, 10000);
+    return () => clearInterval(interval);
   }, [apiBaseUrl, navigate]);
 
   const nameParts = fullName.trim().split(' ');

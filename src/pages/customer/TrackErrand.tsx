@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, MessageSquare, CheckCircle, Navigation } from 'lucide-react';
 import * as L from 'leaflet';
-import { motion, useAnimation } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import { clearSession } from '../../utils/auth';
 
