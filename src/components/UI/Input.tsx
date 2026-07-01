@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Eye, EyeOff } from 'lucide-react';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -15,6 +16,10 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type = "text", label, theme = 'orange', icon, error, ...props }, ref) => {
+    const [showPassword, setShowPassword] = React.useState(false);
+    const isPassword = type === "password";
+    const currentType = isPassword ? (showPassword ? "text" : "password") : type;
+    
     const accent =
       theme === 'orange'
         ? 'focus:border-kart-orange focus:ring-kart-orange/30'
@@ -30,17 +35,27 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative group">
           {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40 transition-colors group-focus-within:text-kart-orange">{icon}</div>}
           <input
-            type={type}
+            type={currentType}
             ref={ref}
             className={cn(
               'flex h-12 w-full rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 px-4 py-2 text-[15px] font-semibold text-black dark:text-white shadow-inner transition-all placeholder:text-black/30 dark:placeholder:text-white/30 focus:outline-none focus:ring-1 hover:border-black/20 dark:hover:border-white/20 focus:bg-white dark:focus:bg-[#000000]',
-              icon ? 'pl-11 pr-4' : 'px-4',
+              icon ? 'pl-11' : 'pl-4',
+              isPassword ? 'pr-11' : 'pr-4',
               accent,
               error && 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20',
               className
             )}
             {...props}
           />
+          {isPassword && (
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full text-black/40 dark:text-white/40 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          )}
         </div>
         {error && <span className="ml-1 text-xs font-semibold text-red-500 dark:text-red-400">{error}</span>}
       </div>

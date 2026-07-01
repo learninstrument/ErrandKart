@@ -26,6 +26,7 @@ export const LoginScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,6 +50,7 @@ export const LoginScreen: React.FC = () => {
   const handleAuthAction = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setSuccessMessage(null);
     setIsSubmitting(true);
 
     try {
@@ -67,6 +69,13 @@ export const LoginScreen: React.FC = () => {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) throw new Error(data.message ?? 'Authentication failed');
+
+      if (data.verificationRequired) {
+        setSuccessMessage(`A verification link has been sent to ${email}. Please check your inbox and click the link to continue.`);
+        setMode('login'); // Switch back to login form
+        setIsSubmitting(false);
+        return;
+      }
 
       const resolvedRole = data.user?.role ?? role;
       navigate(resolveNextPath(resolvedRole));
@@ -197,6 +206,12 @@ export const LoginScreen: React.FC = () => {
                 </div>
               )}
 
+              {successMessage && (
+                <div className="mt-3 sm:mt-4 rounded-xl border border-market-green/20 bg-market-green/10 p-3 sm:p-4 text-xs sm:text-sm font-medium text-market-green">
+                  {successMessage}
+                </div>
+              )}
+
               {mode === 'login' && (
                 <div className="mt-3 sm:mt-4 flex justify-end">
                   <button type="button" onClick={() => setMode('forgot_password')} className={`text-[11px] sm:text-xs font-bold transition-colors hover:underline ${role === 'runner' ? 'text-market-green' : 'text-kart-orange'}`}>
@@ -232,7 +247,7 @@ export const LoginScreen: React.FC = () => {
 
                 <div className="mt-6 sm:mt-8 text-center">
                   <span className="text-xs sm:text-sm font-medium text-white/40">{mode === 'login' ? "Don't have an account? " : "Already have an account? "}</span>
-                  <button onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setErrorMessage(null); }} className={`text-xs sm:text-sm font-bold hover:underline ${role === 'runner' ? 'text-market-green' : 'text-kart-orange'}`}>
+                  <button type="button" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setErrorMessage(null); setSuccessMessage(null); }} className={`text-xs sm:text-sm font-bold hover:underline ${role === 'runner' ? 'text-market-green' : 'text-kart-orange'}`}>
                     {mode === 'login' ? 'Register' : 'Log in'}
                   </button>
                 </div>
