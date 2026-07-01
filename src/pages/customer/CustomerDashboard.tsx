@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { BottomNav } from './BottomNav';
 import { Button } from '../../components/UI/Button';
+import { ThemeSwitcher } from '../../components/UI/ThemeSwitcher';
 import { clearSession } from '../../utils/auth';
 import { motion, useAnimation } from 'framer-motion';
 import * as L from 'leaflet';
@@ -134,15 +135,18 @@ export const CustomerDashboard: React.FC = () => {
      DESKTOP: Left Sidebar Navigation
      ═════════════════════════════════════════ */
   const DesktopSidebar = () => (
-    <aside className="hidden lg:flex lg:w-[22%] lg:min-w-[240px] lg:max-w-[280px] h-full flex-col border-r border-white/10 bg-black p-6">
+    <aside className="hidden lg:flex lg:w-[22%] lg:min-w-[240px] lg:max-w-[280px] h-full flex-col border-r border-black/5 dark:border-white/10 bg-white dark:bg-black p-6">
       {/* Logo */}
-      <div className="mb-10 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10">
-          <img src="/logo.png" alt="ErrandKart" className="h-6 w-6 object-contain brightness-0 invert" />
+      <div className="mb-10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+            <img src="/logo.png" alt="ErrandKart" className="h-6 w-6 object-contain dark:brightness-0 dark:invert" />
+          </div>
+          <h1 className="text-xl font-black tracking-tight text-black dark:text-white">
+            Errand<span className="text-kart-orange">Kart</span>
+          </h1>
         </div>
-        <h1 className="text-xl font-black tracking-tight text-white">
-          Errand<span className="text-kart-orange">Kart</span>
-        </h1>
+        <ThemeSwitcher />
       </div>
 
       {/* Nav Links */}
@@ -160,8 +164,8 @@ export const CustomerDashboard: React.FC = () => {
             onClick={() => navigate(item.href)}
             className={`flex items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition-all ${
               item.active
-                ? 'bg-kart-orange/10 text-kart-orange border border-kart-orange/20'
-                : 'text-white/50 border border-transparent hover:bg-white/5 hover:border-white/10 hover:text-white/80'
+                ? 'bg-kart-orange/10 text-kart-orange border border-kart-orange/20 shadow-sm'
+                : 'text-black/50 dark:text-white/50 border border-transparent hover:bg-black/5 dark:hover:bg-white/5 hover:border-black/10 dark:hover:border-white/10 hover:text-black dark:hover:text-white/80'
             }`}
           >
             {item.icon}
@@ -171,17 +175,17 @@ export const CustomerDashboard: React.FC = () => {
       </nav>
 
       {/* User profile at bottom */}
-      <div className="mt-auto border-t border-white/10 pt-4">
+      <div className="mt-auto border-t border-black/5 dark:border-white/10 pt-4">
         <button
           onClick={() => navigate('/customer/profile')}
-          className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors hover:bg-white/5 border border-transparent hover:border-white/10"
+          className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-black/10 dark:hover:border-white/10"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-bold text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-sm font-bold text-black dark:text-white">
             {initials}
           </div>
           <div className="flex-1">
-            <p className="text-sm font-bold leading-tight text-white">{displayName}</p>
-            <p className="text-xs text-white/40">Customer</p>
+            <p className="text-sm font-bold leading-tight text-black dark:text-white">{displayName}</p>
+            <p className="text-xs text-black/40 dark:text-white/40">Customer</p>
           </div>
         </button>
       </div>
@@ -213,43 +217,43 @@ export const CustomerDashboard: React.FC = () => {
         onDragEnd={handleDragEnd}
         animate={controls}
         initial={{ y: "0%" }}
-        className="absolute bottom-0 left-0 z-40 flex w-full flex-col rounded-t-[2rem] border-t border-white/20 bg-black/80 pb-24 shadow-[0_-20px_60px_rgba(0,0,0,0.8)] backdrop-blur-3xl lg:hidden"
+        className="absolute bottom-0 left-0 z-40 flex w-full flex-col rounded-t-[2rem] border-t border-black/10 dark:border-white/20 bg-white/95 dark:bg-black/90 pb-24 shadow-[0_-20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_60px_rgba(0,0,0,0.8)] backdrop-blur-3xl lg:hidden"
       >
         {/* Drag Handle - Added grab cursor */}
         <div className="flex w-full justify-center pb-3 pt-4 cursor-grab active:cursor-grabbing">
-          <div className="h-1.5 w-12 rounded-full bg-white/20" />
+          <div className="h-1.5 w-12 rounded-full bg-black/20 dark:bg-white/20" />
         </div>
 
         <div className="flex flex-col gap-4 sm:gap-5 px-4 sm:px-5 pt-1">
           {/* Search Input */}
           <div className="relative w-full">
-            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40" />
             <input
               type="text"
               placeholder="Where are we running today?"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-white/5 py-3.5 sm:py-4 pl-12 pr-4 text-sm text-white shadow-inner outline-none transition-colors placeholder:text-white/30 focus:border-white/30 focus:ring-1 focus:ring-white/20"
+              className="w-full rounded-2xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 py-3.5 sm:py-4 pl-12 pr-4 text-sm text-black dark:text-white shadow-inner outline-none transition-colors placeholder:text-black/30 dark:placeholder:text-white/30 focus:border-black/20 dark:focus:border-white/30 focus:ring-1 focus:ring-black/10 dark:focus:ring-white/20"
             />
           </div>
 
           {/* Quick Category Grid (Responsive gaps) */}
           <div className="grid grid-cols-4 gap-2 sm:gap-3">
             {[
-              { label: 'Groceries', icon: <ShoppingCart size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-white', bg: 'bg-white/15' },
+              { label: 'Groceries', icon: <ShoppingCart size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-black dark:text-white', bg: 'bg-black/5 dark:bg-white/15' },
               { label: 'Courier', icon: <Truck size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-market-green', bg: 'bg-market-green/15' },
               { label: 'Store', icon: <Store size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-kart-orange', bg: 'bg-kart-orange/15' },
-              { label: 'More', icon: <Plus size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-white/50', bg: 'bg-white/5' },
+              { label: 'More', icon: <Plus size={20} className="sm:w-[22px] sm:h-[22px]" />, color: 'text-black/50 dark:text-white/50', bg: 'bg-black/5 dark:bg-white/5' },
             ].map(cat => (
               <button
                 key={cat.label}
                 onClick={() => navigate('/customer/post-errand')}
-                className="flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl border border-white/5 bg-white/5 p-2 sm:p-3 transition-colors hover:border-white/20 hover:bg-white/10 active:scale-95"
+                className="flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 p-2 sm:p-3 transition-colors hover:border-black/10 dark:hover:border-white/20 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95"
               >
                 <div className={`flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full ${cat.bg} ${cat.color}`}>
                   {cat.icon}
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-bold text-white">{cat.label}</span>
+                <span className="text-[10px] sm:text-[11px] font-bold text-black dark:text-white">{cat.label}</span>
               </button>
             ))}
           </div>
@@ -257,16 +261,16 @@ export const CustomerDashboard: React.FC = () => {
           {/* Wallet Card */}
           <button
             onClick={() => navigate('/customer/wallet')}
-            className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 text-left transition-colors hover:border-kart-orange/40"
+            className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-4 sm:p-5 text-left transition-colors hover:border-kart-orange/40"
           >
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-kart-orange/20 blur-[40px] transition-colors group-hover:bg-kart-orange/30" />
             <div className="relative z-10 flex flex-col">
-              <span className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-white/50">
+              <span className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-black/50 dark:text-white/50">
                 <Wallet size={12} className="sm:w-[13px] sm:h-[13px]" />
                 Wallet Balance
               </span>
-              <span className="mt-1 sm:mt-1.5 text-xl sm:text-2xl font-black tracking-tight text-white">
-                ₦{walletBalance.toLocaleString()}<span className="text-xs sm:text-sm font-bold text-white/40">.00</span>
+              <span className="mt-1 sm:mt-1.5 text-xl sm:text-2xl font-black tracking-tight text-black dark:text-white">
+                ₦{walletBalance.toLocaleString()}<span className="text-xs sm:text-sm font-bold text-black/40 dark:text-white/40">.00</span>
               </span>
             </div>
             <div className="relative z-10 flex items-center gap-1.5 rounded-[10px] sm:rounded-[12px] border border-kart-orange/30 bg-kart-orange/10 px-3 sm:px-4 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold text-kart-orange transition-all hover:bg-kart-orange hover:text-white">
@@ -283,14 +287,14 @@ export const CustomerDashboard: React.FC = () => {
      DESKTOP: Right Utility Panel
      ═════════════════════════════════════════ */
   const DesktopRightPanel = () => (
-    <aside className="hidden lg:flex lg:w-[30%] lg:min-w-[340px] lg:max-w-[400px] h-full flex-col gap-6 overflow-y-auto border-l border-white/10 bg-black p-8">
+    <aside className="hidden lg:flex lg:w-[30%] lg:min-w-[340px] lg:max-w-[400px] h-full flex-col gap-6 overflow-y-auto border-l border-black/5 dark:border-white/10 bg-white dark:bg-black p-8">
       {/* Wallet Card */}
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+      <section className="relative overflow-hidden rounded-3xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-8 backdrop-blur-xl">
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-kart-orange/20 blur-[50px]" />
         <div className="relative z-10">
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">Available Balance</p>
-          <h2 className="mb-8 text-5xl font-black tracking-tighter text-white">
-            ₦{walletBalance.toLocaleString()}<span className="text-2xl text-white/40">.00</span>
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-black/50 dark:text-white/50">Available Balance</p>
+          <h2 className="mb-8 text-5xl font-black tracking-tighter text-black dark:text-white">
+            ₦{walletBalance.toLocaleString()}<span className="text-2xl text-black/40 dark:text-white/40">.00</span>
           </h2>
           <div className="flex gap-3">
             <Button onClick={() => navigate('/customer/wallet')} className="flex-1 gap-2 py-3.5 text-xs font-bold uppercase tracking-widest rounded-xl">
@@ -306,7 +310,7 @@ export const CustomerDashboard: React.FC = () => {
       {/* Quick Actions */}
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">Quick Actions</h3>
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/50 dark:text-white/50">Quick Actions</h3>
         </div>
         <div className="grid grid-cols-3 gap-3">
           {[
@@ -317,12 +321,12 @@ export const CustomerDashboard: React.FC = () => {
             <button
               key={action.label}
               onClick={() => navigate(action.href)}
-              className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition-all hover:border-kart-orange/40 hover:bg-white/10 active:scale-95"
+              className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 p-4 transition-all hover:border-kart-orange/40 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white shadow-inner">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-black dark:text-white shadow-inner">
                 {action.icon}
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/80">{action.label}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-black/80 dark:text-white/80">{action.label}</span>
             </button>
           ))}
         </div>
@@ -331,7 +335,7 @@ export const CustomerDashboard: React.FC = () => {
       {/* Recent Errands Feed */}
       <section className="flex flex-1 flex-col mt-4">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">Recent Errands</h3>
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/50 dark:text-white/50">Recent Errands</h3>
           <button
             onClick={() => navigate('/customer/orders')}
             className="text-[10px] font-bold uppercase tracking-wider text-kart-orange hover:underline"
@@ -343,13 +347,13 @@ export const CustomerDashboard: React.FC = () => {
         {isLoading ? (
           <div className="flex flex-col gap-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 w-full animate-pulse rounded-2xl bg-white/5" />
+              <div key={i} className="h-20 w-full animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
             ))}
           </div>
         ) : recentErrands.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-white/5 p-8 text-center">
-            <PackageCheck size={32} className="mb-3 text-white/20" />
-            <p className="mb-4 text-sm text-white/40">No errands yet</p>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 p-8 text-center">
+            <PackageCheck size={32} className="mb-3 text-black/20 dark:text-white/20" />
+            <p className="mb-4 text-sm text-black/40 dark:text-white/40">No errands yet</p>
             <Button onClick={() => navigate('/customer/post-errand')} className="text-xs uppercase tracking-widest font-bold">
               Post Your First Errand
             </Button>
@@ -367,12 +371,12 @@ export const CustomerDashboard: React.FC = () => {
                     if (isActive) navigate('/customer/track');
                     else navigate(`/customer/orders/${errand.id}`);
                   }}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition-colors hover:bg-white/10 hover:border-white/20"
+                  className="rounded-2xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 p-5 text-left transition-colors hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/20 dark:hover:border-white/20"
                 >
                   <div className="mb-2 flex items-start justify-between">
                     <div>
-                      <h4 className="text-sm font-bold leading-tight text-white">{errand.title}</h4>
-                      <p className="mt-1 text-[11px] text-white/40 uppercase tracking-wide">
+                      <h4 className="text-sm font-bold leading-tight text-black dark:text-white">{errand.title}</h4>
+                      <p className="mt-1 text-[11px] text-black/40 dark:text-white/40 uppercase tracking-wide">
                         {errand.pickup_address} • {timeText}
                       </p>
                     </div>
@@ -502,42 +506,42 @@ export const CustomerDashboard: React.FC = () => {
     }, [activeErrand, pickupLocation, dropoffLocation, runnerLocation, pickupIcon, dropoffIcon, runnerIcon]);
 
     return (
-      <div className="relative h-full w-full overflow-hidden bg-black">
+      <div className="relative h-full w-full overflow-hidden bg-white dark:bg-black">
         {/* Real Leaflet Map Container */}
         <div ref={mapContainerRef} className="h-full w-full z-0" />
 
         {/* Ambient overlay to blend with dark mode */}
-        <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-black/20" />
+        <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,0.8)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-white/10 dark:bg-black/20" />
 
         {/* Desktop: Search overlay on map */}
-        <div className="absolute left-1/2 top-8 z-10 hidden w-[80%] max-w-[600px] -translate-x-1/2 items-center gap-3 rounded-2xl border border-white/10 bg-[#0A0A0A]/90 px-5 py-4 shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-2xl lg:flex">
-          <Search size={20} className="text-white/40" />
+        <div className="absolute left-1/2 top-8 z-10 hidden w-[80%] max-w-[600px] -translate-x-1/2 items-center gap-3 rounded-2xl border border-black/10 dark:border-white/10 bg-white/90 dark:bg-[#0A0A0A]/90 px-5 py-4 shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-2xl lg:flex">
+          <Search size={20} className="text-black/40 dark:text-white/40" />
           <input
             type="text"
             placeholder="Search for a store, runner, or address..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full border-none bg-transparent text-sm font-semibold text-white outline-none placeholder:text-white/30 focus:ring-0"
+            className="w-full border-none bg-transparent text-sm font-semibold text-black dark:text-white outline-none placeholder:text-black/30 dark:placeholder:text-white/30 focus:ring-0"
           />
         </div>
 
       {/* Mobile: Header bar */}
-      <header className="fixed left-0 top-0 z-50 flex h-20 w-full max-w-full items-center justify-between bg-gradient-to-b from-black via-black/80 to-transparent px-5 pt-4 pb-2 lg:hidden pointer-events-none">
+      <header className="fixed left-0 top-0 z-50 flex h-20 w-full max-w-full items-center justify-between bg-gradient-to-b from-white/90 via-white/70 dark:from-black dark:via-black/80 to-transparent px-5 pt-4 pb-2 lg:hidden pointer-events-none">
         <div className="flex items-center gap-3 pointer-events-auto">
           <button
             onClick={() => navigate('/customer/profile')}
-            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-black/50 text-sm font-bold text-white backdrop-blur-md"
+            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-black/10 dark:border-white/20 bg-white/80 dark:bg-black/50 text-sm font-bold text-black dark:text-white backdrop-blur-md shadow-sm"
           >
             {initials}
           </button>
         </div>
-        <div className="pointer-events-auto flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-4 py-2 backdrop-blur-md">
+        <div className="pointer-events-auto flex items-center justify-center gap-1.5 rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 px-4 py-2 backdrop-blur-md shadow-sm">
           <div className="h-2 w-2 rounded-full bg-market-green shadow-[0_0_10px_#2E8B57]" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-white">Online</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white">Online</span>
         </div>
         <button
           onClick={() => navigate('/customer/notifications')}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white/60 transition-colors hover:text-white pointer-events-auto backdrop-blur-md"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white pointer-events-auto backdrop-blur-md shadow-sm"
         >
           <Bell size={20} />
         </button>
@@ -555,7 +559,7 @@ export const CustomerDashboard: React.FC = () => {
 };
 
   return (
-    <div className="flex h-[100dvh] w-full overflow-hidden bg-black text-white selection:bg-kart-orange selection:text-white">
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-kart-orange selection:text-white transition-colors duration-300">
       {/* Desktop Sidebar */}
       <DesktopSidebar />
 

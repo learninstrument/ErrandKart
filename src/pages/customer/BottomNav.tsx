@@ -12,7 +12,7 @@ export const BottomNav = ({ activeTab }: { activeTab: 'home' | 'orders' | 'walle
   ] as const;
 
   return (
-    <nav className="fixed bottom-0 left-0 z-50 flex w-full max-w-full items-center justify-around border-t border-white/[0.06] bg-[#0A0A0A]/90 px-4 pb-8 pt-3 backdrop-blur-2xl lg:hidden">
+    <nav className="fixed bottom-0 left-0 z-50 flex w-full max-w-full items-center justify-around border-t border-black/5 dark:border-white/[0.06] bg-white/90 dark:bg-[#0A0A0A]/90 px-4 pb-8 pt-3 backdrop-blur-2xl lg:hidden">
       {tabs.map(tab => {
         const isActive = activeTab === tab.key;
         const Icon = tab.icon;
@@ -33,7 +33,7 @@ export const BottomNav = ({ activeTab }: { activeTab: 'home' | 'orders' | 'walle
           <button
             key={tab.key}
             onClick={() => navigate(tab.href)}
-            className="flex flex-col items-center justify-center gap-1 text-white/35 transition-colors hover:text-white/60"
+            className="flex flex-col items-center justify-center gap-1 text-black/40 dark:text-white/35 transition-colors hover:text-black dark:hover:text-white/60"
           >
             <Icon size={22} />
             <span className="text-[10px] font-bold">{tab.label}</span>

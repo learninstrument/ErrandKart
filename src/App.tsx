@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Splash } from './pages/auth/Splash';
 import { Onboarding } from './pages/Onboarding';
 import { LoginScreen } from './pages/auth/LoginScreen';
@@ -43,9 +44,10 @@ import { UpdatePasswordScreen } from './pages/auth/UpdatePasswordScreen';
 
 function App() {
   return (
-    <BrowserRouter>
-      <PathNormalizer />
-      <div className="min-h-screen text-white">
+    <ThemeProvider>
+      <BrowserRouter>
+        <PathNormalizer />
+        <div className="min-h-screen text-black dark:text-white bg-white dark:bg-black transition-colors duration-300">
         <Routes>
           <Route path="/" element={<Splash />} />
           <Route
@@ -103,6 +105,7 @@ function App() {
         </Routes>
       </div>
     </BrowserRouter>
+  </ThemeProvider>
   );
 }
 

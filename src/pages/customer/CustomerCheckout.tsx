@@ -77,58 +77,58 @@ export const CustomerCheckout: React.FC = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-[#000000] text-white overflow-x-hidden">
+    <div className="relative flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white overflow-x-hidden transition-colors duration-300">
       {/* Top Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-white/5 bg-[#000000]/85 px-6 py-4 backdrop-blur-xl">
-        <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95">
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/85 dark:bg-[#000000]/85 px-6 py-4 backdrop-blur-xl">
+        <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-all active:scale-95">
           <ArrowLeft size={18} className="text-kart-orange" />
         </button>
-        <h1 className="text-lg font-extrabold tracking-tight text-white">Payment</h1>
+        <h1 className="text-lg font-extrabold tracking-tight text-black dark:text-white">Payment</h1>
         <div className="w-10" />
       </header>
 
       {/* Main Form content */}
       <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-6 pb-44 pt-6 animate-fade-in-up">
         {/* Secure Escrow Header Card */}
-        <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-[#0A0A0A]/80 p-6 shadow-2xl backdrop-blur-md">
+        <section className="relative overflow-hidden rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
           <div className="absolute top-0 left-0 h-[3px] w-full bg-kart-orange/40 animate-shimmer"></div>
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-lg font-extrabold text-kart-orange tracking-tight">Secure Escrow Payment</h2>
-              <p className="text-xs text-white/50 mt-1">Transaction: #EK-{errand.id?.split('-')[0].toUpperCase() || 'NEW'}</p>
+              <p className="text-xs text-black/50 dark:text-white/50 mt-1">Transaction: #EK-{errand.id?.split('-')[0].toUpperCase() || 'NEW'}</p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-market-green/20 text-market-green">
               <Shield size={20} className="fill-market-green/20" />
             </div>
           </div>
 
-          <div className="mt-5 border-y border-white/5 py-4 flex gap-4 items-center">
-            <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+          <div className="mt-5 border-y border-black/5 dark:border-white/5 py-4 flex gap-4 items-center">
+            <div className="h-14 w-14 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center overflow-hidden">
               <span className="text-kart-orange font-black text-xs">EK</span>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-bold text-white">Premium Errand Courier</h3>
-              <p className="text-xs text-white/50 mt-0.5">Budgeted Runner Service</p>
+              <h3 className="text-sm font-bold text-black dark:text-white">Premium Errand Courier</h3>
+              <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">Budgeted Runner Service</p>
             </div>
             <div className="text-right">
-              <p className="text-base font-extrabold text-white">₦{runnerFee.toLocaleString()}</p>
+              <p className="text-base font-extrabold text-black dark:text-white">₦{runnerFee.toLocaleString()}</p>
             </div>
           </div>
 
           {/* Pricing breakdown */}
           <div className="mt-5 space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">Runner fee</span>
-              <span className="font-semibold text-white">₦{runnerFee.toLocaleString()}</span>
+              <span className="text-black/60 dark:text-white/60">Runner fee</span>
+              <span className="font-semibold text-black dark:text-white">₦{runnerFee.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">Service fee</span>
-              <span className="font-semibold text-white">₦{serviceFee.toLocaleString()}</span>
+              <span className="text-black/60 dark:text-white/60">Service fee</span>
+              <span className="font-semibold text-black dark:text-white">₦{serviceFee.toLocaleString()}</span>
             </div>
             {priority && (
               <div className="flex justify-between text-sm">
-                <span className="text-white/60">Priority dispatch</span>
-                <span className="font-semibold text-white">₦{priorityFee.toLocaleString()}</span>
+                <span className="text-black/60 dark:text-white/60">Priority dispatch</span>
+                <span className="font-semibold text-black dark:text-white">₦{priorityFee.toLocaleString()}</span>
               </div>
             )}
             {promoApplied && (
@@ -137,36 +137,36 @@ export const CustomerCheckout: React.FC = () => {
                 <span className="font-semibold">-₦1,000</span>
               </div>
             )}
-            <div className="flex justify-between items-center pt-3 border-t border-dashed border-white/10">
+            <div className="flex justify-between items-center pt-3 border-t border-dashed border-black/10 dark:border-white/10">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm text-white/80 font-bold">Escrow Guarantee Hold</span>
+                <span className="text-sm text-black/80 dark:text-white/80 font-bold">Escrow Guarantee Hold</span>
                 <span title="Secured during task, fully released to runner upon completion">
                   <Info size={13} className="text-kart-orange" />
                 </span>
               </div>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/70">Verified</span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black/70 dark:text-white/70">Verified</span>
             </div>
           </div>
 
           {/* Final amount */}
-          <div className="mt-5 pt-4 border-t border-white/10 flex justify-between items-center">
-            <span className="text-base font-bold text-white">Total Amount</span>
+          <div className="mt-5 pt-4 border-t border-black/10 dark:border-white/10 flex justify-between items-center">
+            <span className="text-base font-bold text-black dark:text-white">Total Amount</span>
             <span className="text-2xl font-black text-kart-orange">₦{total.toLocaleString()}</span>
           </div>
         </section>
 
         {/* Priority Boost Option */}
-        <section className="rounded-2xl border border-white/5 bg-[#0A0A0A]/80 p-5 shadow-lg backdrop-blur-md">
+        <section className="rounded-2xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-lg backdrop-blur-md">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h4 className="text-xs font-black tracking-widest uppercase text-white/40">Priority Delivery Handling</h4>
-              <p className="mt-1 text-xs text-white/50">Broadcast to runners as top priority (increases matching speed)</p>
+              <h4 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">Priority Delivery Handling</h4>
+              <p className="mt-1 text-xs text-black/50 dark:text-white/50">Broadcast to runners as top priority (increases matching speed)</p>
             </div>
             <button
               type="button"
               onClick={() => setPriority(!priority)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ${
-                priority ? 'bg-kart-orange' : 'bg-white/10'
+                priority ? 'bg-kart-orange' : 'bg-black/10 dark:bg-white/10'
               }`}
             >
               <span
@@ -180,32 +180,32 @@ export const CustomerCheckout: React.FC = () => {
 
         {/* Payment Methods */}
         <section>
-          <h3 className="text-xs font-black tracking-widest uppercase text-white/40 mb-3 px-1">Payment Method</h3>
+          <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40 mb-3 px-1">Payment Method</h3>
           <div className="flex flex-col gap-3">
             {/* Wallet */}
             <button
               onClick={() => setUseWallet(true)}
               className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all backdrop-blur-md ${
                 useWallet
-                  ? 'border-kart-orange/40 bg-kart-orange/10 text-white ring-1 ring-kart-orange/40'
-                  : 'border-white/5 bg-[#0A0A0A]/80 text-white/70 hover:border-white/10'
+                  ? 'border-kart-orange/40 bg-kart-orange/10 text-black dark:text-white ring-1 ring-kart-orange/40'
+                  : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 text-black/70 dark:text-white/70 hover:border-black/10 dark:hover:border-white/10'
               }`}
             >
               <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all ${
-                useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-white/5 text-white/50'
+                useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50'
               }`}>
                 <WalletIcon size={20} />
               </div>
               <div className="flex-grow">
                 <p className="text-sm font-bold">ErrandKart Wallet</p>
-                <p className="text-xs text-white/50">Balance: ₦48,200</p>
+                <p className="text-xs text-black/50 dark:text-white/50">Balance: ₦48,200</p>
               </div>
               {useWallet ? (
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
                   <Check size={14} className="text-black stroke-[3]" />
                 </div>
               ) : (
-                <div className="h-6 w-6 rounded-full border border-white/20" />
+                <div className="h-6 w-6 rounded-full border border-black/20 dark:border-white/20" />
               )}
             </button>
 
@@ -214,33 +214,33 @@ export const CustomerCheckout: React.FC = () => {
               onClick={() => setUseWallet(false)}
               className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all backdrop-blur-md ${
                 !useWallet
-                  ? 'border-kart-orange/40 bg-kart-orange/10 text-white ring-1 ring-kart-orange/40'
-                  : 'border-white/5 bg-[#0A0A0A]/80 text-white/70 hover:border-white/10'
+                  ? 'border-kart-orange/40 bg-kart-orange/10 text-black dark:text-white ring-1 ring-kart-orange/40'
+                  : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 text-black/70 dark:text-white/70 hover:border-black/10 dark:hover:border-white/10'
               }`}
             >
               <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all ${
-                !useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-white/5 text-white/50'
+                !useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50'
               }`}>
                 <CreditCard size={20} />
               </div>
               <div className="flex-grow">
                 <p className="text-sm font-bold">Paystack Online Checkout</p>
-                <p className="text-xs text-white/50">Card, Bank Transfer, USSD</p>
+                <p className="text-xs text-black/50 dark:text-white/50">Card, Bank Transfer, USSD</p>
               </div>
               {!useWallet ? (
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
                   <Check size={14} className="text-black stroke-[3]" />
                 </div>
               ) : (
-                <div className="h-6 w-6 rounded-full border border-white/20" />
+                <div className="h-6 w-6 rounded-full border border-black/20 dark:border-white/20" />
               )}
             </button>
           </div>
         </section>
 
         {/* Promo Code */}
-        <section className="rounded-2xl border border-white/5 bg-[#0A0A0A]/80 p-5 shadow-lg backdrop-blur-md">
-          <h4 className="text-xs font-black tracking-widest uppercase text-white/40 mb-3">Promo Code</h4>
+        <section className="rounded-2xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-lg backdrop-blur-md">
+          <h4 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40 mb-3">Promo Code</h4>
           <div className="flex gap-3">
             <input
               type="text"
@@ -248,13 +248,13 @@ export const CustomerCheckout: React.FC = () => {
               onChange={(e) => setPromo(e.target.value)}
               placeholder="Enter promo code"
               disabled={promoApplied}
-              className="flex-grow rounded-xl border border-white/5 bg-black/40 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-kart-orange/40 disabled:opacity-50"
+              className="flex-grow rounded-xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-black/40 px-4 py-3 text-xs text-black dark:text-white placeholder:text-black/30 dark:placeholder:text-white/30 focus:outline-none focus:border-kart-orange/40 disabled:opacity-50"
             />
             <Button
               variant="outline"
               onClick={applyPromo}
               disabled={promoApplied}
-              className="border-white/10 hover:bg-white/5"
+              className="border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5"
             >
               {promoApplied ? 'Applied' : 'Apply'}
             </Button>
@@ -264,22 +264,22 @@ export const CustomerCheckout: React.FC = () => {
         {/* Support Link */}
         <section className="flex gap-3 rounded-2xl border border-market-green/20 bg-market-green/5 p-4 items-center">
           <HelpCircle size={18} className="text-market-green" />
-          <p className="text-xs text-white/80">
+          <p className="text-xs text-black/80 dark:text-white/80">
             Funds are held in a secure escrow vault. Payment is only released to the Runner once you confirm the task is complete.
           </p>
         </section>
       </main>
 
       {/* Bottom sliding Action Sheet */}
-      <div className="fixed bottom-0 left-0 w-full z-40 border-t border-white/5 bg-[#000000]/90 backdrop-blur-xl px-6 pt-4 pb-8 max-w-lg left-1/2 -translate-x-1/2 shadow-2xl rounded-t-[32px]">
-        <div className="w-12 h-1 bg-white/10 rounded-full mx-auto mb-5"></div>
+      <div className="fixed bottom-0 left-0 w-full z-40 border-t border-black/5 dark:border-white/5 bg-white/95 dark:bg-[#000000]/90 backdrop-blur-xl px-6 pt-4 pb-8 max-w-lg left-1/2 -translate-x-1/2 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-2xl rounded-t-[32px]">
+        <div className="w-12 h-1 bg-black/10 dark:bg-white/10 rounded-full mx-auto mb-5"></div>
         <div className="flex justify-between items-center mb-5 px-1">
           <div>
-            <p className="text-xs text-white/50">Confirming payment of</p>
-            <p className="text-lg font-black text-white">₦{total.toLocaleString()}</p>
+            <p className="text-xs text-black/50 dark:text-white/50">Confirming payment of</p>
+            <p className="text-lg font-black text-black dark:text-white">₦{total.toLocaleString()}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-white/50">Security Protocol</p>
+            <p className="text-xs text-black/50 dark:text-white/50">Security Protocol</p>
             <div className="flex items-center gap-1 text-xs font-bold text-market-green mt-0.5 justify-end">
               <Lock size={12} /> AES-256
             </div>
@@ -290,7 +290,7 @@ export const CustomerCheckout: React.FC = () => {
         <div
           ref={trackRef}
           id="slide-track"
-          className="relative w-full h-[64px] bg-white/5 rounded-full p-1 border border-white/10 overflow-hidden slide-to-pay group touch-none"
+          className="relative w-full h-[64px] bg-black/5 dark:bg-white/5 rounded-full p-1 border border-black/10 dark:border-white/10 overflow-hidden slide-to-pay group touch-none"
         >
           {/* Progress bar */}
           <div
@@ -326,15 +326,15 @@ export const CustomerCheckout: React.FC = () => {
 
       {/* Full screen success state overlay */}
       {isSuccess && (
-        <div className="fixed inset-0 z-50 bg-[#000000] flex flex-col items-center justify-center p-6 text-center animate-fade-in-up">
+        <div className="fixed inset-0 z-50 bg-white/95 dark:bg-[#000000]/95 flex flex-col items-center justify-center p-6 text-center animate-fade-in-up backdrop-blur-md">
           <div className="relative w-28 h-28 mb-8 flex items-center justify-center">
             <div className="absolute w-24 h-24 bg-market-green/20 rounded-full animate-ping"></div>
             <div className="relative w-20 h-20 bg-market-green rounded-full flex items-center justify-center animate-scale-in">
-              <Check size={40} className="text-black stroke-[3.5]" />
+              <Check size={40} className="text-white dark:text-black stroke-[3.5]" />
             </div>
           </div>
-          <h2 className="text-2xl font-black text-white tracking-tight mb-2">Payment Locked</h2>
-          <p className="text-sm text-white/70 max-w-xs leading-relaxed">
+          <h2 className="text-2xl font-black text-black dark:text-white tracking-tight mb-2">Payment Locked</h2>
+          <p className="text-sm text-black/70 dark:text-white/70 max-w-xs leading-relaxed">
             Funds are secured in escrow. Your errand is now being broadcast to professional runners.
           </p>
         </div>

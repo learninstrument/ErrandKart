@@ -158,13 +158,13 @@ export const TrackErrand: React.FC = () => {
   const StatusAndDetails = () => (
     <div className="flex flex-col h-full w-full">
       {/* Desktop Brand Header */}
-      <div className="hidden lg:flex px-5 pb-6 items-center gap-2 border-b border-white/5">
+      <div className="hidden lg:flex px-5 pb-6 items-center gap-2 border-b border-black/5 dark:border-white/5">
         <h1 className="text-3xl font-black text-kart-orange tracking-tight">ErrandKart</h1>
         <span className="px-2.5 py-0.5 rounded-full bg-market-green/20 text-market-green text-[10px] font-bold uppercase tracking-wider border border-market-green/30">Live Track</span>
       </div>
 
       {/* Runner Details Header */}
-      <div className="px-5 py-4 flex items-center justify-between border-b border-white/10">
+      <div className="px-5 py-4 flex items-center justify-between border-b border-black/10 dark:border-white/10">
         <div className="flex items-center gap-4">
           <div className="relative">
             <img
@@ -173,25 +173,25 @@ export const TrackErrand: React.FC = () => {
               className="w-14 h-14 rounded-full object-cover border-2 border-[#FF6600]"
             />
             {order?.runner_id && (
-              <div className="absolute -bottom-1 -right-1 bg-[#1d100a] rounded-full p-0.5">
-                <div className="bg-market-green text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
+              <div className="absolute -bottom-1 -right-1 bg-white dark:bg-[#1d100a] rounded-full p-0.5">
+                <div className="bg-market-green text-white dark:text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
                   ⭐ 4.9
                 </div>
               </div>
             )}
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">{order?.runner_id ? 'Michael B.' : 'Searching...'}</h2>
-            <p className="text-sm text-white/60 flex items-center gap-1">
+            <h2 className="text-lg font-bold text-black dark:text-white">{order?.runner_id ? 'Michael B.' : 'Searching...'}</h2>
+            <p className="text-sm text-black/60 dark:text-white/60 flex items-center gap-1">
               🛵 Honda PCX • ABC-123
             </p>
           </div>
         </div>
         <div className="flex gap-3">
-          <button className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#FF6600] hover:bg-white/10 transition-colors shadow-sm" onClick={() => navigate(`/customer/chat/${displayOrderId}`)}>
+          <button className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-[#FF6600] hover:bg-black/10 dark:hover:bg-white/10 transition-colors shadow-sm" onClick={() => navigate(`/customer/chat/${displayOrderId}`)}>
             <MessageSquare size={20} />
           </button>
-          <button className="w-12 h-12 rounded-full bg-[#FF6600] text-black flex items-center justify-center hover:opacity-90 transition-opacity shadow-[0_0_15px_rgba(255,102,0,0.3)]">
+          <button className="w-12 h-12 rounded-full bg-[#FF6600] text-white dark:text-black flex items-center justify-center hover:opacity-90 transition-opacity shadow-[0_0_15px_rgba(255,102,0,0.3)]">
             <Phone size={20} />
           </button>
         </div>
@@ -199,28 +199,28 @@ export const TrackErrand: React.FC = () => {
 
       {/* Vertical Timeline */}
       <div className="px-5 py-4 flex-grow overflow-y-auto custom-scrollbar">
-        <div className="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-4 before:w-[2px] before:bg-white/10">
+        <div className="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-4 before:w-[2px] before:bg-black/10 before:dark:bg-white/10">
           {steps.map((step, index) => {
             const isCompleted = step.completed && !step.active;
             const isActive = step.active;
             
             return (
               <div key={index} className="relative">
-                <div className="absolute -left-[27px] w-8 h-8 flex items-center justify-center bg-[#0A0A0A] rounded-full z-10">
+                <div className="absolute -left-[27px] w-8 h-8 flex items-center justify-center bg-white dark:bg-[#0A0A0A] rounded-full z-10">
                   {isActive ? (
                     <div className="w-3 h-3 rounded-full bg-[#FF6600] shadow-[0_0_10px_rgba(255,102,0,0.8)]"></div>
                   ) : isCompleted ? (
                     <CheckCircle size={18} className="text-market-green" strokeWidth={3} />
                   ) : (
-                    <div className="w-2 h-2 rounded-full border-2 border-white/20 bg-transparent"></div>
+                    <div className="w-2 h-2 rounded-full border-2 border-black/20 dark:border-white/20 bg-transparent"></div>
                   )}
                 </div>
                 <div className={`flex justify-between items-start ${!isActive && !isCompleted ? 'opacity-50' : ''}`}>
                   <div>
-                    <h3 className={`text-[16px] font-bold ${isActive ? 'text-kart-orange' : isCompleted ? 'text-market-green' : 'text-white'}`}>
+                    <h3 className={`text-[16px] font-bold ${isActive ? 'text-kart-orange' : isCompleted ? 'text-market-green' : 'text-black dark:text-white'}`}>
                       {step.title}
                     </h3>
-                    <p className={`text-sm mt-1 ${isActive ? 'text-white/80' : isCompleted ? 'text-white/60' : 'text-white/40'}`}>
+                    <p className={`text-sm mt-1 ${isActive ? 'text-black/80 dark:text-white/80' : isCompleted ? 'text-black/60 dark:text-white/60' : 'text-black/40 dark:text-white/40'}`}>
                       {step.subtitle}
                     </p>
                   </div>
@@ -235,7 +235,7 @@ export const TrackErrand: React.FC = () => {
 
       {/* Action Area */}
       <div className="px-5 pt-2 mt-auto mb-4">
-        <button className="w-full bg-kart-orange text-black text-[16px] font-bold py-4 rounded-xl hover:bg-kart-orangeHover transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,102,0,0.25)]">
+        <button className="w-full bg-kart-orange text-white dark:text-black text-[16px] font-bold py-4 rounded-xl hover:bg-kart-orangeHover transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,102,0,0.25)]">
           View Order Details
         </button>
       </div>
@@ -276,10 +276,10 @@ export const TrackErrand: React.FC = () => {
         animate={controls}
         initial={{ y: "60%" }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="absolute bottom-0 left-0 z-40 flex h-[75%] w-full flex-col rounded-t-[2rem] bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
+        className="absolute bottom-0 left-0 z-40 flex h-[75%] w-full flex-col rounded-t-[2rem] bg-white/95 dark:bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
       >
         <div className="flex w-full justify-center pb-3 pt-4 cursor-grab active:cursor-grabbing">
-          <div className="h-1.5 w-12 rounded-full bg-white/20" />
+          <div className="h-1.5 w-12 rounded-full bg-black/20 dark:bg-white/20" />
         </div>
         <div className="flex flex-1 flex-col overflow-hidden pt-2">
           <StatusAndDetails />
@@ -289,19 +289,19 @@ export const TrackErrand: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[100dvh] w-full overflow-hidden bg-black text-white selection:bg-kart-orange selection:text-white">
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-kart-orange selection:text-white transition-colors duration-300">
       {/* Center Map */}
       <main className="relative flex-1">
-        <div className="relative h-full w-full bg-black">
+        <div className="relative h-full w-full bg-white dark:bg-black">
           {/* Real Leaflet Map Container */}
           <div ref={mapContainerRef} className="h-full w-full z-0" />
           
-          {/* Ambient map glow overlay to blend with black theme */}
-          <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-black/20" />
+          {/* Ambient map glow overlay to blend with theme */}
+          <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,0.8)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-white/10 dark:bg-black/20" />
           
           {/* Mobile Header Over Map */}
-          <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 bg-gradient-to-b from-[#0A0A0A]/80 to-transparent backdrop-blur-xl pointer-events-none">
-            <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors pointer-events-auto">
+          <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 bg-gradient-to-b from-white/90 dark:from-[#0A0A0A]/80 to-transparent backdrop-blur-xl pointer-events-none">
+            <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors pointer-events-auto">
               <ArrowLeft size={20} className="text-[#FF6600]" />
             </button>
             <h1 className="text-2xl font-black text-[#FF6600] tracking-tight">ErrandKart</h1>
@@ -310,8 +310,8 @@ export const TrackErrand: React.FC = () => {
 
           {/* Floating Action Buttons */}
           <div className="absolute top-24 right-5 flex flex-col gap-2 z-20">
-            <button className="w-10 h-10 rounded-full bg-white/10 shadow-lg flex items-center justify-center border border-white/10 hover:bg-white/20 transition-colors">
-              <Navigation size={18} className="text-white" />
+            <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-white/10 shadow-lg flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition-colors backdrop-blur-sm">
+              <Navigation size={18} className="text-black dark:text-white" />
             </button>
           </div>
 
@@ -326,13 +326,12 @@ export const TrackErrand: React.FC = () => {
             </div>
           </div>
         </div>
-        
         {/* Mobile Bottom Sheet */}
         <MobileBottomSheet />
       </main>
 
       {/* Desktop Sidebar (Right Panel) */}
-      <aside className="hidden lg:flex lg:w-[35%] lg:min-w-[380px] lg:max-w-[420px] h-full flex-col border-l border-white/10 bg-[#0A0A0A] overflow-y-auto shadow-2xl z-30 pt-10">
+      <aside className="hidden lg:flex lg:w-[35%] lg:min-w-[380px] lg:max-w-[420px] h-full flex-col border-l border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] overflow-y-auto shadow-2xl z-30 pt-10">
         <StatusAndDetails />
       </aside>
     </div>
