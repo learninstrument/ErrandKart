@@ -395,12 +395,15 @@ export const RunnerDashboard: React.FC = () => {
           <div className="h-2 w-2 rounded-full bg-market-green shadow-[0_0_10px_#2E8B57]" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-market-green">Online</span>
         </div>
-        <button
-          onClick={() => navigate('/runner/wallet')}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white pointer-events-auto backdrop-blur-md shadow-sm"
-        >
-          <Wallet size={18} />
-        </button>
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <ThemeSwitcher />
+          <button
+            onClick={() => navigate('/runner/wallet')}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white backdrop-blur-md shadow-sm"
+          >
+            <Wallet size={18} />
+          </button>
+        </div>
       </header>
     </div>
   );

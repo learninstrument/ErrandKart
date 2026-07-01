@@ -52,13 +52,13 @@ export const RunnerProfile: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-[#050505]/90 px-6 py-4 backdrop-blur-md md:px-10">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white/60 transition-colors hover:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/85 dark:bg-[#000000]/85 px-6 py-4 backdrop-blur-md md:px-10">
+        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white">
           <ArrowLeft size={24} />
         </button>
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-black text-white">Runner Profile</h2>
+          <h2 className="text-lg font-extrabold tracking-tight text-black dark:text-white">Runner Profile</h2>
           <span className="rounded-full border border-market-green/40 bg-market-green/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-market-green">
             Pending verification
           </span>
@@ -66,50 +66,50 @@ export const RunnerProfile: React.FC = () => {
         <div className="w-8" />
       </header>
 
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:px-10 md:pb-10">
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+      <main className="mx-auto flex w-full max-w-lg md:max-w-2xl lg:max-w-4xl flex-1 flex-col gap-6 px-6 pb-28 pt-6 md:px-10 md:pb-10 animate-fade-in-up">
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
               <img
                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fullName || 'Runner')}`}
                 alt="Profile"
-                className="h-16 w-16 rounded-2xl border border-white/10 bg-white/5"
+                className="h-16 w-16 rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5"
               />
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Runner profile</p>
-                <p className="text-lg font-bold text-white">{fullName || 'Loading...'}</p>
-                <p className="text-sm text-white/50">{email || 'Loading...'}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Runner profile</p>
+                <p className="text-lg font-black tracking-tight text-black dark:text-white">{fullName || 'Loading...'}</p>
+                <p className="text-sm font-semibold text-black/50 dark:text-white/50">{email || 'Loading...'}</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/70 transition-colors hover:text-white">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-black/70 dark:text-white/70 transition-colors hover:border-black/10 dark:hover:border-white/20">
                 <Camera size={16} />
                 Upload
                 <input type="file" className="hidden" />
               </label>
-              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Status</div>
+              <div className="flex items-center gap-3 rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Status</div>
                 <button
                   type="button"
                   onClick={() => setIsOnline(!isOnline)}
-                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
-                    isOnline ? 'bg-market-green' : 'bg-white/10'
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors shadow-inner ${
+                    isOnline ? 'bg-market-green' : 'bg-black/10 dark:bg-white/10'
                   }`}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
                       isOnline ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
                 </button>
-                <span className="text-xs font-semibold text-white/70">{isOnline ? 'Online' : 'Offline'}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-black/70 dark:text-white/70">{isOnline ? 'Online' : 'Offline'}</span>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">PERSONAL INFO</h3>
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+          <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">PERSONAL INFO</h3>
           <Input 
             label="Full Name" 
             placeholder="Your Name" 
@@ -129,11 +129,11 @@ export const RunnerProfile: React.FC = () => {
           />
 
           <div>
-            <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Gender</label>
+            <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Gender</label>
             <select 
               value={gender}
               onChange={e => setGender(e.target.value)}
-              className="mb-6 mt-1 w-full rounded-2xl border border-[#253043] bg-[#111621] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-market-green focus:ring-4 focus:ring-market-green/25"
+              className="mb-6 mt-1.5 w-full rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3.5 text-sm font-semibold text-black dark:text-white outline-none transition-all hover:border-black/10 dark:hover:border-white/20 focus:border-market-green/50 focus:bg-white dark:focus:bg-[#000000] focus:ring-4 focus:ring-market-green/10"
             >
               <option value="" disabled>Select Gender</option>
               <option value="Male">Male</option>
@@ -143,51 +143,51 @@ export const RunnerProfile: React.FC = () => {
           </div>
 
           {message.text && (
-            <div className={`mb-4 rounded-2xl border px-4 py-3 text-sm ${message.type === 'error' ? 'border-red-500/40 bg-red-500/10 text-red-200' : 'border-market-green/40 bg-market-green/10 text-market-green'}`}>
+            <div className={`mb-4 rounded-2xl border px-4 py-3.5 text-sm font-bold ${message.type === 'error' ? 'border-red-500/40 bg-red-500/10 text-red-500 dark:text-red-400' : 'border-market-green/40 bg-market-green/10 text-market-green'}`}>
               {message.text}
             </div>
           )}
 
-          <Button theme="green" className="w-full" onClick={handleSaveProfile} disabled={isSaving}>
+          <Button theme="green" className="w-full h-14 shadow-[0_4px_20px_rgba(46,139,87,0.2)]" onClick={handleSaveProfile} disabled={isSaving}>
             {isSaving ? 'Saving...' : 'Save Profile'}
           </Button>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-black tracking-[0.2em] text-white/70">SETTINGS</h3>
-              <p className="mt-2 text-sm text-white/50">Notifications, safety, and job preferences.</p>
+              <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">SETTINGS</h3>
+              <p className="mt-2 text-sm font-medium text-black/50 dark:text-white/50">Notifications, safety, and job preferences.</p>
             </div>
-            <Button onClick={() => navigate('/runner/settings')} className="gap-2 text-xs">
+            <Button variant="outline" onClick={() => navigate('/runner/settings')} className="gap-2 text-[11px] font-bold uppercase tracking-wider border-black/10 dark:border-white/10 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl">
               <Settings size={14} /> Manage
             </Button>
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">KYC VERIFICATION</h3>
-          <div className="rounded-2xl border border-white/10 bg-[#121212] p-4 text-white/70">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-market-green/15 text-market-green">
-                <ShieldCheck size={18} />
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+          <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">KYC VERIFICATION</h3>
+          <div className="rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 p-4 transition-colors hover:border-black/10 dark:hover:border-white/10">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-market-green/15 text-market-green shadow-inner">
+                <ShieldCheck size={20} />
               </div>
               <div>
-                <p className="text-sm font-bold text-white">Government ID</p>
-                <p className="text-xs text-white/50">Upload your NIN or Driver's License</p>
+                <p className="text-sm font-bold text-black dark:text-white">Government ID</p>
+                <p className="text-xs font-medium text-black/50 dark:text-white/50">Upload your NIN or Driver's License</p>
               </div>
             </div>
-            <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/70 transition-colors hover:text-white">
+            <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-black/70 dark:text-white/70 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
               Upload document
               <input type="file" className="hidden" />
             </label>
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">VEHICLE INFO</h3>
-          <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">Vehicle Type</label>
-          <select className="mb-4 mt-1 w-full rounded-2xl border border-[#222222] bg-[#121212] px-4 py-3 text-sm text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] outline-none focus:border-market-green focus:ring-4 focus:ring-market-green/25">
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+          <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">VEHICLE INFO</h3>
+          <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Vehicle Type</label>
+          <select className="mb-6 mt-1.5 w-full rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 px-4 py-3.5 text-sm font-semibold text-black dark:text-white outline-none transition-all hover:border-black/10 dark:hover:border-white/20 focus:border-market-green/50 focus:bg-white dark:focus:bg-[#000000] focus:ring-4 focus:ring-market-green/10">
             <option>Bicycle</option>
             <option>Motorbike</option>
             <option>Car</option>
@@ -203,16 +203,16 @@ export const RunnerProfile: React.FC = () => {
           ].map((stat, index) => (
             <div
               key={index}
-              className="rounded-2xl border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
+              className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md text-center"
             >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">{stat.label}</p>
-              <p className="mt-2 text-2xl font-black text-white">{stat.value}</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">{stat.label}</p>
+              <p className="mt-2 text-3xl font-black tracking-tighter text-black dark:text-white">{stat.value}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-[28px] border border-white/10 bg-[#0A0A0A] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
-          <h3 className="mb-4 text-sm font-black tracking-[0.2em] text-white/70">BANK DETAILS</h3>
+        <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl backdrop-blur-md">
+          <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">BANK DETAILS</h3>
           <Input label="Bank Name" placeholder="GTBank" theme="green" />
           <Input label="Account Number" placeholder="0123456789" theme="green" />
         </section>
