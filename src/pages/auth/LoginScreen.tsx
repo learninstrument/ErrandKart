@@ -152,11 +152,11 @@ export const LoginScreen: React.FC = () => {
                     exit={{ opacity: 0, height: 0 }}
                     className="space-y-3 sm:space-y-4 mb-3 sm:mb-4"
                   >
-                    <Input label="Full Name" placeholder="John Doe" theme={theme} value={fullName} onChange={e => setFullName(e.target.value)} required />
-                    <Input label="Phone Number" placeholder="+234 80..." theme={theme} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value.replace(/[^\d+]/g, '').slice(0, 12))} />
+                    <Input label="Full Name" placeholder="John Doe" theme={theme} value={fullName} onChange={e => setFullName(e.target.value)} required className="bg-white/5 border-white/20 text-white placeholder:text-white/30 hover:border-white/40 focus:bg-white/10" />
+                    <Input label="Phone Number" placeholder="+234 80..." theme={theme} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value.replace(/[^\d+]/g, '').slice(0, 12))} className="bg-white/5 border-white/20 text-white placeholder:text-white/30 hover:border-white/40 focus:bg-white/10" />
                     <div className="mb-4">
                       <label className="mb-1.5 sm:mb-2 ml-1 block text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-white/50">Gender</label>
-                      <select value={gender} onChange={e => setGender(e.target.value)} required className="w-full appearance-none rounded-xl sm:rounded-2xl border border-white/20 bg-black px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-[15px] text-white outline-none transition-all focus:ring-1 focus:border-white/40">
+                      <select value={gender} onChange={e => setGender(e.target.value)} required className="w-full appearance-none rounded-xl sm:rounded-2xl border border-white/20 bg-white/5 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-[15px] text-white outline-none transition-all focus:ring-1 focus:border-white/40">
                         <option value="" disabled className="text-black bg-white">Select Gender</option>
                         <option value="Male" className="text-black bg-white">Male</option>
                         <option value="Female" className="text-black bg-white">Female</option>
@@ -168,11 +168,11 @@ export const LoginScreen: React.FC = () => {
               </AnimatePresence>
 
               <div className="space-y-3 sm:space-y-4">
-                <Input label="Email Address" type="email" placeholder="john@example.com" theme={theme} value={email} onChange={e => setEmail(e.target.value)} required />
+                <Input label="Email Address" type="email" placeholder="john@example.com" theme={theme} value={email} onChange={e => setEmail(e.target.value)} required className="bg-white/5 border-white/20 text-white placeholder:text-white/30 hover:border-white/40 focus:bg-white/10" />
                 
                 {mode !== 'forgot_password' && (
                   <div>
-                    <Input label="Password" type="password" placeholder="••••••••" theme={theme} value={password} onChange={e => setPassword(e.target.value)} required />
+                    <Input label="Password" type="password" placeholder="••••••••" theme={theme} value={password} onChange={e => setPassword(e.target.value)} required className="bg-white/5 border-white/20 text-white placeholder:text-white/30 hover:border-white/40 focus:bg-white/10" />
                     {mode === 'register' && password.length > 0 && (
                       <div className="-mt-1 mb-2 px-1 flex flex-wrap gap-x-3 gap-y-1">
                         {[
