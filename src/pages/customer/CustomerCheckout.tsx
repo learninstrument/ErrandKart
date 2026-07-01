@@ -75,9 +75,6 @@ export const CustomerCheckout: React.FC = () => {
       alert('Invalid promo code');
     }
   };
-
-  const displayPromoDiscount = promoApplied ? '₦1,000' : '-';
-
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#0A0A0A] text-[#f8ddd2] overflow-x-hidden">
       {/* Top Header */}
@@ -142,7 +139,9 @@ export const CustomerCheckout: React.FC = () => {
             <div className="flex justify-between items-center pt-3 border-t border-dashed border-white/10">
               <div className="flex items-center gap-1.5">
                 <span className="text-sm text-white/80 font-bold">Escrow Guarantee Hold</span>
-                <Info size={13} className="text-[#ff6600]" title="Secured during task, fully released to runner upon completion" />
+                <span title="Secured during task, fully released to runner upon completion">
+                  <Info size={13} className="text-[#ff6600]" />
+                </span>
               </div>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/70">Verified</span>
             </div>

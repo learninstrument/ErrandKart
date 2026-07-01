@@ -76,9 +76,7 @@ export const CustomerDashboard: React.FC = () => {
 
   // Calculate metrics
 
-  const completedCount = useMemo(() => {
-    return errands.filter((e: any) => e.status === 'completed').length;
-  }, [errands]);
+
 
   // Filter errands based on search
   const filteredErrands = useMemo(() => {
@@ -94,20 +92,7 @@ export const CustomerDashboard: React.FC = () => {
     return filteredErrands.slice(0, 3);
   }, [filteredErrands]);
 
-  const getCategoryIcon = (category: string) => {
-    switch (category?.toLowerCase()) {
-      case 'market':
-        return <ShoppingBasket size={20} />;
-      case 'supermarket':
-        return <Store size={20} />;
-      case 'service':
-        return <Truck size={20} />;
-      case 'purchase':
-        return <ShoppingCart size={20} />;
-      default:
-        return <PackageCheck size={20} />;
-    }
-  };
+
 
   const getErrandTimeText = (status: string, createdAt: string) => {
     if (['active', 'shopping', 'en_route', 'arrived'].includes(status)) {
@@ -210,7 +195,7 @@ export const CustomerDashboard: React.FC = () => {
   const MobileBottomSheet = () => {
     const controls = useAnimation();
 
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (_event: any, info: any) => {
       // If dragged down significantly, collapse it slightly
       if (info.offset.y > 50) {
         controls.start({ y: "55%" });

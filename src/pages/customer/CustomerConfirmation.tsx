@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MapPin, ShieldCheck, Clock, RefreshCw, Radar, Home, HelpCircle } from 'lucide-react';
+import { MapPin, ShieldCheck, Clock, RefreshCw, Radar, Home } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 
 export const CustomerConfirmation: React.FC = () => {
