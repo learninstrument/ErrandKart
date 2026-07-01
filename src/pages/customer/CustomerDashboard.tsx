@@ -450,16 +450,43 @@ export const CustomerDashboard: React.FC = () => {
     React.useEffect(() => {
       if (!mapContainerRef.current || mapRef.current) return;
 
+      // Start with a default center in Lagos, then fly to real GPS location
       const map = L.map(mapContainerRef.current, {
         zoomControl: false,
         attributionControl: false,
-      }).setView(pickupLocation, 13); // Default to Lagos, Nigeria
+      }).setView([6.4474, 3.4558], 13);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
       }).addTo(map);
 
       mapRef.current = map;
+
+      // Auto-locate user on load
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.5 });
+
+            // Add a pulsing blue dot for the user's real position
+            const userIcon = L.divIcon({
+              className: '',
+              html: `<div style="position:relative;width:20px;height:20px;">
+                <div style="position:absolute;inset:0;border-radius:999px;background:rgba(59,130,246,0.25);animation:ping 1.5s ease-out infinite;"></div>
+                <div style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:999px;background:#3b82f6;border:2px solid white;box-shadow:0 0 8px rgba(59,130,246,0.6);"></div>
+              </div>`,
+              iconSize: [20, 20],
+              iconAnchor: [10, 10],
+            });
+            L.marker([latitude, longitude], { icon: userIcon })
+              .bindPopup('📍 You are here')
+              .addTo(map);
+          },
+          (err) => console.warn('[Geolocation]', err.message),
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+        );
+      }
 
       return () => {
         map.remove();
@@ -505,6 +532,18 @@ export const CustomerDashboard: React.FC = () => {
       }
     }, [activeErrand, pickupLocation, dropoffLocation, runnerLocation, pickupIcon, dropoffIcon, runnerIcon]);
 
+    const handleLocateMe = () => {
+      if (!navigator.geolocation || !mapRef.current) return;
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          mapRef.current!.flyTo([latitude, longitude], 16, { animate: true, duration: 1.2 });
+        },
+        (err) => console.warn('[Locate Me]', err.message),
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    };
+
     return (
       <div className="relative h-full w-full overflow-hidden bg-white dark:bg-black">
         {/* Real Leaflet Map Container */}
@@ -512,6 +551,17 @@ export const CustomerDashboard: React.FC = () => {
 
         {/* Ambient overlay to blend with dark mode */}
         <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,0.8)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-white/10 dark:bg-black/20" />
+
+        {/* Locate Me Button */}
+        <button
+          onClick={handleLocateMe}
+          title="Go to my location"
+          className="absolute bottom-8 left-8 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/90 dark:bg-[#0A0A0A]/90 text-black/70 dark:text-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.15)] backdrop-blur-md transition-all hover:scale-105 hover:text-kart-orange dark:hover:text-kart-orange active:scale-95"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" opacity="0.2"/>
+          </svg>
+        </button>
 
         {/* Desktop: Search overlay on map */}
         <div className="absolute left-1/2 top-8 z-10 hidden w-[80%] max-w-[600px] -translate-x-1/2 items-center gap-3 rounded-2xl border border-black/10 dark:border-white/10 bg-white/90 dark:bg-[#0A0A0A]/90 px-5 py-4 shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-2xl lg:flex">

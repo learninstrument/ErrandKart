@@ -348,13 +348,13 @@ export const RunnerDashboard: React.FC = () => {
       const map = L.map(mapContainerRef.current, {
         zoomControl: false,
         attributionControl: false,
-      }).setView([6.4474, 3.4558], 14); // Default to Lagos, Nigeria, slightly zoomed in for runners
+      }).setView([6.4474, 3.4558], 14);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
       }).addTo(map);
 
-      // Add a marker for the runner's current location
+      // Runner location marker (will be updated after GPS)
       const runnerIcon = L.divIcon({
         className: '',
         html: `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
@@ -363,15 +363,52 @@ export const RunnerDashboard: React.FC = () => {
         iconSize: [36, 36],
         iconAnchor: [18, 18],
       });
-      L.marker([6.4474, 3.4558], { icon: runnerIcon }).addTo(map);
+
+      let runnerMarker = L.marker([6.4474, 3.4558], { icon: runnerIcon }).addTo(map);
 
       mapRef.current = map;
+
+      // Auto-locate runner on load
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.5 });
+            runnerMarker.setLatLng([latitude, longitude]);
+
+            // Add pulsing ring around runner's real location
+            const pulseIcon = L.divIcon({
+              className: '',
+              html: `<div style="position:relative;width:20px;height:20px;">
+                <div style="position:absolute;inset:0;border-radius:999px;background:rgba(46,139,87,0.25);animation:ping 1.5s ease-out infinite;"></div>
+              </div>`,
+              iconSize: [20, 20],
+              iconAnchor: [10, 10],
+            });
+            L.marker([latitude, longitude], { icon: pulseIcon }).addTo(map);
+          },
+          (err) => console.warn('[Geolocation]', err.message),
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+        );
+      }
 
       return () => {
         map.remove();
         mapRef.current = null;
       };
     }, []);
+
+    const handleLocateMe = () => {
+      if (!navigator.geolocation || !mapRef.current) return;
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          mapRef.current!.flyTo([latitude, longitude], 16, { animate: true, duration: 1.2 });
+        },
+        (err) => console.warn('[Locate Me]', err.message),
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    };
 
     return (
       <div className="relative h-full w-full overflow-hidden bg-white dark:bg-black">
@@ -380,6 +417,17 @@ export const RunnerDashboard: React.FC = () => {
 
         {/* Ambient overlay to blend with dark mode */}
         <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,0.8)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-white/10 dark:bg-black/20" />
+
+        {/* Locate Me Button */}
+        <button
+          onClick={handleLocateMe}
+          title="Go to my location"
+          className="absolute bottom-8 left-8 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/90 dark:bg-[#0A0A0A]/90 text-black/70 dark:text-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.15)] backdrop-blur-md transition-all hover:scale-105 hover:text-market-green dark:hover:text-market-green active:scale-95"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" opacity="0.2"/>
+          </svg>
+        </button>
 
       {/* Mobile: Top Header bar over Map */}
       <header className="fixed left-0 top-0 z-50 flex h-20 w-full max-w-full items-center justify-between bg-gradient-to-b from-white/90 via-white/70 dark:from-black dark:via-black/80 to-transparent px-5 pt-4 pb-2 lg:hidden pointer-events-none">
