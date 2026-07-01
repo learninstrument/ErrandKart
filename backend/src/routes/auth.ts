@@ -30,7 +30,7 @@ authRouter.use(
 const getCookieOptions = () => ({
   httpOnly: true,
   secure: env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  sameSite: (env.NODE_ENV === 'production' ? 'none' : 'lax') as const,
   path: '/',
 });
 
