@@ -204,7 +204,12 @@ const getApiBaseUrl = () => {
   return env.API_BASE_URL ?? `http://localhost:${env.PORT}`;
 };
 
-const getAppOrigin = () => {
+const getAppOrigin = (request?: any) => {
+  if (request) {
+    const host = request.get('x-forwarded-host') || request.get('host');
+    const protocol = request.get('x-forwarded-proto') || request.protocol;
+    if (host) return `${protocol}://${host}`;
+  }
   return env.APP_ORIGIN ?? 'http://localhost:5173';
 };
 
@@ -636,7 +641,10 @@ authRouter.get(
   '/google/start',
   asyncHandler(async (request, response) => {
     const role = resolveProfileRole(String(request.query.role ?? 'customer'));
-    const redirectTo = `${getApiBaseUrl()}/api/auth/google/callback`;
+    const host = request.get('x-forwarded-host') || request.get('host');
+    const protocol = request.get('x-forwarded-proto') || request.protocol;
+    const base = host ? `${protocol}://${host}` : getApiBaseUrl();
+    const redirectTo = `${base}/api/auth/google/callback`;
 
     let pkceVerifier = '';
     const storage: Record<string, string> = {};
@@ -695,7 +703,7 @@ authRouter.get(
         oauth_error: error,
         oauth_error_description: errorDescription ?? 'Google authentication failed',
       });
-      return response.redirect(`${getAppOrigin()}/login?${params.toString()}`);
+      return response.redirect(`${getAppOrigin(request)}/login?${params.toString()}`);
     }
 
     const code = request.query.code ? String(request.query.code) : null;
@@ -704,7 +712,7 @@ authRouter.get(
         oauth_error: 'invalid_request',
         oauth_error_description: 'Missing OAuth code',
       });
-      return response.redirect(`${getAppOrigin()}/login?${params.toString()}`);
+      return response.redirect(`${getAppOrigin(request)}/login?${params.toString()}`);
     }
 
     const codeVerifier = request.cookies?.oauth_pkce_verifier;
@@ -739,7 +747,7 @@ authRouter.get(
         oauth_error: 'exchange_failed',
         oauth_error_description: 'Secure authentication failed. Please try again or use a different login method.',
       });
-      return response.redirect(`${getAppOrigin()}/login?${params.toString()}`);
+      return response.redirect(`${getAppOrigin(request)}/login?${params.toString()}`);
     }
 
     const roleFromCookie = request.cookies?.oauth_role ?? null;
@@ -764,7 +772,7 @@ authRouter.get(
         oauth_error: isForbidden ? 'access_denied' : 'server_error',
         oauth_error_description: isForbidden ? error.message : 'Failed to set up your profile. Please try again later.',
       });
-      return response.redirect(`${getAppOrigin()}/login?${params.toString()}`);
+      return response.redirect(`${getAppOrigin(request)}/login?${params.toString()}`);
     }
 
     setAuthCookies(response, data.session);
@@ -777,6 +785,6 @@ authRouter.get(
       next_path: nextPath,
     });
 
-    response.redirect(`${getAppOrigin()}/login?${params.toString()}`);
+    response.redirect(`${getAppOrigin(request)}/login?${params.toString()}`);
   })
 );
