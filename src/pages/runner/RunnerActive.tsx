@@ -141,6 +141,8 @@ export const RunnerActive: React.FC = () => {
       style: initialStyle,
       center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
       zoom: 14,
+      pitch: 60,
+      bearing: -17.6,
       attributionControl: false,
     });
 
@@ -156,69 +158,118 @@ export const RunnerActive: React.FC = () => {
     });
     observer.observe(document.documentElement, { attributes: true });
 
+    // 2. Add Pickup Marker
+    const pEl = document.createElement('div');
+    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
+    new mapboxgl.Marker({ element: pEl })
+      .setLngLat([pickupLocation[1], pickupLocation[0]])
+      .addTo(map);
+
+    // 3. Add Dropoff Marker
+    const dEl = document.createElement('div');
+    dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
+    new mapboxgl.Marker({ element: dEl })
+      .setLngLat([dropoffLocation[1], dropoffLocation[0]])
+      .addTo(map);
+
+    // 4. Add Runner Marker
+    const rEl = document.createElement('div');
+    rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            </div>`;
+    runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
+      .setLngLat([runnerLocation[1], runnerLocation[0]])
+      .addTo(map);
+
+    // Fit bounds
+    const bounds = new mapboxgl.LngLatBounds();
+    bounds.extend([runnerLocation[1], runnerLocation[0]]);
+    bounds.extend([pickupLocation[1], pickupLocation[0]]);
+    bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
+    map.fitBounds(bounds, { padding: 60 });
+
     // Wait for style load to add sources/layers
-    map.on('load', () => {
+    map.on('style.load', () => {
       // 1. Add route line
-      map.addSource('route', {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [runnerLocation[1], runnerLocation[0]],
-              [pickupLocation[1], pickupLocation[0]],
-              [dropoffLocation[1], dropoffLocation[0]]
-            ]
+      if (!map.getSource('route')) {
+        map.addSource('route', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [runnerLocation[1], runnerLocation[0]],
+                [pickupLocation[1], pickupLocation[0]],
+                [dropoffLocation[1], dropoffLocation[0]]
+              ]
+            }
           }
-        }
-      });
+        });
+      }
 
-      map.addLayer({
-        id: 'route',
-        type: 'line',
-        source: 'route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#2E8B57',
-          'line-width': 4,
-          'line-dasharray': [2, 2]
-        }
-      });
+      if (!map.getLayer('route')) {
+        map.addLayer({
+          id: 'route',
+          type: 'line',
+          source: 'route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#2E8B57',
+            'line-width': 4,
+            'line-dasharray': [2, 2]
+          }
+        });
+      }
 
-      // 2. Add Pickup Marker
-      const pEl = document.createElement('div');
-      pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
-      new mapboxgl.Marker({ element: pEl })
-        .setLngLat([pickupLocation[1], pickupLocation[0]])
-        .addTo(map);
+      // Add 3D Buildings
+      const layers = map.getStyle().layers;
+      if (!layers) return;
+      const labelLayerId = layers.find(
+        (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
+      )?.id;
 
-      // 3. Add Dropoff Marker
-      const dEl = document.createElement('div');
-      dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
-      new mapboxgl.Marker({ element: dEl })
-        .setLngLat([dropoffLocation[1], dropoffLocation[0]])
-        .addTo(map);
+      if (!map.getSource('composite')) return;
 
-      // 4. Add Runner Marker
-      const rEl = document.createElement('div');
-      rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-              </div>`;
-      runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
-        .setLngLat([runnerLocation[1], runnerLocation[0]])
-        .addTo(map);
-
-      // Fit bounds
-      const bounds = new mapboxgl.LngLatBounds();
-      bounds.extend([runnerLocation[1], runnerLocation[0]]);
-      bounds.extend([pickupLocation[1], pickupLocation[0]]);
-      bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
-      map.fitBounds(bounds, { padding: 60 });
+      if (!map.getLayer('3d-buildings')) {
+        map.addLayer(
+          {
+            id: '3d-buildings',
+            source: 'composite',
+            'source-layer': 'building',
+            filter: ['==', 'extrude', 'true'],
+            type: 'fill-extrusion',
+            minzoom: 15,
+            paint: {
+              'fill-extrusion-color': '#aaa',
+              'fill-extrusion-height': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'height']
+              ],
+              'fill-extrusion-base': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'min_height']
+              ],
+              'fill-extrusion-opacity': 0.6
+            }
+          },
+          labelLayerId
+        );
+      }
     });
 
     return () => {

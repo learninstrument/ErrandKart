@@ -19,6 +19,7 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
+  const hasInitialZoomed = useRef(false);
   const [isLocating, setIsLocating] = useState(false);
 
   // Initialize Map
@@ -35,8 +36,10 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: initialStyle,
-      center: [3.4558, 6.4474], // MapLibre uses [lng, lat]
+      center: [3.4558, 6.4474], // Mapbox uses [lng, lat]
       zoom: 14,
+      pitch: 60,
+      bearing: -17.6,
       attributionControl: false,
     });
 
@@ -74,6 +77,53 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       );
     }
 
+    // Add 3D Buildings
+    map.on('style.load', () => {
+      const layers = map.getStyle().layers;
+      if (!layers) return;
+      const labelLayerId = layers.find(
+        (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
+      )?.id;
+
+      if (!map.getSource('composite')) return;
+
+      if (!map.getLayer('3d-buildings')) {
+        map.addLayer(
+          {
+            id: '3d-buildings',
+            source: 'composite',
+            'source-layer': 'building',
+            filter: ['==', 'extrude', 'true'],
+            type: 'fill-extrusion',
+            minzoom: 15,
+            paint: {
+              'fill-extrusion-color': '#aaa',
+              'fill-extrusion-height': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'height']
+              ],
+              'fill-extrusion-base': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'min_height']
+              ],
+              'fill-extrusion-opacity': 0.6
+            }
+          },
+          labelLayerId
+        );
+      }
+    });
+
     return () => {
       map.remove();
       mapRef.current = null;
@@ -105,10 +155,17 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
     
     const map = mapRef.current;
     
-    // Clear old markers
-    Object.values(markersRef.current).forEach(marker => marker.remove());
-    markersRef.current = {};
-    
+    // Add new markers and update existing ones
+    const currentErrandIds = new Set(availableErrands.map(e => e.id));
+
+    // Remove markers for errands that are no longer available
+    Object.keys(markersRef.current).forEach(id => {
+      if (!currentErrandIds.has(id)) {
+        markersRef.current[id].remove();
+        delete markersRef.current[id];
+      }
+    });
+
     const bounds = new mapboxgl.LngLatBounds();
     let hasValidBounds = false;
 
@@ -117,24 +174,31 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
         const lng = Number(errand.lng);
         const lat = Number(errand.lat);
 
-        const el = document.createElement('div');
-        el.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`;
+        if (!markersRef.current[errand.id]) {
+          const el = document.createElement('div');
+          el.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`;
+          
+          const marker = new mapboxgl.Marker({ element: el })
+            .setLngLat([lng, lat])
+            .addTo(map);
+          
+          el.addEventListener('click', () => navigate(`/runner/errand/${errand.id}`));
+          
+          markersRef.current[errand.id] = marker;
+        } else {
+          // Update position if changed
+          markersRef.current[errand.id].setLngLat([lng, lat]);
+        }
         
-        const marker = new mapboxgl.Marker({ element: el })
-          .setLngLat([lng, lat])
-          .addTo(map);
-        
-        el.addEventListener('click', () => navigate(`/runner/errand/${errand.id}`));
-        
-        markersRef.current[errand.id] = marker;
         bounds.extend([lng, lat]);
         hasValidBounds = true;
       }
     });
     
-    // Auto-zoom map
-    if (hasValidBounds) {
+    // Auto-zoom map only initially
+    if (hasValidBounds && !hasInitialZoomed.current) {
       map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
+      hasInitialZoomed.current = true;
     }
   }, [availableErrands, navigate]);
 

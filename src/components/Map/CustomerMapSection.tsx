@@ -30,6 +30,8 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
       style: initialStyle,
       center: [3.4558, 6.4474], // [lng, lat]
       zoom: 14,
+      pitch: 60,
+      bearing: -17.6,
       attributionControl: false,
     });
 
@@ -64,6 +66,53 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     }
+
+    // Add 3D Buildings
+    map.on('style.load', () => {
+      const layers = map.getStyle().layers;
+      if (!layers) return;
+      const labelLayerId = layers.find(
+        (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
+      )?.id;
+
+      if (!map.getSource('composite')) return;
+
+      if (!map.getLayer('3d-buildings')) {
+        map.addLayer(
+          {
+            id: '3d-buildings',
+            source: 'composite',
+            'source-layer': 'building',
+            filter: ['==', 'extrude', 'true'],
+            type: 'fill-extrusion',
+            minzoom: 15,
+            paint: {
+              'fill-extrusion-color': '#aaa',
+              'fill-extrusion-height': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'height']
+              ],
+              'fill-extrusion-base': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'min_height']
+              ],
+              'fill-extrusion-opacity': 0.6
+            }
+          },
+          labelLayerId
+        );
+      }
+    });
 
     return () => {
       map.remove();
