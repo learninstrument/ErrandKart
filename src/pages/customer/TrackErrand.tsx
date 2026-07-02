@@ -494,9 +494,14 @@ export const TrackErrand: React.FC = () => {
       </main>
 
         {/* Desktop Sidebar (Right Panel) */}
-        <aside className="hidden lg:flex lg:w-[35%] lg:min-w-[380px] lg:max-w-[420px] h-full flex-col border-l border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] overflow-y-auto shadow-2xl z-30 pt-10">
+        <motion.aside 
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+          className="hidden lg:flex lg:w-[35%] lg:min-w-[380px] lg:max-w-[420px] h-full flex-col border-l border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] overflow-y-auto shadow-2xl z-30 pt-10"
+        >
           <StatusAndDetails />
-        </aside>
+        </motion.aside>
       </>
       )}
     </div>

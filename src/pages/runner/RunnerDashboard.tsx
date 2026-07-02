@@ -159,7 +159,12 @@ export const RunnerDashboard: React.FC = () => {
      DESKTOP: Left Sidebar Navigation
      ═════════════════════════════════════════ */
   const DesktopSidebar = () => (
-    <aside className="hidden lg:flex lg:w-[22%] lg:min-w-[240px] lg:max-w-[280px] h-full flex-col border-r border-black/5 dark:border-white/10 bg-white dark:bg-black p-6">
+    <motion.aside 
+      initial={{ x: -50, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="hidden lg:flex lg:w-[22%] lg:min-w-[240px] lg:max-w-[280px] h-full flex-col border-r border-black/5 dark:border-white/10 bg-white dark:bg-black p-6"
+    >
       {/* Logo */}
       <div className="mb-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -214,7 +219,7 @@ export const RunnerDashboard: React.FC = () => {
           <div className="h-2 w-2 rounded-full bg-market-green shadow-[0_0_10px_#2E8B57]" />
         </button>
       </div>
-    </aside>
+    </motion.aside>
   );
 
   /* ═════════════════════════════════════════
@@ -309,7 +314,12 @@ export const RunnerDashboard: React.FC = () => {
      DESKTOP: Right Utility Panel (Job Feed)
      ═════════════════════════════════════════ */
   const DesktopRightPanel = () => (
-    <aside className="hidden lg:flex lg:w-[32%] lg:min-w-[380px] lg:max-w-[440px] h-full flex-col border-l border-black/5 dark:border-white/10 bg-white dark:bg-black p-0 overflow-hidden">
+    <motion.aside 
+      initial={{ x: 50, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="hidden lg:flex lg:w-[32%] lg:min-w-[380px] lg:max-w-[440px] h-full flex-col border-l border-black/5 dark:border-white/10 bg-white dark:bg-black p-0 overflow-hidden"
+    >
 
       {/* Header Area */}
       <div className="p-8 pb-4">
@@ -391,7 +401,7 @@ export const RunnerDashboard: React.FC = () => {
           )}
         </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 
   return (

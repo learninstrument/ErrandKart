@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home, Store } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { TextArea } from '../../components/UI/TextArea';
@@ -181,7 +182,7 @@ export const PostErrand: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-white dark:bg-[#000000] text-black dark:text-white transition-colors duration-300">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/90 dark:bg-[#050505]/90 p-6 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-[#050505]/80 p-6 backdrop-blur-xl">
         <button
           onClick={() => navigate(-1)}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-all active:scale-95 -ml-2"
@@ -192,9 +193,14 @@ export const PostErrand: React.FC = () => {
         <div className="w-10" />
       </header>
 
-      <main className="mx-auto w-full max-w-2xl p-6 pb-36 animate-fade-in-up">
+      <motion.main 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        className="mx-auto w-full max-w-2xl p-6 pb-36"
+      >
         <div className="mb-6 rounded-[28px] border border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] p-6 text-black dark:text-white shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl">
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-kart-orange">Create request</p>
+          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.2em] text-kart-orange">Create request</p>
           <h3 className="mb-1 text-2xl font-black tracking-tight">Describe your errand</h3>
           <p className="text-sm text-black/60 dark:text-white/60">Set details, pickup & delivery points, and runner fee.</p>
         </div>
@@ -380,7 +386,7 @@ export const PostErrand: React.FC = () => {
             </div>
           </section>
         </div>
-      </main>
+      </motion.main>
 
       <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-2xl -translate-x-1/2 border-t border-black/5 dark:border-white/5 bg-white/95 dark:bg-[#050505]/95 p-5 backdrop-blur-xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-2xl rounded-t-[32px]">
         {error && (

@@ -139,7 +139,12 @@ export const CustomerDashboard: React.FC = () => {
      DESKTOP: Left Sidebar Navigation
      ═════════════════════════════════════════ */
   const DesktopSidebar = () => (
-    <aside className="hidden lg:flex lg:w-[22%] lg:min-w-[240px] lg:max-w-[280px] h-full flex-col border-r border-black/5 dark:border-white/10 bg-white dark:bg-black p-6">
+    <motion.aside 
+      initial={{ x: -50, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="hidden lg:flex lg:w-[22%] lg:min-w-[240px] lg:max-w-[280px] h-full flex-col border-r border-black/5 dark:border-white/10 bg-white dark:bg-black p-6"
+    >
       {/* Logo */}
       <div className="mb-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -192,7 +197,7 @@ export const CustomerDashboard: React.FC = () => {
           </div>
         </button>
       </div>
-    </aside>
+    </motion.aside>
   );
 
   /* ═════════════════════════════════════════
@@ -280,7 +285,12 @@ export const CustomerDashboard: React.FC = () => {
      DESKTOP: Right Utility Panel
      ═════════════════════════════════════════ */
   const DesktopRightPanel = () => (
-    <aside className="hidden lg:flex lg:w-[30%] lg:min-w-[340px] lg:max-w-[400px] h-full flex-col gap-6 overflow-y-auto border-l border-black/5 dark:border-white/10 bg-white dark:bg-black p-8">
+    <motion.aside 
+      initial={{ x: 50, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="hidden lg:flex lg:w-[30%] lg:min-w-[340px] lg:max-w-[400px] h-full flex-col gap-6 overflow-y-auto border-l border-black/5 dark:border-white/10 bg-white dark:bg-black p-8"
+    >
       {/* Wallet Card */}
       <section className="relative overflow-hidden rounded-3xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-8 backdrop-blur-xl">
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-kart-orange/20 blur-[50px]" />
@@ -386,7 +396,7 @@ export const CustomerDashboard: React.FC = () => {
           </div>
         )}
       </section>
-    </aside>
+    </motion.aside>
   );
 
 
