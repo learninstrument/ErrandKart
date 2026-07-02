@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload, Store, Navigation, MapPin, User } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
-import { motion, useAnimation } from 'framer-motion';
+import { motion } from 'framer-motion';
+import * as turf from '@turf/turf';
 import { Button } from '../../components/UI/Button';
 import { GPSKalmanFilter } from '../../utils/KalmanFilter';
 import { clearSession } from '../../utils/auth';
@@ -15,6 +16,8 @@ export const RunnerActive: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const runnerMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const gpsBufferRef = useRef<[number, number][]>([]);
+  const fullRouteFetchedRef = useRef<boolean>(false);
+  const routeGeometryRef = useRef<GeoJSON.LineString | null>(null);
 
   const [errand, setErrand] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -256,9 +259,9 @@ export const RunnerActive: React.FC = () => {
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#2E8B57',
-            'line-width': 4,
-            'line-dasharray': [2, 2]
+            'line-color': '#2E8B57', // Green
+            'line-width': 6,
+            'line-opacity': 0.8
           }
         });
       }
@@ -279,33 +282,62 @@ export const RunnerActive: React.FC = () => {
     // Update runner marker
     runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
 
-    // Fetch Route from Mapbox Directions API
-    const fetchRoute = async () => {
+    // Calculate heading/bearing to dynamically rotate the map
+    if (gpsBufferRef.current.length >= 2) {
+      const prevLoc = gpsBufferRef.current[gpsBufferRef.current.length - 2];
+      const currLoc = [runnerLocation[1], runnerLocation[0]];
+      const bearing = turf.bearing(turf.point(prevLoc), turf.point(currLoc));
+      
+      // Only rotate if the movement is significant (avoids jitter)
+      if (turf.distance(turf.point(prevLoc), turf.point(currLoc), { units: 'meters' }) > 2) {
+         map.easeTo({ bearing: bearing, duration: 1000, pitch: 60 });
+      }
+    }
+
+    // Fetch Route ONCE, then trim it
+    const manageRoute = async () => {
       try {
-        const token = import.meta.env.VITE_MAPBOX_TOKEN;
-        const coords = `${runnerLocation[1]},${runnerLocation[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
-        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&access_token=${token}`;
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data.routes && data.routes[0]) {
-          const routeGeometry = data.routes[0].geometry;
-          if (map.isStyleLoaded() && map.getSource('route')) {
-            const source = map.getSource('route') as mapboxgl.GeoJSONSource;
-            source.setData({
-              type: 'Feature',
-              properties: {},
-              geometry: routeGeometry
-            });
+        if (!fullRouteFetchedRef.current) {
+          const token = import.meta.env.VITE_MAPBOX_TOKEN;
+          const coords = `${runnerLocation[1]},${runnerLocation[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
+          const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&access_token=${token}`;
+          
+          const response = await fetch(url);
+          const data = await response.json();
+          
+          if (data.routes && data.routes[0]) {
+            const routeGeometry = data.routes[0].geometry;
+            routeGeometryRef.current = routeGeometry;
+            fullRouteFetchedRef.current = true;
+            if (map.isStyleLoaded() && map.getSource('route')) {
+              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
+              source.setData({
+                type: 'Feature',
+                properties: {},
+                geometry: routeGeometry
+              });
+            }
+          }
+        } else if (routeGeometryRef.current) {
+          // Trim the route behind the runner
+          const startPt = turf.point([runnerLocation[1], runnerLocation[0]]);
+          const endPt = turf.point([dropoffLocation[1], dropoffLocation[0]]);
+          try {
+            const sliced = turf.lineSlice(startPt, endPt, routeGeometryRef.current);
+            if (map.isStyleLoaded() && map.getSource('route')) {
+              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
+              source.setData(sliced);
+            }
+          } catch (e) {
+            console.warn("Turf line slice failed", e);
           }
         }
       } catch (error) {
-        console.error("Failed to fetch route", error);
+        console.error("Failed to manage route", error);
       }
     };
 
-    fetchRoute();
+    manageRoute();
   }, [runnerLocation, pickupLocation, dropoffLocation]);
 
   if (isLoading) {
@@ -406,39 +438,12 @@ export const RunnerActive: React.FC = () => {
   );
 
   const MobileBottomSheet = () => {
-    const controls = useAnimation();
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    // Initial state: collapse the sheet to show the map
-    useEffect(() => {
-      controls.start({ y: "60%" });
-    }, [controls]);
-
-    const handleDragEnd = (_event: any, info: any) => {
-      // Swipe down
-      if (info.offset.y > 50 || info.velocity.y > 500) {
-        controls.start({ y: "60%" });
-        setIsExpanded(false);
-      } 
-      // Swipe up
-      else if (info.offset.y < -50 || info.velocity.y < -500) {
-        controls.start({ y: "0%" });
-        setIsExpanded(true);
-      } else {
-        // Snap back to nearest
-        controls.start({ y: isExpanded ? "0%" : "60%" });
-      }
-    };
-
     return (
       <motion.div
         drag="y"
-        dragConstraints={{ top: 0, bottom: 400 }}
-        dragElastic={0.05}
-        onDragEnd={handleDragEnd}
-        animate={controls}
-        initial={{ y: "60%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        dragConstraints={{ top: 0, bottom: 500 }}
+        dragElastic={0.1}
+        initial={{ y: "40%" }}
         className="absolute bottom-0 left-0 z-40 flex h-[75%] w-full flex-col rounded-t-[2rem] bg-white/95 dark:bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
       >
         <div className="flex w-full justify-center pb-3 pt-4 cursor-grab active:cursor-grabbing">

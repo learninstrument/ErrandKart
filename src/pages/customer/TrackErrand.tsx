@@ -188,9 +188,9 @@ export const TrackErrand: React.FC = () => {
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#FF6600',
-            'line-width': 4,
-            'line-dasharray': [2, 2]
+            'line-color': '#2E8B57', // Green solid line for Uber feel
+            'line-width': 6,
+            'line-opacity': 0.8
           }
         });
       }
@@ -246,20 +246,22 @@ export const TrackErrand: React.FC = () => {
         if (!fullRouteFetchedRef.current) {
           const rLoc = runnerLocation || pickupLocation;
           const coords = `${rLoc[1]},${rLoc[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
-          const url = `${apiBaseUrl}/api/locations/directions?coords=${coords}`;
+          const token = import.meta.env.VITE_MAPBOX_TOKEN;
+          const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&access_token=${token}`;
           
           const response = await fetch(url);
           const data = await response.json();
           
-          if (data.geometry) {
-            routeGeometryRef.current = data.geometry;
+          if (data.routes && data.routes[0]) {
+            const routeGeometry = data.routes[0].geometry;
+            routeGeometryRef.current = routeGeometry;
             fullRouteFetchedRef.current = true;
             if (map.isStyleLoaded() && map.getSource('route')) {
               const source = map.getSource('route') as mapboxgl.GeoJSONSource;
               source.setData({
                 type: 'Feature',
                 properties: {},
-                geometry: data.geometry
+                geometry: routeGeometry
               });
             }
           }
