@@ -133,7 +133,8 @@ export const RunnerActive: React.FC = () => {
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
     
-    const initialStyle = 'mapbox://styles/mapbox/standard';
+    const isDark = document.documentElement.classList.contains('dark');
+    const initialStyle = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -151,9 +152,7 @@ export const RunnerActive: React.FC = () => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           const isDarkNow = document.documentElement.classList.contains('dark');
-          if (map.getStyle()?.name?.toLowerCase().includes('standard')) {
-            map.setConfigProperty('basemap', 'lightPreset', isDarkNow ? 'night' : 'day');
-          }
+          map.setStyle(isDarkNow ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11');
         }
       });
     });
@@ -191,11 +190,6 @@ export const RunnerActive: React.FC = () => {
 
     // Wait for style load to add sources/layers
     map.on('style.load', () => {
-      // Set initial theme for Standard style
-      const isDarkNow = document.documentElement.classList.contains('dark');
-      if (map.getStyle()?.name?.toLowerCase().includes('standard')) {
-        map.setConfigProperty('basemap', 'lightPreset', isDarkNow ? 'night' : 'day');
-      }
 
       // 1. Add route line
       if (!map.getSource('route')) {
@@ -231,6 +225,51 @@ export const RunnerActive: React.FC = () => {
             'line-dasharray': [2, 2]
           }
         });
+      }
+
+      // Add 3D Buildings
+      const layers = map.getStyle().layers;
+      if (!layers) return;
+      const labelLayerId = layers.find(
+        (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
+      )?.id;
+
+      if (!map.getSource('composite')) return;
+
+      if (!map.getLayer('3d-buildings')) {
+        map.addLayer(
+          {
+            id: '3d-buildings',
+            source: 'composite',
+            'source-layer': 'building',
+            filter: ['==', 'extrude', 'true'],
+            type: 'fill-extrusion',
+            minzoom: 15,
+            paint: {
+              'fill-extrusion-color': '#aaa',
+              'fill-extrusion-height': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'height']
+              ],
+              'fill-extrusion-base': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15,
+                0,
+                15.05,
+                ['get', 'min_height']
+              ],
+              'fill-extrusion-opacity': 0.6
+            }
+          },
+          labelLayerId
+        );
       }
     });
 
@@ -482,10 +521,8 @@ export const RunnerActive: React.FC = () => {
           {/* Real Leaflet Map Container */}
           <div ref={mapContainerRef} className="h-full w-full z-0" />
           
-          <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,1)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,1)] bg-white/10 dark:bg-black/40" />
-          
-          {/* Mobile Header Over Map */}
-          <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 bg-gradient-to-b from-white/90 dark:from-[#0A0A0A]/80 to-transparent backdrop-blur-xl pointer-events-none lg:hidden">
+          {/* Mobile Overlay Header */}
+          <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 backdrop-blur-xl pointer-events-none lg:hidden">
             <button onClick={() => navigate('/runner/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors pointer-events-auto">
               <ArrowLeft size={20} className="text-black dark:text-white" />
             </button>

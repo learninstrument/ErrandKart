@@ -26,11 +26,9 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
-    const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    mapboxgl.accessToken = token || '';
-    
-    // Use Mapbox Standard Style for beautiful native themes
-    const initialStyle = 'mapbox://styles/mapbox/standard';
+    // Use standard light/dark v11 styles for reliable themes
+    const isDark = document.documentElement.classList.contains('dark');
+    const initialStyle = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -76,12 +74,6 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       );
     }
     
-    map.on('style.load', () => {
-      // Set initial theme for Standard style
-      const isDark = document.documentElement.classList.contains('dark');
-      if (map.getStyle()?.name?.toLowerCase().includes('standard')) {
-        map.setConfigProperty('basemap', 'lightPreset', isDark ? 'night' : 'day');
-      }
     });
 
     return () => {
@@ -98,10 +90,8 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           const isDark = document.documentElement.classList.contains('dark');
-          const map = mapRef.current;
-          if (map && map.getStyle()?.name?.toLowerCase().includes('standard')) {
-            map.setConfigProperty('basemap', 'lightPreset', isDark ? 'night' : 'day');
-          }
+          const style = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
+          mapRef.current?.setStyle(style);
         }
       });
     });
@@ -187,9 +177,6 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       {/* Real Mapbox Map Container */}
       <div ref={mapContainerRef} className="h-full w-full z-0" />
 
-      {/* Ambient overlay to blend with dark mode */}
-      <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(255,255,255,0.8)] dark:shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] bg-white/10 dark:bg-black/20" />
-
       {/* Locate Me Button - Positioned right-center to avoid overlaps but stay accessible */}
       <button
         onClick={handleLocateMe}
@@ -208,7 +195,7 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       </button>
 
       {/* Mobile: Top Header bar over Map */}
-      <header className="fixed left-0 top-0 z-50 flex h-20 w-full max-w-full items-center justify-between bg-gradient-to-b from-white/90 via-white/70 dark:from-black dark:via-black/80 to-transparent px-5 pt-4 pb-2 lg:hidden pointer-events-none">
+      <header className="fixed left-0 top-0 z-50 flex h-20 w-full max-w-full items-center justify-between px-5 pt-4 pb-2 lg:hidden pointer-events-none">
         <div className="flex items-center gap-3 pointer-events-auto">
           <button
             onClick={() => navigate('/runner/profile')}
