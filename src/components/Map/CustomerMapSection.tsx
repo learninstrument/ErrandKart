@@ -64,8 +64,6 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
       );
     }
 
-    });
-
     return () => {
       map.remove();
       mapRef.current = null;

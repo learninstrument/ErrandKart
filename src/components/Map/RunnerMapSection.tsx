@@ -74,8 +74,6 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       );
     }
     
-    });
-
     return () => {
       map.remove();
       mapRef.current = null;
