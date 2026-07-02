@@ -91,8 +91,7 @@ export const TrackErrand: React.FC = () => {
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
-    const isDark = document.documentElement.classList.contains('dark');
-    const initialStyle = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
+    const initialStyle = 'mapbox://styles/mapbox/standard';
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -110,7 +109,11 @@ export const TrackErrand: React.FC = () => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           const isDarkNow = document.documentElement.classList.contains('dark');
-          map.setStyle(isDarkNow ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11');
+          try {
+            map.setConfigProperty('basemap', 'lightPreset', isDarkNow ? 'night' : 'day');
+          } catch (e) {
+            console.warn('Could not set lightPreset', e);
+          }
         }
       });
     });
@@ -145,6 +148,12 @@ export const TrackErrand: React.FC = () => {
     map.fitBounds(bounds, { padding: 60 });
 
     map.on('style.load', () => {
+      const isDarkNow = document.documentElement.classList.contains('dark');
+      try {
+        map.setConfigProperty('basemap', 'lightPreset', isDarkNow ? 'night' : 'day');
+      } catch (e) {
+        console.warn('Could not set lightPreset', e);
+      }
 
       // 1. Add Route line
       if (!map.getSource('route')) {
@@ -182,50 +191,6 @@ export const TrackErrand: React.FC = () => {
         });
       }
 
-      // Add 3D Buildings
-      const layers = map.getStyle()?.layers;
-      if (!layers) return;
-      const labelLayerId = layers.find(
-        (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
-      )?.id;
-
-      if (!map.getSource('composite')) return;
-
-      if (!map.getLayer('3d-buildings')) {
-        map.addLayer(
-          {
-            id: '3d-buildings',
-            source: 'composite',
-            'source-layer': 'building',
-            filter: ['==', 'extrude', 'true'],
-            type: 'fill-extrusion',
-            minzoom: 15,
-            paint: {
-              'fill-extrusion-color': '#aaa',
-              'fill-extrusion-height': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                15,
-                0,
-                15.05,
-                ['get', 'height']
-              ],
-              'fill-extrusion-base': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                15,
-                0,
-                15.05,
-                ['get', 'min_height']
-              ],
-              'fill-extrusion-opacity': 0.6
-            }
-          },
-          labelLayerId
-        );
-      }
     });
 
     return () => {

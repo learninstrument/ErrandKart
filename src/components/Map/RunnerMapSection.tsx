@@ -29,9 +29,8 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
 
-    // Use standard light/dark v11 styles for reliable themes
-    const isDark = document.documentElement.classList.contains('dark');
-    const initialStyle = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
+    // Use Mapbox Standard Style
+    const initialStyle = 'mapbox://styles/mapbox/standard';
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -77,6 +76,15 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       );
     }
     
+    map.on('style.load', () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      try {
+        map.setConfigProperty('basemap', 'lightPreset', isDark ? 'night' : 'day');
+      } catch (e) {
+        console.warn('Could not set lightPreset', e);
+      }
+    });
+
     return () => {
       map.remove();
       mapRef.current = null;
@@ -91,8 +99,13 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           const isDark = document.documentElement.classList.contains('dark');
-          const style = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
-          mapRef.current?.setStyle(style);
+          if (mapRef.current) {
+            try {
+              mapRef.current.setConfigProperty('basemap', 'lightPreset', isDark ? 'night' : 'day');
+            } catch (e) {
+              console.warn('Could not set lightPreset', e);
+            }
+          }
         }
       });
     });
