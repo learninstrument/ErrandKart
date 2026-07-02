@@ -101,6 +101,8 @@ export const RunnerDashboard: React.FC = () => {
     icon: getCategoryIcon(errand.category),
   })), [filteredErrands]);
 
+  const sheetControls = useAnimation();
+
   /* ═════════════════════════════════════════
      DESKTOP: Left Sidebar Navigation
      ═════════════════════════════════════════ */
@@ -167,16 +169,14 @@ export const RunnerDashboard: React.FC = () => {
      MOBILE BOTTOM SHEET: Feed
      ═════════════════════════════════════════ */
   const MobileBottomSheet = () => {
-    const controls = useAnimation();
-
     const handleDragEnd = (_event: any, info: any) => {
       // If dragged down significantly, collapse it slightly
       if (info.offset.y > 50) {
-        controls.start({ y: "55%" });
+        sheetControls.start({ y: "55%" });
       }
       // If dragged up, snap back to fully expanded
       else if (info.offset.y < -50) {
-        controls.start({ y: "0%" });
+        sheetControls.start({ y: "0%" });
       }
     };
 
@@ -186,7 +186,7 @@ export const RunnerDashboard: React.FC = () => {
         dragConstraints={{ top: 0, bottom: 300 }}
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
-        animate={controls}
+        animate={sheetControls}
         initial={{ y: "0%" }}
         className="absolute bottom-0 left-0 z-40 flex h-[65%] w-full flex-col rounded-t-[2rem] border-t border-black/10 dark:border-white/20 bg-white/95 dark:bg-black/90 pb-20 shadow-[0_-20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_60px_rgba(0,0,0,0.8)] backdrop-blur-3xl lg:hidden"
       >
@@ -342,28 +342,26 @@ export const RunnerDashboard: React.FC = () => {
     </aside>
   );
 
-
-
   return (
     <div className="flex h-[100dvh] w-full overflow-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-market-green selection:text-white transition-colors duration-300">
       {/* Desktop Sidebar */}
-<DesktopSidebar />
+      {DesktopSidebar()}
 
-{/* Center: Map Canvas */ }
-<main className="relative flex-1">
-  <RunnerMapSection initials={initials} availableErrands={availableErrands} />
-  {/* Mobile Bottom Sheet */}
-  <MobileBottomSheet />
-</main>
+      {/* Center: Map Canvas */}
+      <main className="relative flex-1">
+        <RunnerMapSection initials={initials} availableErrands={availableErrands} />
+        {/* Mobile Bottom Sheet */}
+        {MobileBottomSheet()}
+      </main>
 
-{/* Desktop Right Panel (Job Feed) */ }
-<DesktopRightPanel />
+      {/* Desktop Right Panel (Job Feed) */}
+      {DesktopRightPanel()}
 
-{/* Mobile Bottom Navigation */ }
-<div className="lg:hidden">
-  <RunnerBottomNav activeTab="available" />
-</div>
-    </div >
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden">
+        <RunnerBottomNav activeTab="available" />
+      </div>
+    </div>
   );
 };
 
