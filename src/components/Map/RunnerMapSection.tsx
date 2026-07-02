@@ -29,17 +29,16 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
     
-    // Determine initial style based on current theme class
-    const isDark = document.documentElement.classList.contains('dark');
-    const initialStyle = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
+    // Use Mapbox Standard Style for beautiful native themes
+    const initialStyle = 'mapbox://styles/mapbox/standard';
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: initialStyle,
       center: [3.4558, 6.4474], // Mapbox uses [lng, lat]
       zoom: 14,
-      pitch: 60,
-      bearing: -17.6,
+      pitch: 0,
+      bearing: 0,
       attributionControl: false,
     });
 
@@ -76,51 +75,12 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     }
-
-    // Add 3D Buildings
+    
     map.on('style.load', () => {
-      const layers = map.getStyle().layers;
-      if (!layers) return;
-      const labelLayerId = layers.find(
-        (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
-      )?.id;
-
-      if (!map.getSource('composite')) return;
-
-      if (!map.getLayer('3d-buildings')) {
-        map.addLayer(
-          {
-            id: '3d-buildings',
-            source: 'composite',
-            'source-layer': 'building',
-            filter: ['==', 'extrude', 'true'],
-            type: 'fill-extrusion',
-            minzoom: 15,
-            paint: {
-              'fill-extrusion-color': '#aaa',
-              'fill-extrusion-height': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                15,
-                0,
-                15.05,
-                ['get', 'height']
-              ],
-              'fill-extrusion-base': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                15,
-                0,
-                15.05,
-                ['get', 'min_height']
-              ],
-              'fill-extrusion-opacity': 0.6
-            }
-          },
-          labelLayerId
-        );
+      // Set initial theme for Standard style
+      const isDark = document.documentElement.classList.contains('dark');
+      if (map.getStyle()?.name?.toLowerCase().includes('standard')) {
+        map.setConfigProperty('basemap', 'lightPreset', isDark ? 'night' : 'day');
       }
     });
 
@@ -138,8 +98,10 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           const isDark = document.documentElement.classList.contains('dark');
-          const style = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
-          mapRef.current?.setStyle(style);
+          const map = mapRef.current;
+          if (map && map.getStyle()?.name?.toLowerCase().includes('standard')) {
+            map.setConfigProperty('basemap', 'lightPreset', isDark ? 'night' : 'day');
+          }
         }
       });
     });
