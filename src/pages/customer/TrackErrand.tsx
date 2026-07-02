@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, MessageSquare, CheckCircle, Navigation } from 'lucide-react';
-import maplibregl from 'maplibre-gl';
+import mapboxgl from 'mapbox-gl';
 import { motion } from 'framer-motion';
 
 import { clearSession } from '../../utils/auth';
 
 export const TrackErrand: React.FC = () => {
   const navigate = useNavigate();
-  const mapRef = useRef<maplibregl.Map | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const runnerMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const runnerMarkerRef = useRef<mapboxgl.Marker | null>(null);
 
   const [order, setOrder] = useState<any>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
@@ -90,7 +90,7 @@ export const TrackErrand: React.FC = () => {
     if (!order || !mapContainerRef.current || mapRef.current) return;
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    const map = new maplibregl.Map({
+    const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
       center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
@@ -136,26 +136,26 @@ export const TrackErrand: React.FC = () => {
       // 2. Add Pickup Marker
       const pEl = document.createElement('div');
       pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
-      new maplibregl.Marker({ element: pEl })
+      new mapboxgl.Marker({ element: pEl })
         .setLngLat([pickupLocation[1], pickupLocation[0]])
         .addTo(map);
 
       // 3. Add Dropoff Marker
       const dEl = document.createElement('div');
       dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
-      new maplibregl.Marker({ element: dEl })
+      new mapboxgl.Marker({ element: dEl })
         .setLngLat([dropoffLocation[1], dropoffLocation[0]])
         .addTo(map);
 
       // 4. Add Runner Marker
       const rEl = document.createElement('div');
       rEl.innerHTML = `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">moped</span></div>`;
-      runnerMarkerRef.current = new maplibregl.Marker({ element: rEl })
+      runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
         .setLngLat([runnerLocation[1], runnerLocation[0]])
         .addTo(map);
 
       // Fit bounds
-      const bounds = new maplibregl.LngLatBounds();
+      const bounds = new mapboxgl.LngLatBounds();
       bounds.extend([pickupLocation[1], pickupLocation[0]]);
       bounds.extend([runnerLocation[1], runnerLocation[0]]);
       bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
@@ -177,7 +177,7 @@ export const TrackErrand: React.FC = () => {
 
     // Update route line
     if (map.isStyleLoaded() && map.getSource('route')) {
-      const source = map.getSource('route') as maplibregl.GeoJSONSource;
+      const source = map.getSource('route') as mapboxgl.GeoJSONSource;
       source.setData({
         type: 'Feature',
         properties: {},
@@ -412,3 +412,4 @@ export const TrackErrand: React.FC = () => {
     </div>
   );
 };
+

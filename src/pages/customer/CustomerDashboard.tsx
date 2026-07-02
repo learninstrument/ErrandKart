@@ -22,7 +22,7 @@ import { Button } from '../../components/UI/Button';
 import { ThemeSwitcher } from '../../components/UI/ThemeSwitcher';
 import { clearSession } from '../../utils/auth';
 import { motion, useAnimation } from 'framer-motion';
-import maplibregl from 'maplibre-gl';
+import mapboxgl from 'mapbox-gl';
 
 export const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -397,14 +397,14 @@ export const CustomerDashboard: React.FC = () => {
      ═════════════════════════════════════════ */
   const MapSection = () => {
     const mapContainerRef = React.useRef<HTMLDivElement | null>(null);
-    const mapRef = React.useRef<maplibregl.Map | null>(null);
+    const mapRef = React.useRef<mapboxgl.Map | null>(null);
     const [isLocating, setIsLocating] = React.useState(false);
 
     React.useEffect(() => {
       if (!mapContainerRef.current || mapRef.current) return;
 
       const token = import.meta.env.VITE_MAPBOX_TOKEN;
-      const map = new maplibregl.Map({
+      const map = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
         center: [3.4558, 6.4474], // [lng, lat]
@@ -415,7 +415,7 @@ export const CustomerDashboard: React.FC = () => {
       // Customer location marker (will be updated after GPS)
       const el = document.createElement('div');
       el.innerHTML = `<div style="width:24px;height:24px;border-radius:999px;background:#3B82F6;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.5); border: 2px solid white;"></div>`;
-      let userMarker = new maplibregl.Marker({ element: el })
+      let userMarker = new mapboxgl.Marker({ element: el })
         .setLngLat([3.4558, 6.4474])
         .addTo(map);
 
@@ -563,3 +563,4 @@ export const CustomerDashboard: React.FC = () => {
     </div>
   );
 };
+

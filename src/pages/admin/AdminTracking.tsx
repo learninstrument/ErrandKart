@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import maplibregl from 'maplibre-gl';
+import mapboxgl from 'mapbox-gl';
 import { Phone, Navigation, MapPin, Wallet, Timer, Store } from 'lucide-react';
 import { AdminLayout } from './AdminLayout';
 import type { ActiveErrandTrack } from './adminData';
@@ -12,10 +12,10 @@ export const AdminTracking: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
-  const pickupMarkerRef = useRef<maplibregl.Marker | null>(null);
-  const dropoffMarkerRef = useRef<maplibregl.Marker | null>(null);
-  const runnerMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const pickupMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  const dropoffMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  const runnerMarkerRef = useRef<mapboxgl.Marker | null>(null);
 
   const selectedErrand = useMemo(
     () => errands.find(item => item.orderId === selectedOrderId) ?? errands[0] ?? null,
@@ -75,7 +75,7 @@ export const AdminTracking: React.FC = () => {
     if (!selectedErrand || !mapContainerRef.current || mapRef.current) return;
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    const map = new maplibregl.Map({
+    const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
       center: [selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]],
@@ -120,19 +120,19 @@ export const AdminTracking: React.FC = () => {
 
       const pEl = document.createElement('div');
       pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
-      const pickupMarker = new maplibregl.Marker({ element: pEl })
+      const pickupMarker = new mapboxgl.Marker({ element: pEl })
         .setLngLat([selectedErrand.pickupLocation[1], selectedErrand.pickupLocation[0]])
         .addTo(map);
 
       const dEl = document.createElement('div');
       dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
-      const dropoffMarker = new maplibregl.Marker({ element: dEl })
+      const dropoffMarker = new mapboxgl.Marker({ element: dEl })
         .setLngLat([selectedErrand.dropoffLocation[1], selectedErrand.dropoffLocation[0]])
         .addTo(map);
 
       const rEl = document.createElement('div');
       rEl.innerHTML = `<div style="width:28px;height:28px;border-radius:12px;background:#FF6600;color:#ffffff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(255,102,0,0.45);">R</div>`;
-      const runnerMarker = new maplibregl.Marker({ element: rEl })
+      const runnerMarker = new mapboxgl.Marker({ element: rEl })
         .setLngLat([selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]])
         .addTo(map);
 
@@ -140,7 +140,7 @@ export const AdminTracking: React.FC = () => {
       dropoffMarkerRef.current = dropoffMarker;
       runnerMarkerRef.current = runnerMarker;
 
-      const bounds = new maplibregl.LngLatBounds();
+      const bounds = new mapboxgl.LngLatBounds();
       bounds.extend([selectedErrand.pickupLocation[1], selectedErrand.pickupLocation[0]]);
       bounds.extend([selectedErrand.dropoffLocation[1], selectedErrand.dropoffLocation[0]]);
       map.fitBounds(bounds, { padding: 50 });
@@ -166,7 +166,7 @@ export const AdminTracking: React.FC = () => {
 
     const map = mapRef.current;
     if (map.isStyleLoaded() && map.getSource('route')) {
-      const source = map.getSource('route') as maplibregl.GeoJSONSource;
+      const source = map.getSource('route') as mapboxgl.GeoJSONSource;
       source.setData({
         type: 'Feature',
         properties: {},
@@ -370,4 +370,5 @@ const mapErrand = (order: ActiveErrandApi): ActiveErrandTrack | null => {
     supermarketContact: order.supermarket?.phone ?? undefined,
   };
 };
+
 

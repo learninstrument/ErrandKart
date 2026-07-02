@@ -22,7 +22,7 @@ import { Button } from '../../components/UI/Button';
 import { ThemeSwitcher } from '../../components/UI/ThemeSwitcher';
 import { clearSession } from '../../utils/auth';
 import { motion, useAnimation } from 'framer-motion';
-import maplibregl from 'maplibre-gl';
+import mapboxgl from 'mapbox-gl';
 
 export const RunnerDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -348,15 +348,15 @@ export const RunnerDashboard: React.FC = () => {
      ═════════════════════════════════════════ */
   const MapSection = () => {
     const mapContainerRef = React.useRef<HTMLDivElement | null>(null);
-    const mapRef = React.useRef<maplibregl.Map | null>(null);
-    const markersRef = React.useRef<{ [key: string]: maplibregl.Marker }>({});
+    const mapRef = React.useRef<mapboxgl.Map | null>(null);
+    const markersRef = React.useRef<{ [key: string]: mapboxgl.Marker }>({});
     const [isLocating, setIsLocating] = React.useState(false);
 
     React.useEffect(() => {
       if (!mapContainerRef.current || mapRef.current) return;
 
       const token = import.meta.env.VITE_MAPBOX_TOKEN;
-      const map = new maplibregl.Map({
+      const map = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
         center: [3.4558, 6.4474], // MapLibre uses [lng, lat]
@@ -369,7 +369,7 @@ export const RunnerDashboard: React.FC = () => {
       el.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
               </div>`;
-      let runnerMarker = new maplibregl.Marker({ element: el })
+      let runnerMarker = new mapboxgl.Marker({ element: el })
         .setLngLat([3.4558, 6.4474])
         .addTo(map);
 
@@ -414,7 +414,7 @@ export const RunnerDashboard: React.FC = () => {
       Object.values(markersRef.current).forEach(marker => marker.remove());
       markersRef.current = {};
       
-      const bounds = new maplibregl.LngLatBounds();
+      const bounds = new mapboxgl.LngLatBounds();
       let hasValidBounds = false;
 
       availableErrands.forEach(errand => {
@@ -425,7 +425,7 @@ export const RunnerDashboard: React.FC = () => {
           const el = document.createElement('div');
           el.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`;
           
-          const marker = new maplibregl.Marker({ element: el })
+          const marker = new mapboxgl.Marker({ element: el })
             .setLngLat([lng, lat])
             .addTo(map);
           
@@ -536,3 +536,4 @@ export const RunnerDashboard: React.FC = () => {
     </div>
   );
 };
+
