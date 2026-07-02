@@ -91,15 +91,28 @@ export const TrackErrand: React.FC = () => {
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
-      const map = new mapboxgl.Map({
+    const isDark = document.documentElement.classList.contains('dark');
+    const initialStyle = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
+
+    const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: `mapbox://styles/mapbox/dark-v11`,
+      style: initialStyle,
       center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
       zoom: 13,
       attributionControl: false,
     });
 
     mapRef.current = map;
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const isDarkNow = document.documentElement.classList.contains('dark');
+          map.setStyle(isDarkNow ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11');
+        }
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true });
 
     map.on('load', () => {
       // 1. Add Route line
@@ -164,6 +177,7 @@ export const TrackErrand: React.FC = () => {
     });
 
     return () => {
+      observer.disconnect();
       map.remove();
       mapRef.current = null;
     };
@@ -176,22 +190,33 @@ export const TrackErrand: React.FC = () => {
     // Update runner marker
     runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
 
-    // Update route line
-    if (map.isStyleLoaded() && map.getSource('route')) {
-      const source = map.getSource('route') as mapboxgl.GeoJSONSource;
-      source.setData({
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            [pickupLocation[1], pickupLocation[0]],
-            [runnerLocation[1], runnerLocation[0]],
-            [dropoffLocation[1], dropoffLocation[0]]
-          ]
+    // Fetch Route from Mapbox Directions API
+    const fetchRoute = async () => {
+      try {
+        const token = import.meta.env.VITE_MAPBOX_TOKEN;
+        const coords = `${runnerLocation[1]},${runnerLocation[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
+        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&access_token=${token}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.routes && data.routes[0]) {
+          const routeGeometry = data.routes[0].geometry;
+          if (map.isStyleLoaded() && map.getSource('route')) {
+            const source = map.getSource('route') as mapboxgl.GeoJSONSource;
+            source.setData({
+              type: 'Feature',
+              properties: {},
+              geometry: routeGeometry
+            });
+          }
         }
-      });
-    }
+      } catch (error) {
+        console.error("Failed to fetch route", error);
+      }
+    };
+
+    fetchRoute();
   }, [runnerLocation, pickupLocation, dropoffLocation]);
 
   const StatusAndDetails = () => (
