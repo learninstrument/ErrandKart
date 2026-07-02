@@ -75,9 +75,10 @@ export const AdminTracking: React.FC = () => {
     if (!selectedErrand || !mapContainerRef.current || mapRef.current) return;
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    const map = new mapboxgl.Map({
+    mapboxgl.accessToken = token || '';
+      const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11`,
       center: [selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]],
       zoom: 13,
       attributionControl: false,
@@ -370,5 +371,6 @@ const mapErrand = (order: ActiveErrandApi): ActiveErrandTrack | null => {
     supermarketContact: order.supermarket?.phone ?? undefined,
   };
 };
+
 
 

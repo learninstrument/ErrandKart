@@ -90,9 +90,10 @@ export const TrackErrand: React.FC = () => {
     if (!order || !mapContainerRef.current || mapRef.current) return;
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
-    const map = new mapboxgl.Map({
+    mapboxgl.accessToken = token || '';
+      const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11`,
       center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
       zoom: 13,
       attributionControl: false,
@@ -412,4 +413,5 @@ export const TrackErrand: React.FC = () => {
     </div>
   );
 };
+
 

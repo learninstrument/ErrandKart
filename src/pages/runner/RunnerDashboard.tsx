@@ -356,9 +356,10 @@ export const RunnerDashboard: React.FC = () => {
       if (!mapContainerRef.current || mapRef.current) return;
 
       const token = import.meta.env.VITE_MAPBOX_TOKEN;
+      mapboxgl.accessToken = token || '';
       const map = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+        style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11`,
         center: [3.4558, 6.4474], // MapLibre uses [lng, lat]
         zoom: 14,
         attributionControl: false,
@@ -536,4 +537,5 @@ export const RunnerDashboard: React.FC = () => {
     </div>
   );
 };
+
 
