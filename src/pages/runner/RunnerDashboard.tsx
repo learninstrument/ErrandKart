@@ -30,6 +30,7 @@ export const RunnerDashboard: React.FC = () => {
   const [errands, setErrands] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [, setRunnerLocation] = useState<{ lat: number, lng: number } | null>(null);
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
@@ -43,8 +44,9 @@ export const RunnerDashboard: React.FC = () => {
       })
       .catch(console.error);
 
-    const fetchErrands = () => {
-      fetch(`${apiBaseUrl}/api/errands/available`, { method: 'GET', credentials: 'include' })
+    const fetchErrands = (lat?: number, lng?: number) => {
+      const qs = lat && lng ? `?lat=${lat}&lng=${lng}` : '';
+      fetch(`${apiBaseUrl}/api/errands/available${qs}`, { method: 'GET', credentials: 'include' })
         .then(res => {
           if (res.status === 401) {
             clearSession();
@@ -60,9 +62,54 @@ export const RunnerDashboard: React.FC = () => {
         .finally(() => setIsLoading(false));
     };
 
+    // Initial fetch without location
     fetchErrands();
-    const interval = setInterval(fetchErrands, 10000);
-    return () => clearInterval(interval);
+    
+    let intervalId: ReturnType<typeof setInterval>;
+
+    // Track location and fetch sorted errands
+    if (navigator.geolocation) {
+      const watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const { latitude, longitude, accuracy } = pos.coords;
+          if (accuracy > 50) return; // Ignore very bad points
+          
+          setRunnerLocation({ lat: latitude, lng: longitude });
+          
+          // Update location on backend
+          fetch(`${apiBaseUrl}/api/auth/me/location`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ lat: latitude, lng: longitude }),
+          }).catch(console.error);
+
+          // Fetch sorted errands
+          fetchErrands(latitude, longitude);
+        },
+        console.warn,
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+
+      // We don't need the setInterval if watchPosition triggers on movement, 
+      // but we'll keep a fallback interval in case they are completely stationary.
+      intervalId = setInterval(() => {
+        // Fetch using the latest known location from state
+        setRunnerLocation(prev => {
+          if (prev) fetchErrands(prev.lat, prev.lng);
+          else fetchErrands();
+          return prev;
+        });
+      }, 15000);
+
+      return () => {
+        navigator.geolocation.clearWatch(watchId);
+        clearInterval(intervalId);
+      };
+    } else {
+      intervalId = setInterval(fetchErrands, 15000);
+      return () => clearInterval(intervalId);
+    }
   }, [apiBaseUrl, navigate]);
 
   const nameParts = fullName.trim().split(' ');
@@ -96,7 +143,7 @@ export const RunnerDashboard: React.FC = () => {
     lat: errand.pickup_lat,
     lng: errand.pickup_lng,
     time: new Date(errand.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-    distance: 'Nearby',
+    distance: errand.distance ? `${(errand.distance / 1000).toFixed(1)} km away` : 'Nearby',
     items: `${errand.description?.split('\n').length || 1} items`,
     icon: getCategoryIcon(errand.category),
   })), [filteredErrands]);

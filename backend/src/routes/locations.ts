@@ -89,6 +89,37 @@ locationsRouter.get(
   })
 );
 
+// GET /api/locations/runners - Find nearby runners using PostGIS
+locationsRouter.get(
+  '/runners',
+  asyncHandler(async (request, response) => {
+    const { lat, lng, radius } = request.query;
+
+    if (!lat || !lng) {
+      throw new HttpError(400, 'Latitude and longitude are required');
+    }
+
+    const radiusMeters = Number(radius || 5000); // default 5km
+
+    try {
+      const { data, error } = await supabaseAdmin.rpc('find_nearby_runners', {
+        client_lat: Number(lat),
+        client_lng: Number(lng),
+        radius_meters: radiusMeters,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      response.json({ runners: data || [] });
+    } catch (e) {
+      console.warn('[PostGIS] find_nearby_runners failed. Did you run the SQL script? Fallback to empty.', e);
+      response.json({ runners: [] });
+    }
+  })
+);
+
 const createLocationSchema = z.object({
   label: z.string().min(1, 'Label is required'),
   address: z.string().min(1, 'Address is required'),

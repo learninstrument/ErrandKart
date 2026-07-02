@@ -103,6 +103,8 @@ errandsRouter.get(
   '/available',
   asyncHandler(async (request, response) => {
     await requireAuth(request); // Just ensures user is logged in
+    const { lat, lng } = request.query;
+    
     const { data, error } = await supabaseAdmin
       .from('errands')
       .select('*, customer:customer_id(id, full_name, phone_number)')
@@ -111,14 +113,40 @@ errandsRouter.get(
 
     if (error) throw new HttpError(500, 'Failed to fetch available errands', error);
 
-    const formatted = (data ?? []).map(o => {
+    let formatted = (data ?? []).map(o => {
       const budget = o.budget_customer_fee ?? o.budget_service_fee ?? 0;
+      
+      let distance = null;
+      if (lat && lng && o.pickup_lat && o.pickup_lng) {
+        // Simple Haversine distance in meters
+        const R = 6371e3; // Earth radius in meters
+        const φ1 = Number(lat) * Math.PI / 180;
+        const φ2 = o.pickup_lat * Math.PI / 180;
+        const Δφ = (o.pickup_lat - Number(lat)) * Math.PI / 180;
+        const Δλ = (o.pickup_lng - Number(lng)) * Math.PI / 180;
+        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        distance = R * c;
+      }
+
       return {
         ...o,
         budget_customer_fee: budget,
         budget_service_fee: budget,
+        distance,
       };
     });
+
+    // If we calculated distance, sort by distance ascending
+    if (lat && lng) {
+      formatted = formatted.sort((a, b) => {
+        if (a.distance === null) return 1;
+        if (b.distance === null) return -1;
+        return a.distance - b.distance;
+      });
+    }
 
     response.json({ errands: formatted });
   })

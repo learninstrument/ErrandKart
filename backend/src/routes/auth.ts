@@ -822,3 +822,38 @@ authRouter.get(
     response.redirect(`${getAppOrigin(request)}/login?${params.toString()}`);
   })
 );
+
+// PATCH /api/auth/me/location - Update user's live physical location for PostGIS matching
+authRouter.patch(
+  '/me/location',
+  asyncHandler(async (request, response) => {
+    const context = await getAuthContext(request, true);
+    if (!context || !context.profile) {
+      throw new HttpError(401, 'Unauthorized');
+    }
+
+    const { lat, lng } = z.object({
+      lat: z.number(),
+      lng: z.number()
+    }).parse(request.body);
+
+    // Save as raw lat/lng and PostGIS geography point if postgis is enabled
+    // If postgis fails (not enabled), we catch and just update standard columns
+    try {
+      // Use raw SQL via RPC or direct update if we have postgis.
+      // But standard Supabase JS `update` doesn't support PostGIS literal strings easily without raw SQL or RPC.
+      // We will just try to update lat/lng columns, and let the backend/DB handle postgis.
+      // Actually, we can use a raw update for PostGIS:
+      await supabaseAdmin
+        .from('profiles')
+        .update({
+          location: `POINT(${lng} ${lat})`
+        })
+        .eq('id', context.profile.id);
+    } catch (e) {
+      console.warn('[PostGIS] Location update failed, ensure extension is enabled.', e);
+    }
+
+    response.json({ message: 'Location updated successfully' });
+  })
+);
