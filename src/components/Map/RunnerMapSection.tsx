@@ -36,7 +36,7 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: initialStyle,
-      center: [3.4558, 6.4474], // Mapbox uses [lng, lat]
+      center: [7.49508, 9.05785], // Mapbox uses [lng, lat] (Abuja)
       zoom: 14,
       pitch: 0,
       bearing: 0,
@@ -47,7 +47,7 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
     const el = document.createElement('div');
     el.innerHTML = `<div style="width:24px;height:24px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(46,139,87,0.5); border: 2px solid white;"></div>`;
     userMarkerRef.current = new mapboxgl.Marker({ element: el })
-      .setLngLat([3.4558, 6.4474])
+      .setLngLat([7.49508, 9.05785])
       .addTo(map);
 
     mapRef.current = map;

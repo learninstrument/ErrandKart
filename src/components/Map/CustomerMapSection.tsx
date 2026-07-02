@@ -28,7 +28,7 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: initialStyle,
-      center: [3.4558, 6.4474], // [lng, lat]
+      center: [7.49508, 9.05785], // [lng, lat] Abuja
       zoom: 14,
       pitch: 0,
       bearing: 0,
@@ -39,7 +39,7 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
     const el = document.createElement('div');
     el.innerHTML = `<div style="width:24px;height:24px;border-radius:999px;background:#3B82F6;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.5); border: 2px solid white;"></div>`;
     userMarkerRef.current = new mapboxgl.Marker({ element: el })
-      .setLngLat([3.4558, 6.4474])
+      .setLngLat([7.49508, 9.05785])
       .addTo(map);
 
     mapRef.current = map;
