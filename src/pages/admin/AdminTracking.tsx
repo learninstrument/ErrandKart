@@ -78,7 +78,7 @@ export const AdminTracking: React.FC = () => {
     mapboxgl.accessToken = token || '';
       const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11`,
+      style: `mapbox://styles/mapbox/dark-v11`,
       center: [selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]],
       zoom: 13,
       attributionControl: false,
@@ -371,6 +371,7 @@ const mapErrand = (order: ActiveErrandApi): ActiveErrandTrack | null => {
     supermarketContact: order.supermarket?.phone ?? undefined,
   };
 };
+
 
 
 

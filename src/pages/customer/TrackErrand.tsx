@@ -93,7 +93,7 @@ export const TrackErrand: React.FC = () => {
     mapboxgl.accessToken = token || '';
       const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11`,
+      style: `mapbox://styles/mapbox/dark-v11`,
       center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
       zoom: 13,
       attributionControl: false,
@@ -413,5 +413,6 @@ export const TrackErrand: React.FC = () => {
     </div>
   );
 };
+
 
 
