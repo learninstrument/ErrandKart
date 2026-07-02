@@ -160,8 +160,32 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
           <span className="text-[10px] font-bold uppercase tracking-widest text-market-green">Online</span>
         </div>
         <div className="flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={() => {
+              const isDark = document.documentElement.classList.contains('dark');
+              if (isDark) document.documentElement.classList.remove('dark');
+              else document.documentElement.classList.add('dark');
+            }}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white backdrop-blur-md shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+          <button
+            onClick={() => navigate('/customer/notifications')}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white backdrop-blur-md shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </button>
         </div>
       </header>
+
+      {/* Floating FAB for Post Errand (desktop) */}
+      <button
+        onClick={() => navigate('/customer/post-errand')}
+        className="absolute bottom-8 right-8 z-20 hidden h-16 w-16 items-center justify-center rounded-full bg-[#FF6600] text-white shadow-[0_10px_40px_rgba(255,102,0,0.5)] transition-transform hover:scale-105 lg:flex border-2 border-black"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      </button>
     </div>
   );
 };

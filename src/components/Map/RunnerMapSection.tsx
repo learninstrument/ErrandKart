@@ -195,8 +195,23 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
           <div className="h-2 w-2 rounded-full bg-market-green shadow-[0_0_8px_rgba(46,139,87,1)]" />
           <span className="text-xs font-bold tracking-wide text-market-green">ONLINE</span>
         </div>
-        <div className="pointer-events-auto">
-          {/* Theme switcher isn't accessible here on mobile in original code, placeholder. */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={() => {
+              const isDark = document.documentElement.classList.contains('dark');
+              if (isDark) document.documentElement.classList.remove('dark');
+              else document.documentElement.classList.add('dark');
+            }}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white backdrop-blur-md shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+          <button
+            onClick={() => navigate('/runner/wallet')}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white backdrop-blur-md shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 2-2h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+          </button>
         </div>
       </header>
     </div>

@@ -30,7 +30,7 @@ export const RunnerDashboard: React.FC = () => {
   const [errands, setErrands] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   useEffect(() => {
@@ -133,11 +133,10 @@ export const RunnerDashboard: React.FC = () => {
           <button
             key={item.label}
             onClick={() => navigate(item.href)}
-            className={`flex items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition-all ${
-              item.active
+            className={`flex items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition-all ${item.active
                 ? 'bg-market-green/10 text-market-green border border-market-green/20 shadow-sm'
                 : 'text-black/50 dark:text-white/50 border border-transparent hover:bg-black/5 dark:hover:bg-white/5 hover:border-black/10 dark:hover:border-white/10 hover:text-black dark:hover:text-white/80'
-            }`}
+              }`}
           >
             {item.icon}
             {item.label}
@@ -174,7 +173,7 @@ export const RunnerDashboard: React.FC = () => {
       // If dragged down significantly, collapse it slightly
       if (info.offset.y > 50) {
         controls.start({ y: "55%" });
-      } 
+      }
       // If dragged up, snap back to fully expanded
       else if (info.offset.y < -50) {
         controls.start({ y: "0%" });
@@ -259,7 +258,7 @@ export const RunnerDashboard: React.FC = () => {
      ═════════════════════════════════════════ */
   const DesktopRightPanel = () => (
     <aside className="hidden lg:flex lg:w-[32%] lg:min-w-[380px] lg:max-w-[440px] h-full flex-col border-l border-black/5 dark:border-white/10 bg-white dark:bg-black p-0 overflow-hidden">
-      
+
       {/* Header Area */}
       <div className="p-8 pb-4">
         <h2 className="text-3xl font-black tracking-tighter text-black dark:text-white mb-2">Gig Radar</h2>
@@ -343,43 +342,28 @@ export const RunnerDashboard: React.FC = () => {
     </aside>
   );
 
-  /* ═════════════════════════════════════════
-          <span className="text-[10px] font-bold uppercase tracking-widest text-market-green">Online</span>
-        </div>
-        <div className="flex items-center gap-2 pointer-events-auto">
-          <ThemeSwitcher />
-          <button
-            onClick={() => navigate('/runner/wallet')}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/50 text-black/60 dark:text-white/60 transition-colors hover:text-black dark:hover:text-white backdrop-blur-md shadow-sm"
-          >
-            <Wallet size={18} />
-          </button>
-        </div>
-      </header>
-    </div>
-  );
-};
+
 
   return (
     <div className="flex h-[100dvh] w-full overflow-hidden bg-white dark:bg-black text-black dark:text-white selection:bg-market-green selection:text-white transition-colors duration-300">
       {/* Desktop Sidebar */}
-      <DesktopSidebar />
+<DesktopSidebar />
 
-      {/* Center: Map Canvas */}
-      <main className="relative flex-1">
-        <MapSection />
-        {/* Mobile Bottom Sheet */}
-        <MobileBottomSheet />
-      </main>
+{/* Center: Map Canvas */ }
+<main className="relative flex-1">
+  <RunnerMapSection initials={initials} availableErrands={availableErrands} />
+  {/* Mobile Bottom Sheet */}
+  <MobileBottomSheet />
+</main>
 
-      {/* Desktop Right Panel (Job Feed) */}
-      <DesktopRightPanel />
+{/* Desktop Right Panel (Job Feed) */ }
+<DesktopRightPanel />
 
-      {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden">
-        <RunnerBottomNav activeTab="available" />
-      </div>
-    </div>
+{/* Mobile Bottom Navigation */ }
+<div className="lg:hidden">
+  <RunnerBottomNav activeTab="available" />
+</div>
+    </div >
   );
 };
 
