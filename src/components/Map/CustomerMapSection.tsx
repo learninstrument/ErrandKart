@@ -52,7 +52,12 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
           map.jumpTo({ center: [longitude, latitude], zoom: 14 });
           if (userMarkerRef.current) userMarkerRef.current.setLngLat([longitude, latitude]);
         },
-        (err) => console.warn('[Fast Geolocation]', err.message),
+        (err) => {
+          console.warn('[Fast Geolocation]', err.message);
+          if (err.code === err.PERMISSION_DENIED) {
+            alert("Please enable location services in your browser settings to see your current location.");
+          }
+        },
         { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
       );
 
@@ -122,6 +127,9 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
       (err) => {
         console.warn('[Locate Me]', err.message);
         setIsLocating(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          alert("Please enable location services in your browser settings to use 'Locate Me'.");
+        }
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );

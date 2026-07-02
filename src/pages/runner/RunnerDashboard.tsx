@@ -87,7 +87,12 @@ export const RunnerDashboard: React.FC = () => {
           // Fetch sorted errands
           fetchErrands(latitude, longitude);
         },
-        console.warn,
+        (err) => {
+          console.warn('[Runner Geolocation]', err.message);
+          if (err.code === err.PERMISSION_DENIED) {
+            alert("Please enable location services in your browser settings to automatically match you with nearby errands.");
+          }
+        },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
 

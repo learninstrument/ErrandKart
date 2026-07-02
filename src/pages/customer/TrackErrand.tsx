@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, MessageSquare, CheckCircle, Navigation } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
 import { motion } from 'framer-motion';
+import * as turf from '@turf/turf';
 
 import { clearSession } from '../../utils/auth';
 
@@ -203,41 +204,86 @@ export const TrackErrand: React.FC = () => {
     };
   }, [!!order]);
 
+  const prevRunnerLocationRef = useRef<[number, number] | null>(null);
+  const fullRouteFetchedRef = useRef<boolean>(false);
+  const routeGeometryRef = useRef<GeoJSON.LineString | null>(null);
+
   useEffect(() => {
     if (!mapRef.current || !runnerMarkerRef.current) return;
     const map = mapRef.current;
     
-    // Update runner marker
+    // Update runner marker and camera
     if (runnerLocation) {
       runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
+
+      let heading = map.getBearing();
+      if (prevRunnerLocationRef.current) {
+        const prevPt = turf.point([prevRunnerLocationRef.current[1], prevRunnerLocationRef.current[0]]);
+        const currPt = turf.point([runnerLocation[1], runnerLocation[0]]);
+        const dist = turf.distance(prevPt, currPt, { units: 'meters' });
+        // Only update heading if they moved significantly to avoid jitter
+        if (dist > 2) {
+          heading = turf.bearing(prevPt, currPt);
+        }
+      }
+
+      // 3D Motion Tracking Camera
+      map.easeTo({
+        center: [runnerLocation[1], runnerLocation[0]],
+        pitch: 60,
+        bearing: heading,
+        zoom: 16.5,
+        duration: 2000, // Matches polling frequency for smooth motion
+        easing: (t) => t
+      });
+
+      prevRunnerLocationRef.current = runnerLocation;
     }
 
-    // Fetch Route from Mapbox Directions API (via backend)
-    const fetchRoute = async () => {
+    // Fetch Route ONCE, then trim it
+    const manageRoute = async () => {
       try {
-        const rLoc = runnerLocation || pickupLocation;
-        const coords = `${rLoc[1]},${rLoc[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
-        const url = `${apiBaseUrl}/api/locations/directions?coords=${coords}`;
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data.geometry) {
-          if (map.isStyleLoaded() && map.getSource('route')) {
-            const source = map.getSource('route') as mapboxgl.GeoJSONSource;
-            source.setData({
-              type: 'Feature',
-              properties: {},
-              geometry: data.geometry
-            });
+        if (!fullRouteFetchedRef.current) {
+          const rLoc = runnerLocation || pickupLocation;
+          const coords = `${rLoc[1]},${rLoc[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
+          const url = `${apiBaseUrl}/api/locations/directions?coords=${coords}`;
+          
+          const response = await fetch(url);
+          const data = await response.json();
+          
+          if (data.geometry) {
+            routeGeometryRef.current = data.geometry;
+            fullRouteFetchedRef.current = true;
+            if (map.isStyleLoaded() && map.getSource('route')) {
+              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
+              source.setData({
+                type: 'Feature',
+                properties: {},
+                geometry: data.geometry
+              });
+            }
+          }
+        } else if (runnerLocation && routeGeometryRef.current) {
+          // We have the full route, use Turf to trim it behind the runner
+          const startPt = turf.point([runnerLocation[1], runnerLocation[0]]);
+          const endPt = turf.point([dropoffLocation[1], dropoffLocation[0]]);
+          
+          try {
+            const sliced = turf.lineSlice(startPt, endPt, routeGeometryRef.current);
+            if (map.isStyleLoaded() && map.getSource('route')) {
+              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
+              source.setData(sliced);
+            }
+          } catch (e) {
+            console.warn("Turf line slice failed", e);
           }
         }
       } catch (error) {
-        console.error("Failed to fetch route", error);
+        console.error("Failed to manage route", error);
       }
     };
 
-    fetchRoute();
+    manageRoute();
   }, [runnerLocation, pickupLocation, dropoffLocation, apiBaseUrl]);
 
   const StatusAndDetails = () => (

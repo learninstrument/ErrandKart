@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@turf/turf": "^7.3.5",
+    "@types/turf": "^3.5.32",
     "clsx": "^2.1.1",
     "firebase": "^12.10.0",
     "framer-motion": "^12.38.0",

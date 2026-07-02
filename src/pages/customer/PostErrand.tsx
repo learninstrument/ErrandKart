@@ -72,7 +72,8 @@ export const PostErrand: React.FC = () => {
     searchTimeout.current = setTimeout(async () => {
       try {
         const token = import.meta.env.VITE_MAPBOX_TOKEN;
-        const res = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&country=ng&limit=4&access_token=${token}`);
+        const abujaBbox = "7.25,8.85,7.60,9.25";
+        const res = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&country=ng&bbox=${abujaBbox}&limit=4&access_token=${token}`);
         const data = await res.json();
         const mapped = (data.features || []).map((f: any) => ({
           display_name: f.properties.full_address,
@@ -97,15 +98,16 @@ export const PostErrand: React.FC = () => {
       // 1. GEOCODING WITH MAPBOX
       let pickupLat, pickupLng, dropoffLat, dropoffLng;
       const token = import.meta.env.VITE_MAPBOX_TOKEN;
+      const abujaBbox = "7.25,8.85,7.60,9.25";
       try {
-        const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&limit=1&access_token=${token}`);
+        const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&bbox=${abujaBbox}&limit=1&access_token=${token}`);
         const pData = await pRes.json();
         if (pData?.features?.[0]) { 
           pickupLat = Number(pData.features[0].properties.coordinates.latitude); 
           pickupLng = Number(pData.features[0].properties.coordinates.longitude); 
         }
 
-        const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&limit=1&access_token=${token}`);
+        const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&bbox=${abujaBbox}&limit=1&access_token=${token}`);
         const dData = await dRes.json();
         if (dData?.features?.[0]) { 
           dropoffLat = Number(dData.features[0].properties.coordinates.latitude); 
@@ -119,7 +121,12 @@ export const PostErrand: React.FC = () => {
       if (!pickupLat || !dropoffLat) {
         try {
           const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+            navigator.geolocation.getCurrentPosition(resolve, (err) => {
+              if (err.code === err.PERMISSION_DENIED) {
+                alert("Please enable location services in your browser settings to automatically use your current location.");
+              }
+              reject(err);
+            }, { timeout: 5000 });
           });
           if (!pickupLat) {
             pickupLat = pos.coords.latitude;
