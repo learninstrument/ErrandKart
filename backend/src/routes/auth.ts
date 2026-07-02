@@ -845,7 +845,7 @@ authRouter.patch(
       // We will just try to update lat/lng columns, and let the backend/DB handle postgis.
       // Actually, we can use a raw update for PostGIS:
       await supabaseAdmin
-        .from('profiles')
+        .from('users')
         .update({
           location: `POINT(${lng} ${lat})`
         })
