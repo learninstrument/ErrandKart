@@ -52,15 +52,33 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
 
     mapRef.current = map;
 
+    const ipFallback = () => {
+      fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+          if (data.latitude && data.longitude && mapRef.current) {
+            mapRef.current.flyTo({ center: [data.longitude, data.latitude], zoom: 14, duration: 1500 });
+            if (userMarkerRef.current) userMarkerRef.current.setLngLat([data.longitude, data.latitude]);
+          }
+        })
+        .catch(err => console.warn('[IP Geolocation]', err));
+    };
+
     // Auto-locate
     if (navigator.geolocation) {
+      let hasLocated = false;
+
       navigator.geolocation.getCurrentPosition(
         (pos) => {
+          hasLocated = true;
           const { latitude, longitude } = pos.coords;
           map.jumpTo({ center: [longitude, latitude], zoom: 14 });
           if (userMarkerRef.current) userMarkerRef.current.setLngLat([longitude, latitude]);
         },
-        (err) => console.warn('[Fast Geolocation]', err.message),
+        (err) => {
+          console.warn('[Fast Geolocation]', err.message);
+          ipFallback();
+        },
         { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
       );
 
@@ -70,9 +88,14 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
           map.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1500 });
           if (userMarkerRef.current) userMarkerRef.current.setLngLat([longitude, latitude]);
         },
-        (err) => console.warn('[Geolocation High Acc]', err.message),
+        (err) => {
+          console.warn('[Geolocation High Acc]', err.message);
+          if (!hasLocated) ipFallback();
+        },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
+    } else {
+      ipFallback();
     }
     
     map.on('style.load', () => {
@@ -168,7 +191,24 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
   }, [availableErrands, navigate]);
 
   const handleLocateMe = () => {
-    if (!navigator.geolocation || !mapRef.current) return;
+    const doIpFallback = () => {
+      fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+          if (data.latitude && data.longitude && mapRef.current) {
+            mapRef.current.flyTo({ center: [data.longitude, data.latitude], zoom: 15, duration: 1000 });
+            if (userMarkerRef.current) userMarkerRef.current.setLngLat([data.longitude, data.latitude]);
+          }
+        })
+        .catch(err => console.warn('[IP Geolocation]', err))
+        .finally(() => setIsLocating(false));
+    };
+
+    if (!navigator.geolocation) {
+      doIpFallback();
+      return;
+    }
+
     setIsLocating(true);
     
     navigator.geolocation.getCurrentPosition(
@@ -182,7 +222,10 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       },
       (err) => {
         console.warn('[Locate Me]', err.message);
-        setIsLocating(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          alert("Please enable location services to use precise GPS. Falling back to network location.");
+        }
+        doIpFallback();
       },
       { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
     );
