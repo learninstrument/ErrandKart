@@ -183,7 +183,7 @@ export const TrackErrand: React.FC = () => {
       }
 
       // Add 3D Buildings
-      const layers = map.getStyle().layers;
+      const layers = map.getStyle()?.layers;
       if (!layers) return;
       const labelLayerId = layers.find(
         (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']

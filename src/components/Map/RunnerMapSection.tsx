@@ -26,6 +26,9 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
+    const token = import.meta.env.VITE_MAPBOX_TOKEN;
+    mapboxgl.accessToken = token || '';
+
     // Use standard light/dark v11 styles for reliable themes
     const isDark = document.documentElement.classList.contains('dark');
     const initialStyle = isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
