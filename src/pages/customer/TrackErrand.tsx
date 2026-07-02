@@ -207,24 +207,22 @@ export const TrackErrand: React.FC = () => {
     // Update runner marker
     runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
 
-    // Fetch Route from Mapbox Directions API
+    // Fetch Route from Mapbox Directions API (via backend)
     const fetchRoute = async () => {
       try {
-        const token = import.meta.env.VITE_MAPBOX_TOKEN;
         const coords = `${runnerLocation[1]},${runnerLocation[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
-        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&access_token=${token}`;
+        const url = `${apiBaseUrl}/api/locations/directions?coords=${coords}`;
         
         const response = await fetch(url);
         const data = await response.json();
         
-        if (data.routes && data.routes[0]) {
-          const routeGeometry = data.routes[0].geometry;
+        if (data.geometry) {
           if (map.isStyleLoaded() && map.getSource('route')) {
             const source = map.getSource('route') as mapboxgl.GeoJSONSource;
             source.setData({
               type: 'Feature',
               properties: {},
-              geometry: routeGeometry
+              geometry: data.geometry
             });
           }
         }
@@ -234,7 +232,7 @@ export const TrackErrand: React.FC = () => {
     };
 
     fetchRoute();
-  }, [runnerLocation, pickupLocation, dropoffLocation]);
+  }, [runnerLocation, pickupLocation, dropoffLocation, apiBaseUrl]);
 
   const StatusAndDetails = () => (
     <div className="flex flex-col h-full w-full">

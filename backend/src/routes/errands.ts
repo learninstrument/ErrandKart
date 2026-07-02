@@ -4,6 +4,7 @@ import { supabaseAdmin } from '../config/supabase.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { HttpError } from '../utils/http-error.js';
 import { requireAuth } from './auth.js';
+import { TrackingService } from '../services/TrackingService.js';
 
 export const errandsRouter = Router();
 
@@ -251,9 +252,10 @@ errandsRouter.patch(
     if (!authUserId) throw new HttpError(401, 'Unauthorized');
 
     const { id } = request.params;
-    const { lat, lng } = z.object({
+    const { lat, lng, coordinates } = z.object({
       lat: z.number(),
       lng: z.number(),
+      coordinates: z.array(z.tuple([z.number(), z.number()])).optional(),
     }).parse(request.body);
 
     const { data: errand, error: fetchError } = await supabaseAdmin
@@ -269,9 +271,25 @@ errandsRouter.patch(
       throw new HttpError(403, 'Unauthorized. Only the assigned runner can update location.');
     }
 
+    let finalLat = lat;
+    let finalLng = lng;
+
+    // Apply Mapbox Map Matching (HMM) to snap to roads if a trace is provided
+    if (coordinates && coordinates.length >= 2) {
+      try {
+        const matchResult = await TrackingService.matchPath(coordinates);
+        if (matchResult.snapped) {
+          finalLng = matchResult.currentLocation[0];
+          finalLat = matchResult.currentLocation[1];
+        }
+      } catch (err) {
+        console.error('[Map Matching] Failed to map match runner location trace, using raw coordinates.');
+      }
+    }
+
     const { data, error } = await supabaseAdmin
       .from('errands')
-      .update({ runner_lat: lat, runner_lng: lng })
+      .update({ runner_lat: finalLat, runner_lng: finalLng })
       .eq('id', id)
       .select('*, customer:customer_id(id, full_name, phone_number), runner:runner_id(id, full_name, phone_number)')
       .single();

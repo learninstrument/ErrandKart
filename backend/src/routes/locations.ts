@@ -4,6 +4,7 @@ import { supabaseAdmin } from '../config/supabase.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { HttpError } from '../utils/http-error.js';
 import { requireAuth } from './auth.js';
+import { TrackingService } from '../services/TrackingService.js';
 
 export const locationsRouter = Router();
 
@@ -54,6 +55,37 @@ locationsRouter.get(
       console.error('[Backend Location] Critical Error calling OpenStreetMap:', error);
       throw new HttpError(500, 'Failed to reverse geocode', error);
     }
+  })
+);
+
+// POST /api/locations/match-path - Mapbox Map Matching API (HMM)
+locationsRouter.post(
+  '/match-path',
+  asyncHandler(async (request, response) => {
+    // In production, requireAuth(request) should protect this
+    const { coordinates } = request.body; // Expects an array of [lng, lat]
+    
+    if (!Array.isArray(coordinates) || coordinates.length < 2) {
+      throw new HttpError(400, 'Requires an array of at least two [lng, lat] coordinates.');
+    }
+
+    const matchResult = await TrackingService.matchPath(coordinates);
+    response.json(matchResult);
+  })
+);
+
+// GET /api/locations/directions - Mapbox Directions API (A*)
+locationsRouter.get(
+  '/directions',
+  asyncHandler(async (request, response) => {
+    const { coords } = request.query;
+
+    if (!coords || typeof coords !== 'string') {
+      throw new HttpError(400, 'Missing coords query parameter (e.g. ?coords=lng,lat;lng,lat)');
+    }
+
+    const routeResult = await TrackingService.getDirections(coords);
+    response.json(routeResult);
   })
 );
 

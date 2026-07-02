@@ -4,6 +4,7 @@ import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload, Store, Navigatio
 import mapboxgl from 'mapbox-gl';
 import { motion, useAnimation } from 'framer-motion';
 import { Button } from '../../components/UI/Button';
+import { GPSKalmanFilter } from '../../utils/KalmanFilter';
 import { clearSession } from '../../utils/auth';
 
 const STATUS_STEPS = ['Shopping', 'En Route', 'Arrived'];
@@ -13,6 +14,7 @@ export const RunnerActive: React.FC = () => {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const runnerMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  const gpsBufferRef = useRef<[number, number][]>([]);
 
   const [errand, setErrand] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,14 +61,33 @@ export const RunnerActive: React.FC = () => {
     if (!errand || !['active', 'shopping', 'en_route'].includes(errand.status)) return;
     if (!navigator.geolocation) return;
 
+    // Instantiate Kalman Filter for this session
+    const kalmanFilter = new GPSKalmanFilter();
+
     const successCallback = (position: GeolocationPosition) => {
-      const { latitude, longitude } = position.coords;
-      setRunnerLocation([latitude, longitude]);
+      const { latitude, longitude, accuracy } = position.coords;
+      
+      // Pass raw GPS data through the Kalman filter to smooth erratic jumps
+      const smoothed = kalmanFilter.filter(latitude, longitude, accuracy);
+      
+      // Maintain a recent trace buffer for HMM Map Matching on the backend
+      gpsBufferRef.current.push([smoothed.lng, smoothed.lat]);
+      if (gpsBufferRef.current.length > 20) {
+        gpsBufferRef.current.shift(); // Keep maximum of 20 recent points
+      }
+      
+      setRunnerLocation([smoothed.lat, smoothed.lng]);
+      
+      // Send trace buffer to backend for Map Matching & Broadcasting
       fetch(`${apiBaseUrl}/api/errands/${errand.id}/location`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ lat: latitude, lng: longitude }),
+        body: JSON.stringify({ 
+          lat: smoothed.lat, 
+          lng: smoothed.lng,
+          coordinates: gpsBufferRef.current 
+        }),
       }).catch(console.error);
     };
 
