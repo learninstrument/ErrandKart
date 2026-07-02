@@ -18,6 +18,7 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
   const navigate = useNavigate();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const markersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
   const hasInitialZoomed = useRef(false);
   const [isLocating, setIsLocating] = useState(false);
@@ -42,24 +43,22 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       attributionControl: false,
     });
 
-    // Runner location marker
+    // Runner location marker (will be updated after GPS)
     const el = document.createElement('div');
-    el.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-            </div>`;
-    const runnerMarker = new mapboxgl.Marker({ element: el })
+    el.innerHTML = `<div style="width:24px;height:24px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(46,139,87,0.5); border: 2px solid white;"></div>`;
+    userMarkerRef.current = new mapboxgl.Marker({ element: el })
       .setLngLat([3.4558, 6.4474])
       .addTo(map);
 
     mapRef.current = map;
 
-    // Auto-locate runner
+    // Auto-locate
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
           map.jumpTo({ center: [longitude, latitude], zoom: 14 });
-          runnerMarker.setLngLat([longitude, latitude]);
+          if (userMarkerRef.current) userMarkerRef.current.setLngLat([longitude, latitude]);
         },
         (err) => console.warn('[Fast Geolocation]', err.message),
         { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
@@ -69,7 +68,7 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
         (pos) => {
           const { latitude, longitude } = pos.coords;
           map.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1500 });
-          runnerMarker.setLngLat([longitude, latitude]);
+          if (userMarkerRef.current) userMarkerRef.current.setLngLat([longitude, latitude]);
         },
         (err) => console.warn('[Geolocation High Acc]', err.message),
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -176,6 +175,9 @@ export const RunnerMapSection: React.FC<RunnerMapSectionProps> = ({ availableErr
       (pos) => {
         const { latitude, longitude } = pos.coords;
         mapRef.current!.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1000 });
+        if (userMarkerRef.current) {
+          userMarkerRef.current.setLngLat([longitude, latitude]);
+        }
         setIsLocating(false);
       },
       (err) => {

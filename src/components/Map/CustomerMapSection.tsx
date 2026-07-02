@@ -13,6 +13,7 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
   const navigate = useNavigate();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const [isLocating, setIsLocating] = useState(false);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
     // Customer location marker (will be updated after GPS)
     const el = document.createElement('div');
     el.innerHTML = `<div style="width:24px;height:24px;border-radius:999px;background:#3B82F6;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.5); border: 2px solid white;"></div>`;
-    let userMarker = new mapboxgl.Marker({ element: el })
+    userMarkerRef.current = new mapboxgl.Marker({ element: el })
       .setLngLat([3.4558, 6.4474])
       .addTo(map);
 
@@ -49,7 +50,7 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
         (pos) => {
           const { latitude, longitude } = pos.coords;
           map.jumpTo({ center: [longitude, latitude], zoom: 14 });
-          userMarker.setLngLat([longitude, latitude]);
+          if (userMarkerRef.current) userMarkerRef.current.setLngLat([longitude, latitude]);
         },
         (err) => console.warn('[Fast Geolocation]', err.message),
         { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
@@ -59,7 +60,7 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
         (pos) => {
           const { latitude, longitude } = pos.coords;
           map.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1500 });
-          userMarker.setLngLat([longitude, latitude]);
+          if (userMarkerRef.current) userMarkerRef.current.setLngLat([longitude, latitude]);
         },
         (err) => console.warn('[Geolocation High Acc]', err.message),
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -113,6 +114,9 @@ export const CustomerMapSection: React.FC<CustomerMapSectionProps> = ({ initials
       (pos) => {
         const { latitude, longitude } = pos.coords;
         mapRef.current!.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1000 });
+        if (userMarkerRef.current) {
+          userMarkerRef.current.setLngLat([longitude, latitude]);
+        }
         setIsLocating(false);
       },
       (err) => {
