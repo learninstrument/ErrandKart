@@ -19,7 +19,9 @@ export const TrackErrand: React.FC = () => {
   // Dynamic Coordinates from the Database (with Lagos fallbacks so map doesn't crash while loading)
   const pickupLocation = useMemo<[number, number]>(() => [Number(order?.pickup_lat || 6.4474), Number(order?.pickup_lng || 3.4558)], [order?.pickup_lat, order?.pickup_lng]);
   const dropoffLocation = useMemo<[number, number]>(() => [Number(order?.dropoff_lat || 6.4281), Number(order?.dropoff_lng || 3.4219)], [order?.dropoff_lat, order?.dropoff_lng]);
-  const [runnerLocation, setRunnerLocation] = useState<[number, number]>([6.4408, 3.4469]);
+  
+  // Initialize runnerLocation to null instead of Lagos. We will sync it below.
+  const [runnerLocation, setRunnerLocation] = useState<[number, number] | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -69,6 +71,7 @@ export const TrackErrand: React.FC = () => {
     if (order?.runner_lat && order?.runner_lng) {
       setRunnerLocation([Number(order.runner_lat), Number(order.runner_lng)]);
     } else if (order?.pickup_lat && order?.pickup_lng) {
+      // If runner hasn't sent location yet, just place them at the pickup point
       setRunnerLocation([Number(order.pickup_lat), Number(order.pickup_lng)]);
     }
   }, [order?.runner_lat, order?.runner_lng, order?.pickup_lat, order?.pickup_lng]);
@@ -96,7 +99,7 @@ export const TrackErrand: React.FC = () => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: initialStyle,
-      center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
+      center: runnerLocation ? [runnerLocation[1], runnerLocation[0]] : [pickupLocation[1], pickupLocation[0]], // [lng, lat]
       zoom: 13,
       pitch: 60,
       bearing: -17.6,
@@ -136,14 +139,15 @@ export const TrackErrand: React.FC = () => {
     // 4. Add Runner Marker
     const rEl = document.createElement('div');
     rEl.innerHTML = `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">moped</span></div>`;
+    const initRunnerLoc = runnerLocation || pickupLocation;
     runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
-      .setLngLat([runnerLocation[1], runnerLocation[0]])
+      .setLngLat([initRunnerLoc[1], initRunnerLoc[0]])
       .addTo(map);
 
     // Fit bounds
     const bounds = new mapboxgl.LngLatBounds();
     bounds.extend([pickupLocation[1], pickupLocation[0]]);
-    bounds.extend([runnerLocation[1], runnerLocation[0]]);
+    bounds.extend([initRunnerLoc[1], initRunnerLoc[0]]);
     bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
     map.fitBounds(bounds, { padding: 60 });
 
@@ -166,7 +170,6 @@ export const TrackErrand: React.FC = () => {
               type: 'LineString',
               coordinates: [
                 [pickupLocation[1], pickupLocation[0]],
-                [runnerLocation[1], runnerLocation[0]],
                 [dropoffLocation[1], dropoffLocation[0]]
               ]
             }
@@ -205,12 +208,15 @@ export const TrackErrand: React.FC = () => {
     const map = mapRef.current;
     
     // Update runner marker
-    runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
+    if (runnerLocation) {
+      runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
+    }
 
     // Fetch Route from Mapbox Directions API (via backend)
     const fetchRoute = async () => {
       try {
-        const coords = `${runnerLocation[1]},${runnerLocation[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
+        const rLoc = runnerLocation || pickupLocation;
+        const coords = `${rLoc[1]},${rLoc[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
         const url = `${apiBaseUrl}/api/locations/directions?coords=${coords}`;
         
         const response = await fetch(url);

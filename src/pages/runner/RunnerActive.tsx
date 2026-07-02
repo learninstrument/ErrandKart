@@ -67,6 +67,12 @@ export const RunnerActive: React.FC = () => {
     const successCallback = (position: GeolocationPosition) => {
       const { latitude, longitude, accuracy } = position.coords;
       
+      // Only process high-quality GPS points to prevent wild jumping
+      if (accuracy > 30) {
+        console.warn(`[GPS] Ignoring inaccurate point (Accuracy: ${accuracy}m)`);
+        return;
+      }
+
       // Pass raw GPS data through the Kalman filter to smooth erratic jumps
       const smoothed = kalmanFilter.filter(latitude, longitude, accuracy);
       
