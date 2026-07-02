@@ -313,20 +313,11 @@ const AddLocationModal = ({
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          // Fetch directly from OpenStreetMap so phones can connect without localhost IP issues!
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+          const token = import.meta.env.VITE_MAPBOX_TOKEN;
+          const res = await fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=${token}`);
           const data = await res.json();
-          if (data && data.address) {
-            const addr = data.address;
-            const street = addr.road || addr.pedestrian || addr.path || '';
-            const house = addr.house_number || '';
-            const neighbourhood = addr.neighbourhood || addr.suburb || addr.village || addr.city_district || '';
-            const city = addr.city || addr.town || addr.county || '';
-            
-            const parts = [house, street, neighbourhood, city].filter(Boolean);
-            setAddress(parts.join(', ') || data.display_name);
-          } else if (data && data.display_name) {
-            setAddress(data.display_name);
+          if (data && data.features && data.features.length > 0) {
+            setAddress(data.features[0].properties.full_address);
           } else {
             setError('Could not determine address from your location.');
           }

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import * as L from 'leaflet';
+import maplibregl from 'maplibre-gl';
 import { Phone, Navigation, MapPin, Wallet, Timer, Store } from 'lucide-react';
 import { AdminLayout } from './AdminLayout';
 import type { ActiveErrandTrack } from './adminData';
@@ -12,11 +12,10 @@ export const AdminTracking: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const pickupMarkerRef = useRef<L.Marker | null>(null);
-  const dropoffMarkerRef = useRef<L.Marker | null>(null);
-  const runnerMarkerRef = useRef<L.Marker | null>(null);
-  const routeLineRef = useRef<L.Polyline | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const pickupMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const dropoffMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const runnerMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   const selectedErrand = useMemo(
     () => errands.find(item => item.orderId === selectedOrderId) ?? errands[0] ?? null,
@@ -72,66 +71,80 @@ export const AdminTracking: React.FC = () => {
     }
   }, [errands, selectedOrderId]);
 
-  const pickupIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      }),
-    []
-  );
-
-  const dropoffIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      }),
-    []
-  );
-
-  const runnerIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:28px;height:28px;border-radius:12px;background:#FF6600;color:#ffffff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(255,102,0,0.45);">R</div>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14],
-      }),
-    []
-  );
-
   useEffect(() => {
     if (!selectedErrand || !mapContainerRef.current || mapRef.current) return;
 
-    const map = L.map(mapContainerRef.current, {
-      zoomControl: false,
+    const token = import.meta.env.VITE_MAPBOX_TOKEN;
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+      center: [selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]],
+      zoom: 13,
       attributionControl: false,
-    }).setView(selectedErrand.currentLocation, 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(map);
-
-    const pickupMarker = L.marker(selectedErrand.pickupLocation, { icon: pickupIcon }).addTo(map);
-    const dropoffMarker = L.marker(selectedErrand.dropoffLocation, { icon: dropoffIcon }).addTo(map);
-    const runnerMarker = L.marker(selectedErrand.currentLocation, { icon: runnerIcon }).addTo(map);
-    const routeLine = L.polyline(
-      [selectedErrand.pickupLocation, selectedErrand.currentLocation, selectedErrand.dropoffLocation],
-      { color: '#FF6600', weight: 3, dashArray: '8 10' }
-    ).addTo(map);
-
-    map.fitBounds([selectedErrand.pickupLocation, selectedErrand.dropoffLocation], { padding: [50, 50] });
+    });
 
     mapRef.current = map;
-    pickupMarkerRef.current = pickupMarker;
-    dropoffMarkerRef.current = dropoffMarker;
-    runnerMarkerRef.current = runnerMarker;
-    routeLineRef.current = routeLine;
+
+    map.on('load', () => {
+      // Add Route Line
+      map.addSource('route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [selectedErrand.pickupLocation[1], selectedErrand.pickupLocation[0]],
+              [selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]],
+              [selectedErrand.dropoffLocation[1], selectedErrand.dropoffLocation[0]]
+            ]
+          }
+        }
+      });
+
+      map.addLayer({
+        id: 'route',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#FF6600',
+          'line-width': 3,
+          'line-dasharray': [2, 2]
+        }
+      });
+
+      const pEl = document.createElement('div');
+      pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
+      const pickupMarker = new maplibregl.Marker({ element: pEl })
+        .setLngLat([selectedErrand.pickupLocation[1], selectedErrand.pickupLocation[0]])
+        .addTo(map);
+
+      const dEl = document.createElement('div');
+      dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
+      const dropoffMarker = new maplibregl.Marker({ element: dEl })
+        .setLngLat([selectedErrand.dropoffLocation[1], selectedErrand.dropoffLocation[0]])
+        .addTo(map);
+
+      const rEl = document.createElement('div');
+      rEl.innerHTML = `<div style="width:28px;height:28px;border-radius:12px;background:#FF6600;color:#ffffff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(255,102,0,0.45);">R</div>`;
+      const runnerMarker = new maplibregl.Marker({ element: rEl })
+        .setLngLat([selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]])
+        .addTo(map);
+
+      pickupMarkerRef.current = pickupMarker;
+      dropoffMarkerRef.current = dropoffMarker;
+      runnerMarkerRef.current = runnerMarker;
+
+      const bounds = new maplibregl.LngLatBounds();
+      bounds.extend([selectedErrand.pickupLocation[1], selectedErrand.pickupLocation[0]]);
+      bounds.extend([selectedErrand.dropoffLocation[1], selectedErrand.dropoffLocation[0]]);
+      map.fitBounds(bounds, { padding: 50 });
+    });
 
     return () => {
       map.remove();
@@ -139,24 +152,35 @@ export const AdminTracking: React.FC = () => {
       pickupMarkerRef.current = null;
       dropoffMarkerRef.current = null;
       runnerMarkerRef.current = null;
-      routeLineRef.current = null;
     };
-  }, [selectedErrand, pickupIcon, dropoffIcon, runnerIcon]);
+  }, [selectedErrand]);
 
   useEffect(() => {
-    if (!selectedErrand || !mapRef.current || !pickupMarkerRef.current || !dropoffMarkerRef.current || !runnerMarkerRef.current || !routeLineRef.current) {
+    if (!selectedErrand || !mapRef.current || !pickupMarkerRef.current || !dropoffMarkerRef.current || !runnerMarkerRef.current) {
       return;
     }
 
-    pickupMarkerRef.current.setLatLng(selectedErrand.pickupLocation);
-    dropoffMarkerRef.current.setLatLng(selectedErrand.dropoffLocation);
-    runnerMarkerRef.current.setLatLng(selectedErrand.currentLocation);
-    routeLineRef.current.setLatLngs([
-      selectedErrand.pickupLocation,
-      selectedErrand.currentLocation,
-      selectedErrand.dropoffLocation,
-    ]);
-    mapRef.current.panTo(selectedErrand.currentLocation, { animate: true });
+    pickupMarkerRef.current.setLngLat([selectedErrand.pickupLocation[1], selectedErrand.pickupLocation[0]]);
+    dropoffMarkerRef.current.setLngLat([selectedErrand.dropoffLocation[1], selectedErrand.dropoffLocation[0]]);
+    runnerMarkerRef.current.setLngLat([selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]]);
+
+    const map = mapRef.current;
+    if (map.isStyleLoaded() && map.getSource('route')) {
+      const source = map.getSource('route') as maplibregl.GeoJSONSource;
+      source.setData({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [selectedErrand.pickupLocation[1], selectedErrand.pickupLocation[0]],
+            [selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]],
+            [selectedErrand.dropoffLocation[1], selectedErrand.dropoffLocation[0]]
+          ]
+        }
+      });
+    }
+    map.panTo([selectedErrand.currentLocation[1], selectedErrand.currentLocation[0]], { animate: true });
   }, [selectedErrand]);
 
   return (

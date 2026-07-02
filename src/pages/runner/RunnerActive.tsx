@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload, Store, Navigation, MapPin, User } from 'lucide-react';
-import * as L from 'leaflet';
+import maplibregl from 'maplibre-gl';
 import { motion, useAnimation } from 'framer-motion';
 import { Button } from '../../components/UI/Button';
 import { clearSession } from '../../utils/auth';
@@ -10,10 +10,9 @@ const STATUS_STEPS = ['Shopping', 'En Route', 'Arrived'];
 
 export const RunnerActive: React.FC = () => {
   const navigate = useNavigate();
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const runnerMarkerRef = useRef<L.Marker | null>(null);
-  const routeLineRef = useRef<L.Polyline | null>(null);
+  const runnerMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   const [errand, setErrand] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -128,82 +127,114 @@ export const RunnerActive: React.FC = () => {
   };
 
   // --- MAP LOGIC ---
-  const dropoffIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      }),
-    []
-  );
-
-  const runnerIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-              </div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-      }),
-    []
-  );
-
-  const pickupIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      }),
-    []
-  );
-
   useEffect(() => {
     if (!errand || !mapContainerRef.current || mapRef.current) return;
 
-    const map = L.map(mapContainerRef.current, {
-      zoomControl: false,
+    const token = import.meta.env.VITE_MAPBOX_TOKEN;
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+      center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
+      zoom: 14,
       attributionControl: false,
-    }).setView(runnerLocation, 14);
+    });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(map);
-
-    L.marker(pickupLocation, { icon: pickupIcon }).addTo(map);
-    L.marker(dropoffLocation, { icon: dropoffIcon }).addTo(map);
-
-    const runnerMarker = L.marker(runnerLocation, { icon: runnerIcon }).addTo(map);
-    runnerMarkerRef.current = runnerMarker;
-
-    const routeLine = L.polyline([runnerLocation, pickupLocation, dropoffLocation], {
-      color: '#2E8B57',
-      weight: 4,
-      dashArray: '8 10',
-    }).addTo(map);
-    routeLineRef.current = routeLine;
-
-    map.fitBounds([runnerLocation, pickupLocation, dropoffLocation], { padding: [60, 60] });
     mapRef.current = map;
+
+    // Wait for style load to add sources/layers
+    map.on('load', () => {
+      // 1. Add route line
+      map.addSource('route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [runnerLocation[1], runnerLocation[0]],
+              [pickupLocation[1], pickupLocation[0]],
+              [dropoffLocation[1], dropoffLocation[0]]
+            ]
+          }
+        }
+      });
+
+      map.addLayer({
+        id: 'route',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#2E8B57',
+          'line-width': 4,
+          'line-dasharray': [2, 2]
+        }
+      });
+
+      // 2. Add Pickup Marker
+      const pEl = document.createElement('div');
+      pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
+      new maplibregl.Marker({ element: pEl })
+        .setLngLat([pickupLocation[1], pickupLocation[0]])
+        .addTo(map);
+
+      // 3. Add Dropoff Marker
+      const dEl = document.createElement('div');
+      dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
+      new maplibregl.Marker({ element: dEl })
+        .setLngLat([dropoffLocation[1], dropoffLocation[0]])
+        .addTo(map);
+
+      // 4. Add Runner Marker
+      const rEl = document.createElement('div');
+      rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              </div>`;
+      runnerMarkerRef.current = new maplibregl.Marker({ element: rEl })
+        .setLngLat([runnerLocation[1], runnerLocation[0]])
+        .addTo(map);
+
+      // Fit bounds
+      const bounds = new maplibregl.LngLatBounds();
+      bounds.extend([runnerLocation[1], runnerLocation[0]]);
+      bounds.extend([pickupLocation[1], pickupLocation[0]]);
+      bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
+      map.fitBounds(bounds, { padding: 60 });
+    });
 
     return () => {
       map.remove();
       mapRef.current = null;
     };
-     
   }, [!!errand]);
 
   useEffect(() => {
-    if (!mapRef.current || !runnerMarkerRef.current || !routeLineRef.current) return;
-    runnerMarkerRef.current.setLatLng(runnerLocation);
-    routeLineRef.current.setLatLngs([runnerLocation, pickupLocation, dropoffLocation]);
-    // Optionally pan map to runner
-    // mapRef.current.panTo(runnerLocation);
+    if (!mapRef.current || !runnerMarkerRef.current) return;
+    const map = mapRef.current;
+    
+    // Update runner marker
+    runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
+
+    // Update route line
+    if (map.isStyleLoaded() && map.getSource('route')) {
+      const source = map.getSource('route') as maplibregl.GeoJSONSource;
+      source.setData({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [runnerLocation[1], runnerLocation[0]],
+            [pickupLocation[1], pickupLocation[0]],
+            [dropoffLocation[1], dropoffLocation[0]]
+          ]
+        }
+      });
+    }
   }, [runnerLocation, pickupLocation, dropoffLocation]);
 
   if (isLoading) {
@@ -427,7 +458,7 @@ export const RunnerActive: React.FC = () => {
           
           {/* Floating Location Button */}
           <div className="absolute top-24 right-5 flex flex-col gap-2 z-20 lg:hidden">
-            <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-white/10 shadow-lg flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition-colors pointer-events-auto backdrop-blur-sm" onClick={() => mapRef.current?.panTo(runnerLocation)}>
+            <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-white/10 shadow-lg flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition-colors pointer-events-auto backdrop-blur-sm" onClick={() => mapRef.current?.panTo([runnerLocation[1], runnerLocation[0]])}>
               <MapPin size={18} className="text-black dark:text-white" />
             </button>
           </div>

@@ -22,7 +22,7 @@ import { Button } from '../../components/UI/Button';
 import { ThemeSwitcher } from '../../components/UI/ThemeSwitcher';
 import { clearSession } from '../../utils/auth';
 import { motion, useAnimation } from 'framer-motion';
-import * as L from 'leaflet';
+import maplibregl from 'maplibre-gl';
 
 export const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -397,106 +397,47 @@ export const CustomerDashboard: React.FC = () => {
      ═════════════════════════════════════════ */
   const MapSection = () => {
     const mapContainerRef = React.useRef<HTMLDivElement | null>(null);
-    const mapRef = React.useRef<L.Map | null>(null);
+    const mapRef = React.useRef<maplibregl.Map | null>(null);
     const [isLocating, setIsLocating] = React.useState(false);
-
-    const pickupIcon = React.useMemo(
-      () =>
-        L.divIcon({
-          className: '',
-          html: `<div style="width:16px;height:16px;border-radius:999px;background:#ff6600;box-shadow:0 0 10px rgba(255,102,0,0.5);"></div>`,
-          iconSize: [16, 16],
-          iconAnchor: [8, 8],
-        }),
-      []
-    );
-
-    const dropoffIcon = React.useMemo(
-      () =>
-        L.divIcon({
-          className: '',
-          html: `<div style="width:16px;height:16px;border-radius:999px;background:#2E8B57;box-shadow:0 0 10px rgba(46,139,87,0.5);"></div>`,
-          iconSize: [16, 16],
-          iconAnchor: [8, 8],
-        }),
-      []
-    );
-
-    const runnerIcon = React.useMemo(
-      () =>
-        L.divIcon({
-          className: '',
-          html: `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">moped</span></div>`,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
-        }),
-      []
-    );
-
-    const activeErrand = React.useMemo(() => {
-      return errands.find(e => ['pending', 'active', 'shopping', 'en_route', 'arrived'].includes(e.status)) || null;
-    }, [errands]);
-
-    const pickupLocation = React.useMemo<[number, number]>(() => [Number(activeErrand?.pickup_lat || 6.4474), Number(activeErrand?.pickup_lng || 3.4558)], [activeErrand?.pickup_lat, activeErrand?.pickup_lng]);
-    const dropoffLocation = React.useMemo<[number, number]>(() => [Number(activeErrand?.dropoff_lat || 6.4281), Number(activeErrand?.dropoff_lng || 3.4219)], [activeErrand?.dropoff_lat, activeErrand?.dropoff_lng]);
-    const runnerLocation = React.useMemo<[number, number]>(() => {
-      if (activeErrand?.runner_lat && activeErrand?.runner_lng) return [Number(activeErrand.runner_lat), Number(activeErrand.runner_lng)];
-      return pickupLocation;
-    }, [activeErrand?.runner_lat, activeErrand?.runner_lng, pickupLocation]);
 
     React.useEffect(() => {
       if (!mapContainerRef.current || mapRef.current) return;
 
-      // Start with a default center in Lagos, then fly to real GPS location
-      const map = L.map(mapContainerRef.current, {
-        zoomControl: false,
+      const token = import.meta.env.VITE_MAPBOX_TOKEN;
+      const map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+        center: [3.4558, 6.4474], // [lng, lat]
+        zoom: 14,
         attributionControl: false,
-      }).setView([6.4474, 3.4558], 13);
+      });
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-      }).addTo(map);
+      // Customer location marker (will be updated after GPS)
+      const el = document.createElement('div');
+      el.innerHTML = `<div style="width:24px;height:24px;border-radius:999px;background:#3B82F6;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.5); border: 2px solid white;"></div>`;
+      let userMarker = new maplibregl.Marker({ element: el })
+        .setLngLat([3.4558, 6.4474])
+        .addTo(map);
 
       mapRef.current = map;
 
-      // Auto-locate user on load
-      let userMarker: L.Marker | null = null;
-      const userIcon = L.divIcon({
-        className: '',
-        html: `<div style="position:relative;width:20px;height:20px;">
-          <div style="position:absolute;inset:0;border-radius:999px;background:rgba(59,130,246,0.25);animation:ping 1.5s ease-out infinite;"></div>
-          <div style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:999px;background:#3b82f6;border:2px solid white;box-shadow:0 0 8px rgba(59,130,246,0.6);"></div>
-        </div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      });
-
+      // Auto-locate
       if (navigator.geolocation) {
-        // Fast snap (cell towers/wi-fi)
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
-            map.setView([latitude, longitude], 14, { animate: false });
-            if (!userMarker) {
-              userMarker = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
-            } else {
-              userMarker.setLatLng([latitude, longitude]);
-            }
+            map.jumpTo({ center: [longitude, latitude], zoom: 14 });
+            userMarker.setLngLat([longitude, latitude]);
           },
           (err) => console.warn('[Fast Geolocation]', err.message),
           { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
         );
 
-        // High accuracy refine (GPS Satellites)
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
-            map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.5 });
-            if (!userMarker) {
-              userMarker = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
-            } else {
-              userMarker.setLatLng([latitude, longitude]);
-            }
+            map.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1500 });
+            userMarker.setLngLat([longitude, latitude]);
           },
           (err) => console.warn('[Geolocation High Acc]', err.message),
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -507,71 +448,23 @@ export const CustomerDashboard: React.FC = () => {
         map.remove();
         mapRef.current = null;
       };
-    }, []); // Run once to initialize
-
-    React.useEffect(() => {
-      const map = mapRef.current;
-      if (!map || !activeErrand) return;
-
-      // Clear existing markers/lines
-      map.eachLayer((layer) => {
-        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
-          map.removeLayer(layer);
-        }
-      });
-
-      L.marker(pickupLocation, { icon: pickupIcon }).addTo(map);
-      
-      if (activeErrand.status === 'pending') {
-        // Just show looking for runner status
-        L.marker(pickupLocation, { 
-          icon: L.divIcon({
-            className: '',
-            html: `<div style="width:auto;white-space:nowrap;padding:4px 8px;border-radius:12px;background:#FF6600;color:black;font-weight:bold;font-size:10px;box-shadow:0 0 15px rgba(255,102,0,0.4);margin-top:-30px;margin-left:-20px;">Looking for Runner...</div>`,
-            iconAnchor: [0, 0]
-          }) 
-        }).addTo(map);
-        map.setView(pickupLocation, 14);
-      } else {
-        // Show full track
-        L.marker(dropoffLocation, { icon: dropoffIcon }).addTo(map);
-        L.marker(runnerLocation, { icon: runnerIcon }).addTo(map);
-
-        L.polyline([pickupLocation, runnerLocation, dropoffLocation], {
-          color: '#FF6600',
-          weight: 4,
-          dashArray: '8 10',
-        }).addTo(map);
-
-        map.fitBounds([pickupLocation, dropoffLocation], { padding: [60, 60] });
-      }
-    }, [activeErrand, pickupLocation, dropoffLocation, runnerLocation, pickupIcon, dropoffIcon, runnerIcon]);
+    }, []);
 
     const handleLocateMe = () => {
       if (!navigator.geolocation || !mapRef.current) return;
       setIsLocating(true);
       
-      // Fast location snap
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          mapRef.current!.flyTo([latitude, longitude], 15, { animate: true, duration: 1.0 });
+          mapRef.current!.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1000 });
           setIsLocating(false);
-          
-          // Background refine high-accuracy
-          navigator.geolocation.getCurrentPosition(
-            (hPos) => {
-               mapRef.current!.flyTo([hPos.coords.latitude, hPos.coords.longitude], 16, { animate: true, duration: 0.8 });
-            },
-            () => {},
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-          );
         },
         (err) => {
           console.warn('[Locate Me]', err.message);
           setIsLocating(false);
         },
-        { enableHighAccuracy: false, maximumAge: 60000, timeout: 5000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     };
 

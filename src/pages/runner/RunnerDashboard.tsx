@@ -22,7 +22,7 @@ import { Button } from '../../components/UI/Button';
 import { ThemeSwitcher } from '../../components/UI/ThemeSwitcher';
 import { clearSession } from '../../utils/auth';
 import { motion, useAnimation } from 'framer-motion';
-import * as L from 'leaflet';
+import maplibregl from 'maplibre-gl';
 
 export const RunnerDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -348,65 +348,50 @@ export const RunnerDashboard: React.FC = () => {
      ═════════════════════════════════════════ */
   const MapSection = () => {
     const mapContainerRef = React.useRef<HTMLDivElement | null>(null);
-    const mapRef = React.useRef<L.Map | null>(null);
+    const mapRef = React.useRef<maplibregl.Map | null>(null);
+    const markersRef = React.useRef<{ [key: string]: maplibregl.Marker }>({});
     const [isLocating, setIsLocating] = React.useState(false);
 
     React.useEffect(() => {
       if (!mapContainerRef.current || mapRef.current) return;
 
-      const map = L.map(mapContainerRef.current, {
-        zoomControl: false,
+      const token = import.meta.env.VITE_MAPBOX_TOKEN;
+      const map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+        center: [3.4558, 6.4474], // MapLibre uses [lng, lat]
+        zoom: 14,
         attributionControl: false,
-      }).setView([6.4474, 3.4558], 14);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-      }).addTo(map);
-
-      // Runner location marker (will be updated after GPS)
-      const runnerIcon = L.divIcon({
-        className: '',
-        html: `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-              </div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
       });
 
-      let runnerMarker = L.marker([6.4474, 3.4558], { icon: runnerIcon }).addTo(map);
+      // Runner location marker
+      const el = document.createElement('div');
+      el.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              </div>`;
+      let runnerMarker = new maplibregl.Marker({ element: el })
+        .setLngLat([3.4558, 6.4474])
+        .addTo(map);
 
       mapRef.current = map;
 
-      // Auto-locate runner on load with dual-fetch for instant UI feedback + precision
+      // Auto-locate runner
       if (navigator.geolocation) {
-        // 1. Instant rough location (Cell Tower/Wi-Fi)
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
-            map.setView([latitude, longitude], 14, { animate: false });
-            runnerMarker.setLatLng([latitude, longitude]);
+            map.jumpTo({ center: [longitude, latitude], zoom: 14 });
+            runnerMarker.setLngLat([longitude, latitude]);
           },
           (err) => console.warn('[Fast Geolocation]', err.message),
           { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
         );
 
-        // 2. High precision location (GPS Satellites)
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             const { latitude, longitude } = pos.coords;
-            map.flyTo([latitude, longitude], 15, { animate: true, duration: 1.5 });
-            runnerMarker.setLatLng([latitude, longitude]);
-
-            // Add pulsing ring around runner's real location
-            const pulseIcon = L.divIcon({
-              className: '',
-              html: `<div style="position:relative;width:20px;height:20px;">
-                <div style="position:absolute;inset:0;border-radius:999px;background:rgba(46,139,87,0.25);animation:ping 1.5s ease-out infinite;"></div>
-              </div>`,
-              iconSize: [20, 20],
-              iconAnchor: [10, 10],
-            });
-            L.marker([latitude, longitude], { icon: pulseIcon }).addTo(map);
+            map.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1500 });
+            runnerMarker.setLngLat([longitude, latitude]);
           },
           (err) => console.warn('[Geolocation High Acc]', err.message),
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -419,41 +404,42 @@ export const RunnerDashboard: React.FC = () => {
       };
     }, []);
 
-    // Effect to render available errands on the map
-    const markersLayerRef = React.useRef<L.LayerGroup | null>(null);
+    // Render available errands on the map
     React.useEffect(() => {
       if (!mapRef.current) return;
       
-      if (!markersLayerRef.current) {
-        markersLayerRef.current = L.layerGroup().addTo(mapRef.current);
-      }
+      const map = mapRef.current;
       
-      markersLayerRef.current.clearLayers();
+      // Clear old markers
+      Object.values(markersRef.current).forEach(marker => marker.remove());
+      markersRef.current = {};
       
+      const bounds = new maplibregl.LngLatBounds();
+      let hasValidBounds = false;
+
       availableErrands.forEach(errand => {
         if (errand.lat && errand.lng) {
-          const icon = L.divIcon({
-            className: '',
-            html: `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`,
-            iconSize: [36, 36],
-            iconAnchor: [18, 18],
-          });
+          const lng = Number(errand.lng);
+          const lat = Number(errand.lat);
+
+          const el = document.createElement('div');
+          el.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`;
           
-          const marker = L.marker([Number(errand.lat), Number(errand.lng)], { icon });
+          const marker = new maplibregl.Marker({ element: el })
+            .setLngLat([lng, lat])
+            .addTo(map);
           
-          // Clicking marker navigates to errand details
-          marker.on('click', () => navigate(`/runner/errand/${errand.id}`));
+          el.addEventListener('click', () => navigate(`/runner/errand/${errand.id}`));
           
-          markersLayerRef.current?.addLayer(marker);
+          markersRef.current[errand.id] = marker;
+          bounds.extend([lng, lat]);
+          hasValidBounds = true;
         }
       });
       
-      // Auto-zoom map to show all available errands
-      if (availableErrands.length > 0) {
-        const bounds = L.featureGroup(markersLayerRef.current.getLayers()).getBounds();
-        if (bounds.isValid()) {
-          mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-        }
+      // Auto-zoom map
+      if (hasValidBounds) {
+        map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
       }
     }, [availableErrands, navigate]);
 
@@ -461,27 +447,17 @@ export const RunnerDashboard: React.FC = () => {
       if (!navigator.geolocation || !mapRef.current) return;
       setIsLocating(true);
       
-      // Fast location snap
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          mapRef.current!.flyTo([latitude, longitude], 15, { animate: true, duration: 1.0 });
+          mapRef.current!.flyTo({ center: [longitude, latitude], zoom: 15, duration: 1000 });
           setIsLocating(false);
-          
-          // Background refine high-accuracy
-          navigator.geolocation.getCurrentPosition(
-            (hPos) => {
-               mapRef.current!.flyTo([hPos.coords.latitude, hPos.coords.longitude], 16, { animate: true, duration: 0.8 });
-            },
-            () => {},
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-          );
         },
         (err) => {
           console.warn('[Locate Me]', err.message);
           setIsLocating(false);
         },
-        { enableHighAccuracy: false, maximumAge: 60000, timeout: 5000 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
       );
     };
 

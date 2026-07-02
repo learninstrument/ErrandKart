@@ -68,14 +68,19 @@ export const PostErrand: React.FC = () => {
       return;
     }
 
-    // Wait 600ms after the user stops typing before calling the free OpenStreetMap API
+    // Wait 600ms after the user stops typing before calling the Mapbox API
     searchTimeout.current = setTimeout(async () => {
       try {
-        // Using countrycodes=ng filters the map specifically to Nigeria for extreme accuracy!
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=4&countrycodes=ng&q=${encodeURIComponent(query)}`);
+        const token = import.meta.env.VITE_MAPBOX_TOKEN;
+        const res = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&country=ng&limit=4&access_token=${token}`);
         const data = await res.json();
-        if (type === 'pickup') setPickupResults(data);
-        else setDropoffResults(data);
+        const mapped = (data.features || []).map((f: any) => ({
+          display_name: f.properties.full_address,
+          lat: f.properties.coordinates.latitude,
+          lon: f.properties.coordinates.longitude
+        }));
+        if (type === 'pickup') setPickupResults(mapped);
+        else setDropoffResults(mapped);
       } catch (err) { console.error('Geocoding error:', err); }
     }, 600);
   };
@@ -89,24 +94,25 @@ export const PostErrand: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. FREE GEOCODING WITH OPENSTREETMAP
+      // 1. GEOCODING WITH MAPBOX
       let pickupLat, pickupLng, dropoffLat, dropoffLng;
+      const token = import.meta.env.VITE_MAPBOX_TOKEN;
       try {
-        const pRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(pickupLocation)}`);
+        const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&limit=1&access_token=${token}`);
         const pData = await pRes.json();
-        if (pData?.[0]) { 
-          pickupLat = Number(pData[0].lat); 
-          pickupLng = Number(pData[0].lon); 
+        if (pData?.features?.[0]) { 
+          pickupLat = Number(pData.features[0].properties.coordinates.latitude); 
+          pickupLng = Number(pData.features[0].properties.coordinates.longitude); 
         }
 
-        const dRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(dropoffLocation)}`);
+        const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&limit=1&access_token=${token}`);
         const dData = await dRes.json();
-        if (dData?.[0]) { 
-          dropoffLat = Number(dData[0].lat); 
-          dropoffLng = Number(dData[0].lon); 
+        if (dData?.features?.[0]) { 
+          dropoffLat = Number(dData.features[0].properties.coordinates.latitude); 
+          dropoffLng = Number(dData.features[0].properties.coordinates.longitude); 
         }
       } catch (geoErr) {
-        console.warn('Free Geocoding failed, falling back to null coordinates', geoErr);
+        console.warn('Geocoding failed, falling back to null coordinates', geoErr);
       }
 
       // Fallback to real GPS if OpenStreetMap couldn't find the text address

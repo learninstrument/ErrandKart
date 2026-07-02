@@ -1,17 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, MessageSquare, CheckCircle, Navigation } from 'lucide-react';
-import * as L from 'leaflet';
+import maplibregl from 'maplibre-gl';
 import { motion } from 'framer-motion';
 
 import { clearSession } from '../../utils/auth';
 
 export const TrackErrand: React.FC = () => {
   const navigate = useNavigate();
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const runnerMarkerRef = useRef<L.Marker | null>(null);
-  const routeLineRef = useRef<L.Polyline | null>(null);
+  const runnerMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   const [order, setOrder] = useState<any>(null);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
@@ -85,80 +84,113 @@ export const TrackErrand: React.FC = () => {
     { title: 'Drop-off', subtitle: 'Awaiting drop-off', completed: status === 'completed', active: status === 'completed' },
   ];
 
-  const pickupIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:16px;height:16px;border-radius:999px;background:#ff6600;box-shadow:0 0 10px rgba(255,102,0,0.5);"></div>`,
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-      }),
-    []
-  );
 
-  const dropoffIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:16px;height:16px;border-radius:999px;background:#2E8B57;box-shadow:0 0 10px rgba(46,139,87,0.5);"></div>`,
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-      }),
-    []
-  );
-
-  const runnerIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: '',
-        html: `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">moped</span></div>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-      }),
-    []
-  );
 
   useEffect(() => {
     if (!order || !mapContainerRef.current || mapRef.current) return;
 
-    // Use dark style if available, otherwise default to OSM
-    const map = L.map(mapContainerRef.current, {
-      zoomControl: false,
+    const token = import.meta.env.VITE_MAPBOX_TOKEN;
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`,
+      center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
+      zoom: 13,
       attributionControl: false,
-    }).setView(runnerLocation, 13);
+    });
 
-    // Standard OSM with CSS dark filter applied
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(map);
-
-    L.marker(pickupLocation, { icon: pickupIcon }).addTo(map);
-    L.marker(dropoffLocation, { icon: dropoffIcon }).addTo(map);
-
-    const runnerMarker = L.marker(runnerLocation, { icon: runnerIcon }).addTo(map);
-    runnerMarkerRef.current = runnerMarker;
-
-    const routeLine = L.polyline([pickupLocation, runnerLocation, dropoffLocation], {
-      color: '#FF6600',
-      weight: 4,
-      dashArray: '8 10',
-    }).addTo(map);
-    routeLineRef.current = routeLine;
-
-    map.fitBounds([pickupLocation, dropoffLocation], { padding: [60, 60] });
     mapRef.current = map;
+
+    map.on('load', () => {
+      // 1. Add Route line
+      map.addSource('route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [pickupLocation[1], pickupLocation[0]],
+              [runnerLocation[1], runnerLocation[0]],
+              [dropoffLocation[1], dropoffLocation[0]]
+            ]
+          }
+        }
+      });
+
+      map.addLayer({
+        id: 'route',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#FF6600',
+          'line-width': 4,
+          'line-dasharray': [2, 2]
+        }
+      });
+
+      // 2. Add Pickup Marker
+      const pEl = document.createElement('div');
+      pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
+      new maplibregl.Marker({ element: pEl })
+        .setLngLat([pickupLocation[1], pickupLocation[0]])
+        .addTo(map);
+
+      // 3. Add Dropoff Marker
+      const dEl = document.createElement('div');
+      dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
+      new maplibregl.Marker({ element: dEl })
+        .setLngLat([dropoffLocation[1], dropoffLocation[0]])
+        .addTo(map);
+
+      // 4. Add Runner Marker
+      const rEl = document.createElement('div');
+      rEl.innerHTML = `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">moped</span></div>`;
+      runnerMarkerRef.current = new maplibregl.Marker({ element: rEl })
+        .setLngLat([runnerLocation[1], runnerLocation[0]])
+        .addTo(map);
+
+      // Fit bounds
+      const bounds = new maplibregl.LngLatBounds();
+      bounds.extend([pickupLocation[1], pickupLocation[0]]);
+      bounds.extend([runnerLocation[1], runnerLocation[0]]);
+      bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
+      map.fitBounds(bounds, { padding: 60 });
+    });
 
     return () => {
       map.remove();
       mapRef.current = null;
     };
-     
   }, [!!order]);
 
   useEffect(() => {
-    if (!mapRef.current || !runnerMarkerRef.current || !routeLineRef.current) return;
-    runnerMarkerRef.current.setLatLng(runnerLocation);
-    routeLineRef.current.setLatLngs([pickupLocation, runnerLocation, dropoffLocation]);
+    if (!mapRef.current || !runnerMarkerRef.current) return;
+    const map = mapRef.current;
+    
+    // Update runner marker
+    runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
+
+    // Update route line
+    if (map.isStyleLoaded() && map.getSource('route')) {
+      const source = map.getSource('route') as maplibregl.GeoJSONSource;
+      source.setData({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [pickupLocation[1], pickupLocation[0]],
+            [runnerLocation[1], runnerLocation[0]],
+            [dropoffLocation[1], dropoffLocation[0]]
+          ]
+        }
+      });
+    }
   }, [runnerLocation, pickupLocation, dropoffLocation]);
 
   const StatusAndDetails = () => (
