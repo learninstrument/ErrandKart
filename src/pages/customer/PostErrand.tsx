@@ -50,7 +50,7 @@ export const PostErrand: React.FC = () => {
     isOpen: boolean;
     location: [number, number];
     type: 'pickup' | 'dropoff' | null;
-  }>({ isOpen: false, location: [6.5244, 3.3792], type: null });
+  }>({ isOpen: false, location: [7.4951, 9.0579], type: null }); // [Lng, Lat] for Abuja
 
   const [userCity, setUserCity] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string>('');
