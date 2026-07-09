@@ -280,10 +280,11 @@ errandsRouter.patch(
     if (!authUserId) throw new HttpError(401, 'Unauthorized');
 
     const { id } = request.params;
-    const { lat, lng, coordinates } = z.object({
+    const { lat, lng, coordinates, transport_mode } = z.object({
       lat: z.number(),
       lng: z.number(),
       coordinates: z.array(z.tuple([z.number(), z.number()])).optional(),
+      transport_mode: z.enum(['foot', 'bike', 'vehicle']).optional(),
     }).parse(request.body);
 
     const { data: errand, error: fetchError } = await supabaseAdmin
@@ -315,14 +316,29 @@ errandsRouter.patch(
       }
     }
 
+    const updatePayload: any = { runner_lat: finalLat, runner_lng: finalLng };
+    if (transport_mode && errand.transport_mode !== transport_mode) {
+      updatePayload.transport_mode = transport_mode;
+    }
+
     const { data, error } = await supabaseAdmin
       .from('errands')
-      .update({ runner_lat: finalLat, runner_lng: finalLng })
+      .update(updatePayload)
       .eq('id', id)
       .select('*, customer:customer_id(id, full_name, phone_number), runner:runner_id(id, full_name, phone_number)')
       .single();
 
     if (error) throw new HttpError(500, 'Failed to update runner location', error);
+
+    // If transport_mode changed, insert a log asynchronously (no await needed for response)
+    if (transport_mode && errand.transport_mode !== transport_mode) {
+      supabaseAdmin.from('task_transport_log').insert({
+        errand_id: id,
+        mode: transport_mode,
+      }).then(({ error }) => {
+        if (error) console.error('[TransportLog] Failed to log transport mode change:', error);
+      });
+    }
 
     const budget = data.budget_customer_fee ?? data.budget_service_fee ?? 0;
     const formatted = {
