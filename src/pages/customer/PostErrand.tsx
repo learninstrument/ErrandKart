@@ -59,6 +59,17 @@ export const PostErrand: React.FC = () => {
   // Cache user GPS coordinates so the PinDropModal can open instantly without waiting for geolocation
   const [userCoords, setUserCoords] = useState<[number, number]>([7.4951, 9.0579]); // Default to Abuja
 
+  // Background fetch of exact GPS coordinates on load
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => setUserCoords([pos.coords.longitude, pos.coords.latitude]),
+        err => console.warn("Background GPS failed", err),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+  }, []);
+
   // Auto-detect city when "Market" is selected
   useEffect(() => {
     if (category === 'Market' && !userCity) {

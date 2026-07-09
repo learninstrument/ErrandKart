@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { MapPin, Check, X } from 'lucide-react';
+import { MapPin, Check, X, Navigation } from 'lucide-react';
 import { Button } from '../UI/Button';
 
 interface PinDropModalProps {
@@ -55,6 +55,15 @@ export const PinDropModal: React.FC<PinDropModalProps> = ({
     return () => map.remove();
   }, [isOpen]);
 
+  const handleLocateMe = () => {
+    if (navigator.geolocation && mapRef.current) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { longitude, latitude } = pos.coords;
+        mapRef.current?.flyTo({ center: [longitude, latitude], zoom: 16 });
+      });
+    }
+  };
+
   const reverseGeocode = async (lng: number, lat: number) => {
     setIsGeocoding(true);
     try {
@@ -96,6 +105,14 @@ export const PinDropModal: React.FC<PinDropModalProps> = ({
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full pointer-events-none drop-shadow-xl z-10">
             <MapPin size={40} className="text-kart-orange fill-white" strokeWidth={2} />
           </div>
+
+          {/* Locate Me Button */}
+          <button 
+            onClick={handleLocateMe}
+            className="absolute bottom-4 right-4 bg-white dark:bg-[#1A1A1A] text-black dark:text-white p-3 rounded-full shadow-xl border border-black/5 dark:border-white/5 hover:scale-105 transition-transform z-20"
+          >
+            <Navigation size={20} className="text-kart-orange" />
+          </button>
         </div>
 
         {/* Footer Area */}
