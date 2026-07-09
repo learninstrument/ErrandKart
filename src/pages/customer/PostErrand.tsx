@@ -25,6 +25,11 @@ export const PostErrand: React.FC = () => {
   const [description, setDescription] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
+  
+  // Track exact GPS coordinates if the user dropped a pin or we auto-detected them
+  const [explicitPickupCoords, setExplicitPickupCoords] = useState<{lat: number, lng: number} | null>(null);
+  const [explicitDropoffCoords, setExplicitDropoffCoords] = useState<{lat: number, lng: number} | null>(null);
+
   const [budget, setBudget] = useState('');
   const [supermarketName, setSupermarketName] = useState('');
   const [orderRef, setOrderRef] = useState('');
@@ -158,40 +163,36 @@ export const PostErrand: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. GEOCODING WITH MAPBOX
-      let pickupLat, pickupLng, dropoffLat, dropoffLng;
+      // 1. USE EXPLICIT COORDS OR GEOCODING
+      let pickupLat = explicitPickupCoords?.lat;
+      let pickupLng = explicitPickupCoords?.lng;
+      let dropoffLat = explicitDropoffCoords?.lat;
+      let dropoffLng = explicitDropoffCoords?.lng;
+      
       const token = import.meta.env.VITE_MAPBOX_TOKEN;
       try {
-        const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
-        const pData = await pRes.json();
-        if (pData?.features?.[0]) { 
-          pickupLat = Number(pData.features[0].properties.coordinates.latitude); 
-          pickupLng = Number(pData.features[0].properties.coordinates.longitude); 
-          const placeTypes = pData.features[0].properties.place_type || [pData.features[0].properties.feature_type];
-          if (!placeTypes.includes('address') && !placeTypes.includes('poi')) {
-             setPinDropModal({ isOpen: true, location: [pickupLng, pickupLat], type: 'pickup' });
-             setIsSubmitting(false);
-             return;
+        if (!pickupLat || !pickupLng) {
+          const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
+          const pData = await pRes.json();
+          if (pData?.features?.[0]) { 
+            pickupLat = Number(pData.features[0].properties.coordinates.latitude); 
+            pickupLng = Number(pData.features[0].properties.coordinates.longitude); 
           }
         }
 
-        const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
-        const dData = await dRes.json();
-        if (dData?.features?.[0]) { 
-          dropoffLat = Number(dData.features[0].properties.coordinates.latitude); 
-          dropoffLng = Number(dData.features[0].properties.coordinates.longitude); 
-          const placeTypes = dData.features[0].properties.place_type || [dData.features[0].properties.feature_type];
-          if (!placeTypes.includes('address') && !placeTypes.includes('poi')) {
-             setPinDropModal({ isOpen: true, location: [dropoffLng, dropoffLat], type: 'dropoff' });
-             setIsSubmitting(false);
-             return;
+        if (!dropoffLat || !dropoffLng) {
+          const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
+          const dData = await dRes.json();
+          if (dData?.features?.[0]) { 
+            dropoffLat = Number(dData.features[0].properties.coordinates.latitude); 
+            dropoffLng = Number(dData.features[0].properties.coordinates.longitude); 
           }
         }
       } catch (geoErr) {
         console.warn('Geocoding failed, falling back to null coordinates', geoErr);
       }
 
-      // Fallback to real GPS if OpenStreetMap couldn't find the text address
+      // Fallback to real GPS if OpenStreetMap couldn't find the text address and no explicit pin was dropped
       if (!pickupLat || !dropoffLat) {
         try {
           const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
@@ -543,8 +544,10 @@ export const PostErrand: React.FC = () => {
         onConfirm={(_loc, addr) => {
            if (pinDropModal.type === 'pickup') {
              setPickupLocation(addr);
+             setExplicitPickupCoords({ lat: _loc[1], lng: _loc[0] });
            } else {
              setDropoffLocation(addr);
+             setExplicitDropoffCoords({ lat: _loc[1], lng: _loc[0] });
            }
            setPinDropModal({ ...pinDropModal, isOpen: false });
            // Auto-trigger continue after pin drop
