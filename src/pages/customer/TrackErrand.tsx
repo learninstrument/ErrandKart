@@ -150,7 +150,7 @@ export const TrackErrand: React.FC = () => {
 
     // 4. Add Runner Marker
     const rEl = document.createElement('div');
-    rEl.innerHTML = `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">moped</span></div>`;
+    rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#2E8B57;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #ffffff; font-size: 20px;">🚶</div>`;
     const initRunnerLoc = runnerLocation || pickupLocation;
     runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
       .setLngLat([initRunnerLoc[1], initRunnerLoc[0]])
@@ -171,38 +171,32 @@ export const TrackErrand: React.FC = () => {
         console.warn('Could not set lightPreset', e);
       }
 
-      // 1. Add Route line
-      if (!map.getSource('route')) {
-        map.addSource('route', {
+      // 1. Add Route sources and layers
+      if (!map.getSource('errand-route-traveled')) {
+        map.addSource('errand-route-traveled', {
           type: 'geojson',
-          data: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: [
-                [pickupLocation[1], pickupLocation[0]],
-                [dropoffLocation[1], dropoffLocation[0]]
-              ]
-            }
-          }
+          data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }
+        });
+        map.addLayer({
+          id: 'errand-route-traveled',
+          type: 'line',
+          source: 'errand-route-traveled',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#9CA3AF', 'line-width': 5, 'line-opacity': 0.8 } // Gray for traveled
         });
       }
 
-      if (!map.getLayer('route')) {
+      if (!map.getSource('errand-route-remaining')) {
+        map.addSource('errand-route-remaining', {
+          type: 'geojson',
+          data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }
+        });
         map.addLayer({
-          id: 'route',
+          id: 'errand-route-remaining',
           type: 'line',
-          source: 'route',
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
-          paint: {
-            'line-color': '#2E8B57', // Green solid line for Uber feel
-            'line-width': 6,
-            'line-opacity': 0.8
-          }
+          source: 'errand-route-remaining',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#2E8B57', 'line-width': 5, 'line-opacity': 0.9 } // Green for remaining
         });
       }
 
@@ -255,8 +249,8 @@ export const TrackErrand: React.FC = () => {
     if (order?.transport_mode && runnerMarkerRef.current) {
       const mode = order.transport_mode;
       const el = runnerMarkerRef.current.getElement();
-      const icon = mode === 'bike' ? 'directions_bike' : mode === 'vehicle' ? 'directions_car' : 'directions_walk';
-      el.innerHTML = `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">${icon}</span></div>`;
+      const icon = mode === 'bike' ? '🚴' : mode === 'vehicle' ? '🚗' : '🚶';
+      el.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#2E8B57;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #ffffff; font-size: 20px;">${icon}</div>`;
     }
 
     // Fetch Route ONCE, then trim it
@@ -282,9 +276,9 @@ export const TrackErrand: React.FC = () => {
               if (legs[1]) setEtaLeg2(`Est. ${Math.ceil(legs[1].duration / 60)} mins`);
             }
 
-            if (map.isStyleLoaded() && map.getSource('route')) {
-              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
-              source.setData({
+            if (map.isStyleLoaded() && map.getSource('errand-route-remaining')) {
+              const remainingSource = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource;
+              remainingSource.setData({
                 type: 'Feature',
                 properties: {},
                 geometry: routeGeometry
@@ -301,13 +295,19 @@ export const TrackErrand: React.FC = () => {
 
           // We have the full route, use Turf to trim it behind the runner
           const startPt = turf.point([runnerLocation[1], runnerLocation[0]]);
-          const endPt = turf.point(isPostPickup ? [dropoffLocation[1], dropoffLocation[0]] : [pickupLocation[1], pickupLocation[0]]);
+          const routeLine = turf.lineString(routeGeometryRef.current.coordinates);
           
           try {
-            const sliced = turf.lineSlice(startPt, endPt, routeGeometryRef.current);
-            if (map.isStyleLoaded() && map.getSource('route')) {
-              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
-              source.setData(sliced);
+            const snapped = turf.nearestPointOnLine(routeLine, startPt);
+            const originPt = turf.point(routeGeometryRef.current.coordinates[0]);
+            const destPt = turf.point(routeGeometryRef.current.coordinates[routeGeometryRef.current.coordinates.length - 1]);
+
+            const traveled = turf.lineSlice(originPt, snapped, routeLine);
+            const remaining = turf.lineSlice(snapped, destPt, routeLine);
+
+            if (map.isStyleLoaded()) {
+              (map.getSource('errand-route-traveled') as mapboxgl.GeoJSONSource)?.setData(traveled);
+              (map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource)?.setData(remaining);
             }
           } catch (e) {
             console.warn("Turf line slice failed", e);

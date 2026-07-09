@@ -269,39 +269,32 @@ export const RunnerActive: React.FC = () => {
         console.warn('Could not set lightPreset', e);
       }
 
-      // 1. Add route line
-      if (!map.getSource('route')) {
-        map.addSource('route', {
+      // 1. Add route sources and layers
+      if (!map.getSource('errand-route-traveled')) {
+        map.addSource('errand-route-traveled', {
           type: 'geojson',
-          data: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: [
-                [runnerLocation[1], runnerLocation[0]],
-                [pickupLocation[1], pickupLocation[0]],
-                [dropoffLocation[1], dropoffLocation[0]]
-              ]
-            }
-          }
+          data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }
+        });
+        map.addLayer({
+          id: 'errand-route-traveled',
+          type: 'line',
+          source: 'errand-route-traveled',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#9CA3AF', 'line-width': 5, 'line-opacity': 0.8 } // Gray
         });
       }
 
-      if (!map.getLayer('route')) {
+      if (!map.getSource('errand-route-remaining')) {
+        map.addSource('errand-route-remaining', {
+          type: 'geojson',
+          data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }
+        });
         map.addLayer({
-          id: 'route',
+          id: 'errand-route-remaining',
           type: 'line',
-          source: 'route',
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
-          paint: {
-            'line-color': '#2E8B57', // Green
-            'line-width': 6,
-            'line-opacity': 0.8
-          }
+          source: 'errand-route-remaining',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#2E8B57', 'line-width': 5, 'line-opacity': 0.9 } // Green
         });
       }
 
@@ -348,8 +341,8 @@ export const RunnerActive: React.FC = () => {
             const routeGeometry = data.routes[0].geometry;
             routeGeometryRef.current = routeGeometry;
             fullRouteFetchedRef.current = true;
-            if (map.isStyleLoaded() && map.getSource('route')) {
-              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
+            if (map.isStyleLoaded() && map.getSource('errand-route-remaining')) {
+              const source = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource;
               source.setData({
                 type: 'Feature',
                 properties: {},
@@ -360,12 +353,18 @@ export const RunnerActive: React.FC = () => {
         } else if (routeGeometryRef.current) {
           // Trim the route behind the runner
           const startPt = turf.point([runnerLocation[1], runnerLocation[0]]);
-          const endPt = turf.point([dropoffLocation[1], dropoffLocation[0]]);
+          const routeLine = turf.lineString(routeGeometryRef.current.coordinates);
           try {
-            const sliced = turf.lineSlice(startPt, endPt, routeGeometryRef.current);
-            if (map.isStyleLoaded() && map.getSource('route')) {
-              const source = map.getSource('route') as mapboxgl.GeoJSONSource;
-              source.setData(sliced);
+            const snapped = turf.nearestPointOnLine(routeLine, startPt);
+            const originPt = turf.point(routeGeometryRef.current.coordinates[0]);
+            const destPt = turf.point(routeGeometryRef.current.coordinates[routeGeometryRef.current.coordinates.length - 1]);
+            
+            const traveled = turf.lineSlice(originPt, snapped, routeLine);
+            const remaining = turf.lineSlice(snapped, destPt, routeLine);
+
+            if (map.isStyleLoaded()) {
+              (map.getSource('errand-route-traveled') as mapboxgl.GeoJSONSource)?.setData(traveled);
+              (map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource)?.setData(remaining);
             }
           } catch (e) {
             console.warn("Turf line slice failed", e);
