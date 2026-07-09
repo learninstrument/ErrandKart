@@ -48,6 +48,7 @@ export const PostErrand: React.FC = () => {
   }>({ isOpen: false, location: [6.5244, 3.3792], type: null });
 
   const [userCity, setUserCity] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string>('');
   const [detectingCity, setDetectingCity] = useState(false);
 
   // Auto-detect city when "Market" is selected
@@ -63,16 +64,28 @@ export const PostErrand: React.FC = () => {
               const res = await fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&types=place&access_token=${token}`);
               const data = await res.json();
               if (data.features && data.features.length > 0) {
-                const city = data.features[0].properties.name || data.features[0].properties.place_name;
-                if (city) setUserCity(city.toLowerCase());
+                // Stringify the feature to easily search for city keywords in context/name
+                const featureStr = JSON.stringify(data.features[0]).toLowerCase();
+                const matchedCity = Object.keys(CURATED_MARKETS).find(k => featureStr.includes(k));
+                if (matchedCity) {
+                  setUserCity(matchedCity);
+                  setSelectedCity(matchedCity);
+                } else {
+                  // Fallback to first city if none matched
+                  setSelectedCity('abuja');
+                }
               }
             } catch (err) {
               console.error("City detection failed", err);
+              setSelectedCity('abuja');
             } finally {
               setDetectingCity(false);
             }
           },
-          () => setDetectingCity(false),
+          () => {
+            setDetectingCity(false);
+            setSelectedCity('abuja');
+          },
           { timeout: 5000 }
         );
       } else {
@@ -377,16 +390,27 @@ export const PostErrand: React.FC = () => {
             {category === 'Market' && (
               <div className="mb-6 rounded-2xl bg-black/5 dark:bg-white/5 p-4 border border-black/10 dark:border-white/10">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-black/60 dark:text-white/60">Top Markets in Your City</h4>
-                  {detectingCity && <span className="text-[10px] bg-kart-orange/20 text-kart-orange px-2 py-0.5 rounded-full font-bold animate-pulse">Detecting...</span>}
+                  <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-black/60 dark:text-white/60">Top Markets</h4>
+                  {detectingCity ? (
+                    <span className="text-[10px] bg-kart-orange/20 text-kart-orange px-2 py-0.5 rounded-full font-bold animate-pulse">Detecting...</span>
+                  ) : (
+                    <select 
+                      className="text-xs font-bold bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 rounded-lg px-2 py-1 outline-none text-black dark:text-white"
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                    >
+                      <option value="" disabled>Select City</option>
+                      {Object.keys(CURATED_MARKETS).map(city => (
+                        <option key={city} value={city}>{city.charAt(0).toUpperCase() + city.slice(1)}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
                 
-                {!detectingCity && userCity && Object.keys(CURATED_MARKETS).find(k => userCity.includes(k)) ? (
+                {!detectingCity && selectedCity && CURATED_MARKETS[selectedCity] ? (
                   <div className="flex flex-wrap gap-2">
-                    {CURATED_MARKETS[Object.keys(CURATED_MARKETS).find(k => userCity.includes(k)) as string].map(market => {
-                      // Capitalize userCity for the display string (e.g., abuja -> Abuja)
-                      const matchedKey = Object.keys(CURATED_MARKETS).find(k => userCity.includes(k)) as string;
-                      const displayCity = matchedKey.charAt(0).toUpperCase() + matchedKey.slice(1);
+                    {CURATED_MARKETS[selectedCity].map(market => {
+                      const displayCity = selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1);
                       return (
                         <button
                           key={market}
@@ -404,7 +428,7 @@ export const PostErrand: React.FC = () => {
                     })}
                   </div>
                 ) : !detectingCity ? (
-                  <p className="text-xs font-medium text-black/50 dark:text-white/50">Could not find curated markets for your location. Please type the market name below.</p>
+                  <p className="text-xs font-medium text-black/50 dark:text-white/50">Please select a city above to see curated markets, or type the market name below.</p>
                 ) : null}
               </div>
             )}
