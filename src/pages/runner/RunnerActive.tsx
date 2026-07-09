@@ -30,14 +30,24 @@ export const RunnerActive: React.FC = () => {
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
-  // Fallback coordinates for map initialization
-  const [runnerLocation, setRunnerLocation] = useState<[number, number]>([6.4408, 3.4469]);
+  // Coordinate state - start null to avoid rendering Lagos fallback silently
+  const [runnerLocation, setRunnerLocation] = useState<[number, number] | null>(null);
   const [transportMode, setTransportMode] = useState<TransportMode>(
     (errand?.transport_mode as TransportMode) || 'foot'
   );
   const [isAutoDetectMode, setIsAutoDetectMode] = useState(true);
-  const pickupLocation = useMemo<[number, number]>(() => [Number(errand?.pickup_lat || 6.4474), Number(errand?.pickup_lng || 3.4558)], [errand?.pickup_lat, errand?.pickup_lng]);
-  const dropoffLocation = useMemo<[number, number]>(() => [Number(errand?.dropoff_lat || 6.4281), Number(errand?.dropoff_lng || 3.4219)], [errand?.dropoff_lat, errand?.dropoff_lng]);
+
+  const hasPickup = errand?.pickup_lat != null && errand?.pickup_lng != null;
+  const hasDropoff = errand?.dropoff_lat != null && errand?.dropoff_lng != null;
+
+  const pickupLocation = useMemo<[number, number] | null>(() => 
+    hasPickup ? [Number(errand.pickup_lat), Number(errand.pickup_lng)] : null, 
+    [errand?.pickup_lat, errand?.pickup_lng]
+  );
+  const dropoffLocation = useMemo<[number, number] | null>(() => 
+    hasDropoff ? [Number(errand.dropoff_lat), Number(errand.dropoff_lng)] : null, 
+    [errand?.dropoff_lat, errand?.dropoff_lng]
+  );
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/errands`, { method: 'GET', credentials: 'include' })
@@ -50,6 +60,7 @@ export const RunnerActive: React.FC = () => {
         return res.json();
       })
       .then(data => {
+        console.log('RAW ORDER PAYLOAD:', JSON.stringify(data.errand ?? data.errands, null, 2));
         if (data.errands) {
           const activeStatuses = ['active', 'shopping', 'en_route', 'arrived', 'heading_to_pickup', 'arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff'];
           const active = data.errands.find((e: any) =>
@@ -197,7 +208,7 @@ export const RunnerActive: React.FC = () => {
 
   // --- MAP LOGIC ---
   useEffect(() => {
-    if (!errand || !mapContainerRef.current || mapRef.current) return;
+    if (!errand || !mapContainerRef.current || mapRef.current || !runnerLocation || !pickupLocation || !dropoffLocation) return;
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
@@ -308,7 +319,7 @@ export const RunnerActive: React.FC = () => {
   }, [!!errand]);
 
   useEffect(() => {
-    if (!mapRef.current || !runnerMarkerRef.current) return;
+    if (!mapRef.current || !runnerMarkerRef.current || !runnerLocation || !pickupLocation || !dropoffLocation) return;
     const map = mapRef.current;
     
     // Animate runner marker smoothly instead of snapping
@@ -590,31 +601,45 @@ export const RunnerActive: React.FC = () => {
       </aside>
 
       <main className="relative flex-1">
-        <div className="relative h-full w-full bg-white dark:bg-black">
-          {/* Real Leaflet Map Container */}
-          <div ref={mapContainerRef} className="h-full w-full z-0" />
-          
-          {/* Mobile Overlay Header */}
-          <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 backdrop-blur-xl pointer-events-none lg:hidden">
-            <button onClick={() => navigate('/runner/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors pointer-events-auto">
-              <ArrowLeft size={20} className="text-black dark:text-white" />
-            </button>
-            <div className="flex items-center gap-2 rounded-full border border-market-green/30 bg-market-green/10 px-4 py-2 backdrop-blur-md pointer-events-auto shadow-[0_0_20px_rgba(46,139,87,0.2)]">
-              <Navigation size={12} className="text-market-green fill-market-green animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-market-green">Navigating</span>
-            </div>
-            <div className="w-10"></div>
-          </header>
-          
-          {/* Floating Location Button */}
-          <div className="absolute top-24 right-5 flex flex-col gap-2 z-20 lg:hidden">
-            <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-white/10 shadow-lg flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition-colors pointer-events-auto backdrop-blur-sm" onClick={() => mapRef.current?.panTo([runnerLocation[1], runnerLocation[0]])}>
-              <MapPin size={18} className="text-black dark:text-white" />
-            </button>
+        {(!pickupLocation || !dropoffLocation || !runnerLocation) ? (
+          <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center bg-white dark:bg-black">
+            <header className="absolute top-0 left-0 w-full z-20 flex items-center px-5 pt-6 pb-4">
+              <button onClick={() => navigate('/runner/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
+                <ArrowLeft size={20} className="text-market-green" />
+              </button>
+            </header>
+            <div className="w-16 h-16 mb-4 animate-spin rounded-full border-4 border-black/10 border-t-market-green"></div>
+            <h2 className="text-xl font-bold mb-2">Loading Map Data...</h2>
+            <p className="text-black/50 dark:text-white/50 text-sm">Please wait while we initialize your tracking map.</p>
           </div>
-        </div>
-
-        <MobileBottomSheet />
+        ) : (
+          <>
+            <div className="relative h-full w-full bg-white dark:bg-black">
+              {/* Real Leaflet Map Container */}
+              <div ref={mapContainerRef} className="h-full w-full z-0" />
+            
+              {/* Mobile Overlay Header */}
+              <header className="absolute top-0 left-0 w-full z-20 flex items-center justify-between px-5 pt-6 pb-4 backdrop-blur-xl pointer-events-none lg:hidden">
+                <button onClick={() => navigate('/runner/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors pointer-events-auto">
+                  <ArrowLeft size={20} className="text-black dark:text-white" />
+                </button>
+                <div className="flex items-center gap-2 rounded-full border border-market-green/30 bg-market-green/10 px-4 py-2 backdrop-blur-md pointer-events-auto shadow-[0_0_20px_rgba(46,139,87,0.2)]">
+                  <Navigation size={12} className="text-market-green fill-market-green animate-pulse" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-market-green">Navigating</span>
+                </div>
+                <div className="w-10"></div>
+              </header>
+              
+              {/* Floating Location Button */}
+              <div className="absolute top-24 right-5 flex flex-col gap-2 z-20 lg:hidden">
+                <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-white/10 shadow-lg flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition-colors pointer-events-auto backdrop-blur-sm" onClick={() => mapRef.current?.panTo([runnerLocation[1], runnerLocation[0]])}>
+                  <MapPin size={18} className="text-black dark:text-white" />
+                </button>
+              </div>
+            </div>
+            <MobileBottomSheet />
+          </>
+        )}
       </main>
 
       <aside className="hidden lg:flex lg:w-[35%] lg:min-w-[380px] lg:max-w-[420px] h-full flex-col border-l border-black/10 dark:border-white/10 bg-white dark:bg-[#0A0A0A] p-8 overflow-y-auto shadow-2xl z-30">

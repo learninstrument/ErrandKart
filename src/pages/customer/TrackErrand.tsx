@@ -18,9 +18,18 @@ export const TrackErrand: React.FC = () => {
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
-  // Dynamic Coordinates from the Database (with Lagos fallbacks so map doesn't crash while loading)
-  const pickupLocation = useMemo<[number, number]>(() => [Number(order?.pickup_lat || 6.4474), Number(order?.pickup_lng || 3.4558)], [order?.pickup_lat, order?.pickup_lng]);
-  const dropoffLocation = useMemo<[number, number]>(() => [Number(order?.dropoff_lat || 6.4281), Number(order?.dropoff_lng || 3.4219)], [order?.dropoff_lat, order?.dropoff_lng]);
+  // Dynamic Coordinates from the Database (Explicitly check for presence to avoid silent fallbacks)
+  const hasPickup = order?.pickup_lat != null && order?.pickup_lng != null;
+  const hasDropoff = order?.dropoff_lat != null && order?.dropoff_lng != null;
+
+  const pickupLocation = useMemo<[number, number] | null>(() => 
+    hasPickup ? [Number(order.pickup_lat), Number(order.pickup_lng)] : null, 
+    [order?.pickup_lat, order?.pickup_lng]
+  );
+  const dropoffLocation = useMemo<[number, number] | null>(() => 
+    hasDropoff ? [Number(order.dropoff_lat), Number(order.dropoff_lng)] : null, 
+    [order?.dropoff_lat, order?.dropoff_lng]
+  );
   
   // Initialize runnerLocation to null instead of Lagos. We will sync it below.
   const [runnerLocation, setRunnerLocation] = useState<[number, number] | null>(null);
@@ -101,7 +110,7 @@ export const TrackErrand: React.FC = () => {
 
 
   useEffect(() => {
-    if (!order || !mapContainerRef.current || mapRef.current) return;
+    if (!order || !mapContainerRef.current || mapRef.current || !pickupLocation || !dropoffLocation) return;
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
@@ -214,7 +223,7 @@ export const TrackErrand: React.FC = () => {
   const routeGeometryRef = useRef<GeoJSON.LineString | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current || !runnerMarkerRef.current) return;
+    if (!mapRef.current || !runnerMarkerRef.current || !pickupLocation || !dropoffLocation) return;
     const map = mapRef.current;
     
     // Animate runner marker smoothly instead of snapping
@@ -475,6 +484,17 @@ export const TrackErrand: React.FC = () => {
           >
             Post an Errand
           </button>
+        </div>
+      ) : (!pickupLocation || !dropoffLocation) ? (
+        <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center">
+          <header className="absolute top-0 left-0 w-full z-20 flex items-center px-5 pt-6 pb-4">
+            <button onClick={() => navigate(-1)} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
+              <ArrowLeft size={20} className="text-[#FF6600]" />
+            </button>
+          </header>
+          <div className="w-16 h-16 mb-4 animate-spin rounded-full border-4 border-black/10 border-t-kart-orange"></div>
+          <h2 className="text-xl font-bold mb-2">Loading Location Data...</h2>
+          <p className="text-black/50 dark:text-white/50 text-sm">Please wait while we fetch the exact coordinates for this errand.</p>
         </div>
       ) : status === 'cancelled' ? (
         <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center">
