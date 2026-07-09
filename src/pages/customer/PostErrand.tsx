@@ -55,6 +55,9 @@ export const PostErrand: React.FC = () => {
   const [userCity, setUserCity] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [detectingCity, setDetectingCity] = useState(false);
+  
+  // Cache user GPS coordinates so the PinDropModal can open instantly without waiting for geolocation
+  const [userCoords, setUserCoords] = useState<[number, number]>([7.4951, 9.0579]); // Default to Abuja
 
   // Auto-detect city when "Market" is selected
   useEffect(() => {
@@ -65,6 +68,7 @@ export const PostErrand: React.FC = () => {
           async (pos) => {
             try {
               const { latitude, longitude } = pos.coords;
+              setUserCoords([longitude, latitude]);
               const token = import.meta.env.VITE_MAPBOX_TOKEN;
               const res = await fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&types=place&access_token=${token}`);
               const data = await res.json();
@@ -480,14 +484,7 @@ export const PostErrand: React.FC = () => {
               <button 
                 type="button" 
                 onClick={() => {
-                  if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                      pos => setPinDropModal({ isOpen: true, location: [pos.coords.longitude, pos.coords.latitude], type: 'dropoff' }),
-                      () => setPinDropModal({ isOpen: true, location: [3.3792, 6.5244], type: 'dropoff' })
-                    );
-                  } else {
-                    setPinDropModal({ isOpen: true, location: [3.3792, 6.5244], type: 'dropoff' });
-                  }
+                   setPinDropModal({ isOpen: true, location: userCoords, type: 'dropoff' });
                 }}
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 py-3 text-xs font-bold text-black/70 dark:text-white/70 transition-colors hover:bg-black/10 dark:hover:bg-white/10 hover:text-kart-orange"
               >
