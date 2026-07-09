@@ -8,6 +8,14 @@ import { TextArea } from '../../components/UI/TextArea';
 import { clearSession } from '../../utils/auth';
 import { PinDropModal } from '../../components/Map/PinDropModal';
 
+const CURATED_MARKETS: Record<string, string[]> = {
+  abuja: ["Wuse Market", "Garki International Market", "Utako Market", "Kado Fish Market", "Karmo Market", "Gwarinpa Market"],
+  kano: ["Kantin Kwari Market", "Kurmi Market", "Abubakar Rimi Market (Sabon Gari)", "Dawanau Market", "Tarauni Market"],
+  lagos: ["Balogun Market", "Tejuosho Market", "Oshodi Market", "Mile 12 Market", "Computer Village", "Alaba International Market", "Idumota Market"],
+  "port harcourt": ["Mile 1 Market", "Mile 3 Market", "Oil Mill Market", "Diobu Market"],
+  ibadan: ["Bodija Market", "Oje Market", "Dugbe Market", "Aleshinloye Market"]
+};
+
 export const PostErrand: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState('Purchase');
@@ -38,6 +46,40 @@ export const PostErrand: React.FC = () => {
     location: [number, number];
     type: 'pickup' | 'dropoff' | null;
   }>({ isOpen: false, location: [6.5244, 3.3792], type: null });
+
+  const [userCity, setUserCity] = useState<string | null>(null);
+  const [detectingCity, setDetectingCity] = useState(false);
+
+  // Auto-detect city when "Market" is selected
+  useEffect(() => {
+    if (category === 'Market' && !userCity) {
+      setDetectingCity(true);
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            try {
+              const { latitude, longitude } = pos.coords;
+              const token = import.meta.env.VITE_MAPBOX_TOKEN;
+              const res = await fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&types=place&access_token=${token}`);
+              const data = await res.json();
+              if (data.features && data.features.length > 0) {
+                const city = data.features[0].properties.name || data.features[0].properties.place_name;
+                if (city) setUserCity(city.toLowerCase());
+              }
+            } catch (err) {
+              console.error("City detection failed", err);
+            } finally {
+              setDetectingCity(false);
+            }
+          },
+          () => setDetectingCity(false),
+          { timeout: 5000 }
+        );
+      } else {
+        setDetectingCity(false);
+      }
+    }
+  }, [category, userCity]);
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
@@ -332,10 +374,45 @@ export const PostErrand: React.FC = () => {
           <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl md:p-6 backdrop-blur-md">
             <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">LOCATIONS</h3>
             
+            {category === 'Market' && (
+              <div className="mb-6 rounded-2xl bg-black/5 dark:bg-white/5 p-4 border border-black/10 dark:border-white/10">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-black/60 dark:text-white/60">Top Markets in Your City</h4>
+                  {detectingCity && <span className="text-[10px] bg-kart-orange/20 text-kart-orange px-2 py-0.5 rounded-full font-bold animate-pulse">Detecting...</span>}
+                </div>
+                
+                {!detectingCity && userCity && Object.keys(CURATED_MARKETS).find(k => userCity.includes(k)) ? (
+                  <div className="flex flex-wrap gap-2">
+                    {CURATED_MARKETS[Object.keys(CURATED_MARKETS).find(k => userCity.includes(k)) as string].map(market => {
+                      // Capitalize userCity for the display string (e.g., abuja -> Abuja)
+                      const matchedKey = Object.keys(CURATED_MARKETS).find(k => userCity.includes(k)) as string;
+                      const displayCity = matchedKey.charAt(0).toUpperCase() + matchedKey.slice(1);
+                      return (
+                        <button
+                          key={market}
+                          type="button"
+                          onClick={() => setPickupLocation(`${market}, ${displayCity}`)}
+                          className={`text-xs font-bold px-4 py-2.5 rounded-xl border transition-all ${
+                            pickupLocation.includes(market) 
+                              ? 'bg-kart-orange text-white border-kart-orange shadow-[0_4px_15px_rgba(255,102,0,0.4)]'
+                              : 'bg-white dark:bg-[#1A1A1A] text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-kart-orange/50 hover:text-kart-orange'
+                          }`}
+                        >
+                          {market}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : !detectingCity ? (
+                  <p className="text-xs font-medium text-black/50 dark:text-white/50">Could not find curated markets for your location. Please type the market name below.</p>
+                ) : null}
+              </div>
+            )}
+
             <div className="relative z-20 mb-4">
               <Input 
-                label="Pickup Location" 
-                placeholder="Where should the runner go?" 
+                label={category === 'Market' ? 'Market Location' : 'Pickup Location'} 
+                placeholder={category === 'Market' ? 'Select a market above or search...' : 'Where should the runner go?'} 
                 icon={<MapPin size={18} />} 
                 value={pickupLocation}
                 onChange={(e) => handleAddressSearch(e.target.value, 'pickup')}
