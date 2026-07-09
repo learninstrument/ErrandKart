@@ -10,7 +10,7 @@ import type { TransportMode } from '../../utils/locationFilter';
 import { animateMarkerTo } from '../../utils/markerAnimation';
 import { clearSession } from '../../utils/auth';
 
-const STATUS_STEPS = ['Shopping', 'En Route', 'Arrived'];
+const STATUS_STEPS = ['Heading to Pickup', 'Arrived at Pickup', 'Items Picked Up', 'Heading to Drop-off', 'Arrived at Drop-off', 'Completed'];
 
 export const RunnerActive: React.FC = () => {
   const navigate = useNavigate();
@@ -51,8 +51,9 @@ export const RunnerActive: React.FC = () => {
       })
       .then(data => {
         if (data.errands) {
+          const activeStatuses = ['active', 'shopping', 'en_route', 'arrived', 'heading_to_pickup', 'arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff'];
           const active = data.errands.find((e: any) =>
-            ['active', 'shopping', 'en_route', 'arrived'].includes(e.status)
+            activeStatuses.includes(e.status)
           );
           if (active) {
             setErrand(active);
@@ -69,7 +70,8 @@ export const RunnerActive: React.FC = () => {
 
   // Geolocation watch stream
   useEffect(() => {
-    if (!errand || !['active', 'shopping', 'en_route'].includes(errand.status)) return;
+    const trackingStatuses = ['active', 'shopping', 'en_route', 'heading_to_pickup', 'arrived_at_pickup', 'picked_up', 'heading_to_dropoff'];
+    if (!errand || !trackingStatuses.includes(errand.status)) return;
     if (!navigator.geolocation) return;
 
     // Instantiate LocationFilter for this tracking session
@@ -141,10 +143,13 @@ export const RunnerActive: React.FC = () => {
   };
 
   const getStepIndex = (status: string) => {
-    if (status === 'shopping') return 0;
-    if (status === 'en_route') return 1;
-    if (status === 'arrived') return 2;
-    return -1; // 'active' means they haven't started shopping
+    if (status === 'heading_to_pickup') return 0;
+    if (status === 'arrived_at_pickup') return 1;
+    if (status === 'picked_up') return 2;
+    if (status === 'heading_to_dropoff') return 3;
+    if (status === 'arrived_at_dropoff') return 4;
+    if (status === 'completed' || status === 'dropped_off') return 5;
+    return -1; // 'active' means they haven't started heading to pickup
   };
 
   const currentStep = errand ? getStepIndex(errand.status) : -1;
@@ -155,9 +160,12 @@ export const RunnerActive: React.FC = () => {
     if (stepIndex !== currentStep + 1) return;
 
     let nextStatus = '';
-    if (stepIndex === 0) nextStatus = 'shopping';
-    else if (stepIndex === 1) nextStatus = 'en_route';
-    else if (stepIndex === 2) nextStatus = 'arrived';
+    if (stepIndex === 0) nextStatus = 'heading_to_pickup';
+    else if (stepIndex === 1) nextStatus = 'arrived_at_pickup';
+    else if (stepIndex === 2) nextStatus = 'picked_up';
+    else if (stepIndex === 3) nextStatus = 'heading_to_dropoff';
+    else if (stepIndex === 4) nextStatus = 'arrived_at_dropoff';
+    else if (stepIndex === 5) nextStatus = 'completed';
 
     if (!nextStatus) return;
     setError('');

@@ -26,6 +26,9 @@ export const TrackErrand: React.FC = () => {
   const [runnerLocation, setRunnerLocation] = useState<[number, number] | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [etaLeg1, setEtaLeg1] = useState<string>('');
+  const [etaLeg2, setEtaLeg2] = useState<string>('');
+  const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
   // 1. SMART POLLING ENGINE: Find the active order ONCE on page load
   useEffect(() => {
@@ -39,7 +42,8 @@ export const TrackErrand: React.FC = () => {
         return res.json();
       })
       .then(data => {
-        const active = data?.errands?.find((o: any) => ['pending', 'active', 'shopping', 'en_route', 'arrived'].includes(o.status));
+        const activeStatuses = ['pending', 'active', 'shopping', 'en_route', 'arrived', 'heading_to_pickup', 'arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff'];
+        const active = data?.errands?.find((o: any) => activeStatuses.includes(o.status));
         if (active) {
           setOrder(active);
           setActiveOrderId(active.id);
@@ -81,12 +85,17 @@ export const TrackErrand: React.FC = () => {
   const status = order?.status || 'pending';
   const displayOrderId = order && order.id ? `EK-${String(order.id).split('-')[0].toUpperCase()}` : '...';
 
+  const isPostPickup = ['picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status);
 
   const steps = [
     { title: 'Order Posted', subtitle: 'Request sent to ErrandKart', completed: true, active: status === 'pending' },
     { title: 'Runner Assigned', subtitle: order?.runner_id ? 'Runner accepted your errand' : 'Matching with a runner...', completed: !!order?.runner_id || status === 'completed', active: !!order?.runner_id && status === 'active' },
-    { title: 'Heading to Store', subtitle: 'Est. arrival in 5 mins', completed: status === 'completed', active: status === 'active' },
-    { title: 'Drop-off', subtitle: 'Awaiting drop-off', completed: status === 'completed', active: status === 'completed' },
+    { title: 'Heading to Pickup', subtitle: etaLeg1 || 'Heading to market', completed: ['arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_pickup' },
+    { title: 'Arrived at Pickup', subtitle: 'Runner is at the market', completed: ['picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'arrived_at_pickup' },
+    { title: 'Items Picked Up', subtitle: 'Runner got your items', completed: ['heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'picked_up' },
+    { title: 'Heading to Drop-off', subtitle: etaLeg2 || 'On the way to you', completed: ['arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_dropoff' },
+    { title: 'Arrived at Drop-off', subtitle: 'Runner has arrived', completed: status === 'completed', active: status === 'arrived_at_dropoff' },
+    { title: 'Completed', subtitle: 'Errand delivered successfully', completed: status === 'completed', active: status === 'completed' },
   ];
 
 
@@ -126,7 +135,8 @@ export const TrackErrand: React.FC = () => {
 
     // 2. Add Pickup Marker
     const pEl = document.createElement('div');
-    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
+    pEl.id = 'pickup-marker-el';
+    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18); transition: opacity 0.5s;" id="pickup-marker-inner"></div>`;
     new mapboxgl.Marker({ element: pEl })
       .setLngLat([pickupLocation[1], pickupLocation[0]])
       .addTo(map);
@@ -265,6 +275,13 @@ export const TrackErrand: React.FC = () => {
             const routeGeometry = data.routes[0].geometry;
             routeGeometryRef.current = routeGeometry;
             fullRouteFetchedRef.current = true;
+            
+            if (data.routes[0].legs) {
+              const legs = data.routes[0].legs;
+              if (legs[0]) setEtaLeg1(`Est. ${Math.ceil(legs[0].duration / 60)} mins`);
+              if (legs[1]) setEtaLeg2(`Est. ${Math.ceil(legs[1].duration / 60)} mins`);
+            }
+
             if (map.isStyleLoaded() && map.getSource('route')) {
               const source = map.getSource('route') as mapboxgl.GeoJSONSource;
               source.setData({
@@ -275,9 +292,16 @@ export const TrackErrand: React.FC = () => {
             }
           }
         } else if (runnerLocation && routeGeometryRef.current) {
+          // Fade pickup marker if post pickup
+          const pickupInner = document.getElementById('pickup-marker-inner');
+          if (pickupInner) {
+             pickupInner.style.opacity = isPostPickup ? '0.3' : '1';
+             pickupInner.style.filter = isPostPickup ? 'grayscale(100%)' : 'none';
+          }
+
           // We have the full route, use Turf to trim it behind the runner
           const startPt = turf.point([runnerLocation[1], runnerLocation[0]]);
-          const endPt = turf.point([dropoffLocation[1], dropoffLocation[0]]);
+          const endPt = turf.point(isPostPickup ? [dropoffLocation[1], dropoffLocation[0]] : [pickupLocation[1], pickupLocation[0]]);
           
           try {
             const sliced = turf.lineSlice(startPt, endPt, routeGeometryRef.current);
@@ -405,12 +429,20 @@ export const TrackErrand: React.FC = () => {
     return (
       <motion.div
         drag="y"
-        dragConstraints={{ top: 0, bottom: 500 }}
+        dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={0.1}
         initial={{ y: "40%" }}
-        className="absolute bottom-0 left-0 z-40 flex h-[75%] w-full flex-col rounded-t-[2rem] bg-white/95 dark:bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
+        animate={{ y: isSheetExpanded ? "0%" : "40%" }}
+        onDragEnd={(_e, info) => {
+          if (info.offset.y < -50) setIsSheetExpanded(true);
+          else if (info.offset.y > 50) setIsSheetExpanded(false);
+        }}
+        className="absolute bottom-0 left-0 z-40 flex h-[85%] w-full flex-col rounded-t-[2rem] bg-white/95 dark:bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
       >
-        <div className="flex w-full justify-center pb-3 pt-4 cursor-grab active:cursor-grabbing">
+        <div 
+          className="flex w-full justify-center pb-3 pt-4 cursor-pointer active:cursor-grabbing"
+          onClick={() => setIsSheetExpanded(!isSheetExpanded)}
+        >
           <div className="h-1.5 w-12 rounded-full bg-black/20 dark:bg-white/20" />
         </div>
         <div className="flex flex-1 flex-col overflow-hidden pt-2">
