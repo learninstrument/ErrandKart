@@ -159,9 +159,9 @@ export const PostErrand: React.FC = () => {
         const res = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&country=ng&proximity=7.49508,9.05785&limit=4&access_token=${token}`);
         const data = await res.json();
         const mapped = (data.features || []).map((f: any) => ({
-          display_name: f.properties.full_address,
-          lat: f.properties.coordinates.latitude,
-          lon: f.properties.coordinates.longitude
+          display_name: f.properties.full_address || f.properties.name,
+          lat: f.geometry.coordinates[1],
+          lon: f.geometry.coordinates[0]
         }));
         if (type === 'pickup') setPickupResults(mapped);
         else setDropoffResults(mapped);
@@ -190,8 +190,8 @@ export const PostErrand: React.FC = () => {
           const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
           const pData = await pRes.json();
           if (pData?.features?.[0]) { 
-            pickupLat = Number(pData.features[0].properties.coordinates.latitude); 
-            pickupLng = Number(pData.features[0].properties.coordinates.longitude); 
+            pickupLat = Number(pData.features[0].geometry.coordinates[1]); 
+            pickupLng = Number(pData.features[0].geometry.coordinates[0]); 
           }
         }
 
@@ -199,8 +199,8 @@ export const PostErrand: React.FC = () => {
           const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
           const dData = await dRes.json();
           if (dData?.features?.[0]) { 
-            dropoffLat = Number(dData.features[0].properties.coordinates.latitude); 
-            dropoffLng = Number(dData.features[0].properties.coordinates.longitude); 
+            dropoffLat = Number(dData.features[0].geometry.coordinates[1]); 
+            dropoffLng = Number(dData.features[0].geometry.coordinates[0]); 
           }
         }
       } catch (geoErr) {

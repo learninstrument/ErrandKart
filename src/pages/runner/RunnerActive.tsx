@@ -511,8 +511,8 @@ export const RunnerActive: React.FC = () => {
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={0.1}
-        initial={{ y: "60%" }}
-        animate={{ y: isSheetExpanded ? "0%" : "60%" }}
+        initial={{ y: "calc(100% - 130px)" }}
+        animate={{ y: isSheetExpanded ? "0%" : "calc(100% - 130px)" }}
         onDragEnd={(_e, info) => {
           if (info.offset.y < -50) setIsSheetExpanded(true);
           else if (info.offset.y > 50) setIsSheetExpanded(false);
