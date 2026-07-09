@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload, Store, Navigation, MapPin, User } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload, Store, Navigation, MapPin, User, Footprints, Bike, Car } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
 import { motion } from 'framer-motion';
 import * as turf from '@turf/turf';
 import { Button } from '../../components/UI/Button';
-import { GPSKalmanFilter } from '../../utils/KalmanFilter';
+import { LocationFilter } from '../../utils/locationFilter';
+import type { TransportMode } from '../../utils/locationFilter';
+import { animateMarkerTo } from '../../utils/markerAnimation';
 import { clearSession } from '../../utils/auth';
 
 const STATUS_STEPS = ['Shopping', 'En Route', 'Arrived'];
@@ -24,11 +26,16 @@ export const RunnerActive: React.FC = () => {
   const [receiptSelected, setReceiptSelected] = useState(false);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [error, setError] = useState('');
+  const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   // Fallback coordinates for map initialization
   const [runnerLocation, setRunnerLocation] = useState<[number, number]>([6.4408, 3.4469]);
+  const [transportMode, setTransportMode] = useState<TransportMode>(
+    (errand?.transport_mode as TransportMode) || 'foot'
+  );
+  const [isAutoDetectMode, setIsAutoDetectMode] = useState(true);
   const pickupLocation = useMemo<[number, number]>(() => [Number(errand?.pickup_lat || 6.4474), Number(errand?.pickup_lng || 3.4558)], [errand?.pickup_lat, errand?.pickup_lng]);
   const dropoffLocation = useMemo<[number, number]>(() => [Number(errand?.dropoff_lat || 6.4281), Number(errand?.dropoff_lng || 3.4219)], [errand?.dropoff_lat, errand?.dropoff_lng]);
 
@@ -49,6 +56,7 @@ export const RunnerActive: React.FC = () => {
           );
           if (active) {
             setErrand(active);
+            if (active.transport_mode) setTransportMode(active.transport_mode as TransportMode);
             if (active.pickup_lat && active.pickup_lng) {
                setRunnerLocation([Number(active.pickup_lat), Number(active.pickup_lng)]);
             }
@@ -64,28 +72,44 @@ export const RunnerActive: React.FC = () => {
     if (!errand || !['active', 'shopping', 'en_route'].includes(errand.status)) return;
     if (!navigator.geolocation) return;
 
-    // Instantiate Kalman Filter for this session
-    const kalmanFilter = new GPSKalmanFilter();
+    // Instantiate LocationFilter for this tracking session
+    const locationFilter = new LocationFilter('foot');
+    const recentSpeeds: number[] = [];
 
     const successCallback = (position: GeolocationPosition) => {
       const { latitude, longitude, accuracy } = position.coords;
       
-      // Only process high-quality GPS points to prevent wild jumping
-      if (accuracy > 30) {
-        console.warn(`[GPS] Ignoring inaccurate point (Accuracy: ${accuracy}m)`);
+      // Run through the outlier filter (accuracy + speed-based rejection)
+      const result = locationFilter.filter(latitude, longitude, accuracy);
+      
+      if (!result.accepted) {
+        console.warn(`[GPS] Rejected point (accuracy=${accuracy.toFixed(0)}m, speed=${result.speed?.toFixed(1) || '?'}m/s)`);
         return;
       }
 
-      // Pass raw GPS data through the Kalman filter to smooth erratic jumps
-      const smoothed = kalmanFilter.filter(latitude, longitude, accuracy);
+      // Track recent speeds for auto-detect
+      if (result.speed !== undefined && result.speed > 0) {
+        recentSpeeds.push(result.speed);
+        if (recentSpeeds.length > 5) recentSpeeds.shift();
+        
+        // Auto-detect transport mode from rolling speed average
+        if (isAutoDetectMode) {
+          const detectedMode = LocationFilter.detectMode(recentSpeeds);
+          if (detectedMode !== locationFilter.getTransportMode()) {
+            locationFilter.setTransportMode(detectedMode);
+            setTransportMode(detectedMode);
+            console.log(`[GPS] Auto-detected transport mode: ${detectedMode}`);
+          }
+        }
+      }
       
       // Maintain a recent trace buffer for HMM Map Matching on the backend
-      gpsBufferRef.current.push([smoothed.lng, smoothed.lat]);
+      gpsBufferRef.current.push([result.lng, result.lat]);
       if (gpsBufferRef.current.length > 20) {
         gpsBufferRef.current.shift(); // Keep maximum of 20 recent points
       }
       
-      setRunnerLocation([smoothed.lat, smoothed.lng]);
+      setRunnerLocation([result.lat, result.lng]);
       
       // Send trace buffer to backend for Map Matching & Broadcasting
       fetch(`${apiBaseUrl}/api/errands/${errand.id}/location`, {
@@ -93,9 +117,10 @@ export const RunnerActive: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ 
-          lat: smoothed.lat, 
-          lng: smoothed.lng,
-          coordinates: gpsBufferRef.current 
+          lat: result.lat, 
+          lng: result.lng,
+          coordinates: gpsBufferRef.current,
+          transport_mode: locationFilter.getTransportMode()
         }),
       }).catch(console.error);
     };
@@ -107,7 +132,13 @@ export const RunnerActive: React.FC = () => {
     });
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [errand?.id, errand?.status, apiBaseUrl]);
+  }, [errand?.id, errand?.status, apiBaseUrl, isAutoDetectMode]);
+
+  // Sync manual transport mode change to filter (without full re-render)
+  const handleManualTransportMode = (mode: TransportMode) => {
+    setIsAutoDetectMode(false);
+    setTransportMode(mode);
+  };
 
   const getStepIndex = (status: string) => {
     if (status === 'shopping') return 0;
@@ -279,8 +310,8 @@ export const RunnerActive: React.FC = () => {
     if (!mapRef.current || !runnerMarkerRef.current) return;
     const map = mapRef.current;
     
-    // Update runner marker
-    runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
+    // Animate runner marker smoothly instead of snapping
+    animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 1000);
 
     // Calculate heading/bearing to dynamically rotate the map
     if (gpsBufferRef.current.length >= 2) {
@@ -369,6 +400,36 @@ export const RunnerActive: React.FC = () => {
         </Button>
       </div>
 
+      {/* Transport Mode Toggle */}
+      <div className="bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-2xl p-5 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/50 dark:text-white/50">Transport Mode</h4>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase font-bold text-black/40 dark:text-white/40">Auto</span>
+            <button 
+              onClick={() => setIsAutoDetectMode(!isAutoDetectMode)}
+              className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isAutoDetectMode ? 'bg-market-green' : 'bg-black/20 dark:bg-white/20'}`}
+            >
+              <div className={`w-3 h-3 bg-white rounded-full transition-transform ${isAutoDetectMode ? 'translate-x-4' : 'translate-x-0'}`} />
+            </button>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {(['foot', 'bike', 'vehicle'] as TransportMode[]).map(mode => (
+            <button
+              key={mode}
+              onClick={() => handleManualTransportMode(mode)}
+              className={`flex-1 py-3 flex flex-col items-center gap-2 rounded-xl border transition-all ${transportMode === mode ? 'bg-kart-orange/10 border-kart-orange text-kart-orange' : 'bg-black/5 dark:bg-white/5 border-transparent text-black/60 dark:text-white/60 hover:border-black/20 dark:hover:border-white/20'}`}
+            >
+              {mode === 'foot' && <Footprints size={20} />}
+              {mode === 'bike' && <Bike size={20} />}
+              {mode === 'vehicle' && <Car size={20} />}
+              <span className="text-[10px] font-bold uppercase">{mode}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Progress Steps */}
       <div className="bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-2xl p-5 mb-6">
         <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/50 dark:text-white/50 mb-4">Delivery Progress</h4>
@@ -441,12 +502,20 @@ export const RunnerActive: React.FC = () => {
     return (
       <motion.div
         drag="y"
-        dragConstraints={{ top: 0, bottom: 500 }}
+        dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={0.1}
-        initial={{ y: "40%" }}
-        className="absolute bottom-0 left-0 z-40 flex h-[75%] w-full flex-col rounded-t-[2rem] bg-white/95 dark:bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
+        initial={{ y: "60%" }}
+        animate={{ y: isSheetExpanded ? "0%" : "60%" }}
+        onDragEnd={(_e, info) => {
+          if (info.offset.y < -50) setIsSheetExpanded(true);
+          else if (info.offset.y > 50) setIsSheetExpanded(false);
+        }}
+        className="absolute bottom-0 left-0 z-40 flex h-[85%] w-full flex-col rounded-t-[2rem] bg-white/95 dark:bg-[#0A0A0A]/95 pb-10 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl lg:hidden"
       >
-        <div className="flex w-full justify-center pb-3 pt-4 cursor-grab active:cursor-grabbing">
+        <div 
+          className="flex w-full justify-center pb-3 pt-4 cursor-pointer active:cursor-grabbing"
+          onClick={() => setIsSheetExpanded(!isSheetExpanded)}
+        >
           <div className="h-1.5 w-12 rounded-full bg-black/20 dark:bg-white/20" />
         </div>
         <div className="flex flex-1 flex-col overflow-hidden px-5 pt-2">

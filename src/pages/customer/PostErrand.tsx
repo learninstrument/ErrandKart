@@ -6,6 +6,7 @@ import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { TextArea } from '../../components/UI/TextArea';
 import { clearSession } from '../../utils/auth';
+import { PinDropModal } from '../../components/Map/PinDropModal';
 
 export const PostErrand: React.FC = () => {
   const navigate = useNavigate();
@@ -30,6 +31,13 @@ export const PostErrand: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Pin Drop Modal State
+  const [pinDropModal, setPinDropModal] = useState<{
+    isOpen: boolean;
+    location: [number, number];
+    type: 'pickup' | 'dropoff' | null;
+  }>({ isOpen: false, location: [6.5244, 3.3792], type: null });
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
@@ -104,6 +112,12 @@ export const PostErrand: React.FC = () => {
         if (pData?.features?.[0]) { 
           pickupLat = Number(pData.features[0].properties.coordinates.latitude); 
           pickupLng = Number(pData.features[0].properties.coordinates.longitude); 
+          const placeTypes = pData.features[0].properties.place_type || [pData.features[0].properties.feature_type];
+          if (!placeTypes.includes('address') && !placeTypes.includes('poi')) {
+             setPinDropModal({ isOpen: true, location: [pickupLng, pickupLat], type: 'pickup' });
+             setIsSubmitting(false);
+             return;
+          }
         }
 
         const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
@@ -111,6 +125,12 @@ export const PostErrand: React.FC = () => {
         if (dData?.features?.[0]) { 
           dropoffLat = Number(dData.features[0].properties.coordinates.latitude); 
           dropoffLng = Number(dData.features[0].properties.coordinates.longitude); 
+          const placeTypes = dData.features[0].properties.place_type || [dData.features[0].properties.feature_type];
+          if (!placeTypes.includes('address') && !placeTypes.includes('poi')) {
+             setPinDropModal({ isOpen: true, location: [dropoffLng, dropoffLat], type: 'dropoff' });
+             setIsSubmitting(false);
+             return;
+          }
         }
       } catch (geoErr) {
         console.warn('Geocoding failed, falling back to null coordinates', geoErr);
@@ -396,6 +416,23 @@ export const PostErrand: React.FC = () => {
           {isSubmitting ? 'Saving...' : 'Review & Checkout'}
         </Button>
       </div>
+
+      <PinDropModal 
+        isOpen={pinDropModal.isOpen}
+        initialLocation={pinDropModal.location}
+        title={pinDropModal.type === 'pickup' ? 'Confirm Pickup Location' : 'Confirm Delivery Location'}
+        onClose={() => setPinDropModal({ ...pinDropModal, isOpen: false })}
+        onConfirm={(_loc, addr) => {
+           if (pinDropModal.type === 'pickup') {
+             setPickupLocation(addr);
+           } else {
+             setDropoffLocation(addr);
+           }
+           setPinDropModal({ ...pinDropModal, isOpen: false });
+           // Auto-trigger continue after pin drop
+           setTimeout(() => handleContinue(), 100);
+        }}
+      />
     </div>
   );
 };

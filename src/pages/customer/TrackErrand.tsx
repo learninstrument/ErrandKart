@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import * as turf from '@turf/turf';
 
 import { clearSession } from '../../utils/auth';
+import { animateMarkerTo } from '../../utils/markerAnimation';
 
 export const TrackErrand: React.FC = () => {
   const navigate = useNavigate();
@@ -212,9 +213,9 @@ export const TrackErrand: React.FC = () => {
     if (!mapRef.current || !runnerMarkerRef.current) return;
     const map = mapRef.current;
     
-    // Update runner marker and camera
+    // Animate runner marker smoothly instead of snapping
     if (runnerLocation) {
-      runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]);
+      animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 2000);
 
       let heading = map.getBearing();
       if (prevRunnerLocationRef.current) {
@@ -238,6 +239,14 @@ export const TrackErrand: React.FC = () => {
       });
 
       prevRunnerLocationRef.current = runnerLocation;
+    }
+
+    // Update runner marker icon based on transport mode
+    if (order?.transport_mode && runnerMarkerRef.current) {
+      const mode = order.transport_mode;
+      const el = runnerMarkerRef.current.getElement();
+      const icon = mode === 'bike' ? 'directions_bike' : mode === 'vehicle' ? 'directions_car' : 'directions_walk';
+      el.innerHTML = `<div style="width:32px;height:32px;border-radius:16px;background:#2E8B57;color:#ffffff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #000000;"><span class="material-symbols-outlined" style="font-size:18px;">${icon}</span></div>`;
     }
 
     // Fetch Route ONCE, then trim it
