@@ -16,6 +16,16 @@ const CURATED_MARKETS: Record<string, string[]> = {
   ibadan: ["Bodija Market", "Oje Market", "Dugbe Market", "Aleshinloye Market"]
 };
 
+// Mapbox geocoding often struggles with local Nigerian markets. We hardcode precise coordinates for Abuja to ensure perfect accuracy.
+const ABUJA_MARKET_COORDS: Record<string, { lat: number, lng: number }> = {
+  "Wuse Market": { lat: 9.0620, lng: 7.4608 },
+  "Garki International Market": { lat: 9.0270, lng: 7.4721 },
+  "Utako Market": { lat: 9.0664, lng: 7.4334 },
+  "Kado Fish Market": { lat: 9.0818, lng: 7.4206 },
+  "Karmo Market": { lat: 9.0559, lng: 7.3820 },
+  "Gwarinpa Market": { lat: 9.1060, lng: 7.4116 },
+};
+
 export const PostErrand: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState('Purchase');
@@ -451,7 +461,14 @@ export const PostErrand: React.FC = () => {
                         <button
                           key={market}
                           type="button"
-                          onClick={() => setPickupLocation(`${market}, ${displayCity}`)}
+                          onClick={() => {
+                            setPickupLocation(`${market}, ${displayCity}`);
+                            if (ABUJA_MARKET_COORDS[market]) {
+                              setExplicitPickupCoords(ABUJA_MARKET_COORDS[market]);
+                            } else {
+                              setExplicitPickupCoords(null);
+                            }
+                          }}
                           className={`text-xs font-bold px-4 py-2.5 rounded-xl border transition-all ${
                             pickupLocation.includes(market) 
                               ? 'bg-kart-orange text-white border-kart-orange shadow-[0_4px_15px_rgba(255,102,0,0.4)]'
