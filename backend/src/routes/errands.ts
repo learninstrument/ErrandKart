@@ -223,7 +223,7 @@ errandsRouter.patch(
     const context = await requireAuth(request);
     const { id } = request.params;
     const { status, proof_of_purchase_url } = z.object({
-      status: z.enum(['pending', 'active', 'shopping', 'en_route', 'arrived', 'completed', 'cancelled']),
+      status: z.enum(['pending', 'active', 'shopping', 'heading_to_pickup', 'arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'dropped_off', 'en_route', 'arrived', 'completed', 'cancelled']),
       proof_of_purchase_url: z.string().url().optional(),
     }).parse(request.body);
 

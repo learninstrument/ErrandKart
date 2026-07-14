@@ -10,7 +10,7 @@ import type { TransportMode } from '../../utils/locationFilter';
 import { animateMarkerTo } from '../../utils/markerAnimation';
 import { clearSession } from '../../utils/auth';
 
-const STATUS_STEPS = ['Heading to Pickup', 'Arrived at Pickup', 'Items Picked Up', 'Heading to Drop-off', 'Arrived at Drop-off', 'Completed'];
+const STATUS_STEPS = ['At Pickup / Shopping', 'Heading to Drop-off', 'Arrived at Drop-off', 'Completed'];
 
 export const RunnerActive: React.FC = () => {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ export const RunnerActive: React.FC = () => {
 
   // Geolocation watch stream
   useEffect(() => {
-    const trackingStatuses = ['active', 'shopping', 'en_route', 'heading_to_pickup', 'arrived_at_pickup', 'picked_up', 'heading_to_dropoff'];
+    const trackingStatuses = ['active', 'shopping', 'en_route', 'arrived'];
     if (!errand || !trackingStatuses.includes(errand.status)) return;
     if (!navigator.geolocation) return;
 
@@ -160,13 +160,11 @@ export const RunnerActive: React.FC = () => {
   };
 
   const getStepIndex = (status: string) => {
-    if (status === 'heading_to_pickup') return 0;
-    if (status === 'arrived_at_pickup') return 1;
-    if (status === 'picked_up') return 2;
-    if (status === 'heading_to_dropoff') return 3;
-    if (status === 'arrived_at_dropoff') return 4;
-    if (status === 'completed' || status === 'dropped_off') return 5;
-    return -1; // 'active' means they haven't started heading to pickup
+    if (status === 'shopping') return 0;
+    if (status === 'en_route') return 1;
+    if (status === 'arrived') return 2;
+    if (status === 'completed' || status === 'dropped_off') return 3;
+    return -1; // 'active' means they haven't started yet
   };
 
   const currentStep = errand ? getStepIndex(errand.status) : -1;
@@ -177,12 +175,10 @@ export const RunnerActive: React.FC = () => {
     if (stepIndex !== currentStep + 1) return;
 
     let nextStatus = '';
-    if (stepIndex === 0) nextStatus = 'heading_to_pickup';
-    else if (stepIndex === 1) nextStatus = 'arrived_at_pickup';
-    else if (stepIndex === 2) nextStatus = 'picked_up';
-    else if (stepIndex === 3) nextStatus = 'heading_to_dropoff';
-    else if (stepIndex === 4) nextStatus = 'arrived_at_dropoff';
-    else if (stepIndex === 5) nextStatus = 'completed';
+    if (stepIndex === 0) nextStatus = 'shopping';
+    else if (stepIndex === 1) nextStatus = 'en_route';
+    else if (stepIndex === 2) nextStatus = 'arrived';
+    else if (stepIndex === 3) nextStatus = 'completed';
 
     if (!nextStatus) return;
     setError('');
