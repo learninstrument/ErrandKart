@@ -26,6 +26,7 @@ export const RunnerActive: React.FC = () => {
   const [receiptSelected, setReceiptSelected] = useState(false);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [error, setError] = useState('');
+  const [gpsError, setGpsError] = useState<string | null>(null);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
@@ -136,7 +137,14 @@ export const RunnerActive: React.FC = () => {
       }).catch(console.error);
     };
 
-    const watchId = navigator.geolocation.watchPosition(successCallback, (err) => console.warn(err.message), {
+    const watchId = navigator.geolocation.watchPosition(successCallback, (err) => {
+      console.warn(err.message);
+      if (err.code === err.PERMISSION_DENIED) {
+        setGpsError("Location Permission Denied. Please enable GPS in browser settings.");
+      } else {
+        setGpsError("GPS Signal Lost. Trying to reconnect...");
+      }
+    }, {
       enableHighAccuracy: true,
       timeout: 20000,
       maximumAge: 0,
@@ -325,21 +333,23 @@ export const RunnerActive: React.FC = () => {
   }, [!!errand]);
 
   useEffect(() => {
-    if (!mapRef.current || !runnerMarkerRef.current || !runnerLocation || !pickupLocation || !dropoffLocation) return;
+    if (!mapRef.current || !runnerMarkerRef.current || !pickupLocation || !dropoffLocation) return;
     const map = mapRef.current;
     
-    // Animate runner marker smoothly instead of snapping
-    animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 1000);
+    // Animate runner marker smoothly instead of snapping (only if we have a location)
+    if (runnerLocation) {
+      animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 1000);
 
-    // Calculate heading/bearing to dynamically rotate the map
-    if (gpsBufferRef.current.length >= 2) {
-      const prevLoc = gpsBufferRef.current[gpsBufferRef.current.length - 2];
-      const currLoc = [runnerLocation[1], runnerLocation[0]];
-      const bearing = turf.bearing(turf.point(prevLoc), turf.point(currLoc));
-      
-      // Only rotate if the movement is significant (avoids jitter)
-      if (turf.distance(turf.point(prevLoc), turf.point(currLoc), { units: 'meters' }) > 2) {
-         map.easeTo({ bearing: bearing, duration: 1000, pitch: 60 });
+      // Calculate heading/bearing to dynamically rotate the map
+      if (gpsBufferRef.current.length >= 2) {
+        const prevLoc = gpsBufferRef.current[gpsBufferRef.current.length - 2];
+        const currLoc = [runnerLocation[1], runnerLocation[0]];
+        const bearing = turf.bearing(turf.point(prevLoc), turf.point(currLoc));
+        
+        // Only rotate if the movement is significant (avoids jitter)
+        if (turf.distance(turf.point(prevLoc), turf.point(currLoc), { units: 'meters' }) > 2) {
+           map.easeTo({ bearing: bearing, duration: 1000, pitch: 60 });
+        }
       }
     }
 
@@ -348,7 +358,9 @@ export const RunnerActive: React.FC = () => {
       try {
         if (!fullRouteFetchedRef.current) {
           const token = import.meta.env.VITE_MAPBOX_TOKEN;
-          const coords = `${runnerLocation[1]},${runnerLocation[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
+          const coords = runnerLocation 
+            ? `${runnerLocation[1]},${runnerLocation[0]};${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`
+            : `${pickupLocation[1]},${pickupLocation[0]};${dropoffLocation[1]},${dropoffLocation[0]}`;
           const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&access_token=${token}`;
           
           const response = await fetch(url);
@@ -370,8 +382,8 @@ export const RunnerActive: React.FC = () => {
               }
             }
           }
-        } else if (routeGeometryRef.current) {
-          // Trim the route behind the runner
+        } else if (routeGeometryRef.current && runnerLocation) {
+          // Trim the route behind the runner (only if we have a runner location)
           const startPt = turf.point([runnerLocation[1], runnerLocation[0]]);
           const routeLine = turf.lineString(routeGeometryRef.current.coordinates);
           try {
@@ -624,6 +636,13 @@ export const RunnerActive: React.FC = () => {
         ) : (
           <>
             <div className="relative h-full w-full bg-white dark:bg-black">
+              {/* GPS Error Overlay */}
+              {gpsError && (
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-sm rounded-xl border border-red-500/30 bg-red-500/90 p-3 text-center text-xs font-bold text-white shadow-[0_4px_20px_rgba(239,68,68,0.4)] backdrop-blur-md">
+                  {gpsError}
+                </div>
+              )}
+
               {/* Real Leaflet Map Container */}
               <div ref={mapContainerRef} className="h-full w-full z-0" />
             

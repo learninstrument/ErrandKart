@@ -243,6 +243,15 @@ export const PostErrand: React.FC = () => {
         setError("Could not find the exact location on the map. Please click 'Select precise house pin on map' to drop a pin manually.");
         return;
       }
+
+      // 🚨 Reject exact fallback coordinates! If the user just clicked "Confirm" on the default pin drop without moving it.
+      // 9.0579 is the hardcoded lat for the default center.
+      if (Math.abs(pickupLat - 9.0579) < 0.0001 || Math.abs(dropoffLat - 9.0579) < 0.0001) {
+        setIsSubmitting(false);
+        setError("You must select your EXACT location. The default map center is not allowed. Please drag the map pin to your actual house/market.");
+        return;
+      }
+
       console.log(`[PostErrand] FINAL COORDS → pickup=(${pickupLat}, ${pickupLng}) dropoff=(${dropoffLat}, ${dropoffLng}) | explicit pickup=${!!explicitPickupCoords} dropoff=${!!explicitDropoffCoords} | userCoords=${userCoords}`);
       const res = await fetch(`${apiBaseUrl}/api/errands`, {
         method: 'POST',
