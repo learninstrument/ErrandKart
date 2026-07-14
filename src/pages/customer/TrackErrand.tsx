@@ -145,14 +145,14 @@ export const TrackErrand: React.FC = () => {
     // 2. Add Pickup Marker (Market - Black/White)
     const pEl = document.createElement('div');
     pEl.id = 'pickup-marker-el';
-    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #000000;box-shadow:0 0 0 6px rgba(0,0,0,0.18); transition: opacity 0.5s;" id="pickup-marker-inner"></div>`;
+    pEl.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#000000;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(0,0,0,0.4);border:3px solid white; transition: opacity 0.5s;" id="pickup-marker-inner"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>`;
     new mapboxgl.Marker({ element: pEl })
       .setLngLat([pickupLocation[1], pickupLocation[0]])
       .addTo(map);
 
     // 3. Add Dropoff Marker (Customer - Orange)
     const dEl = document.createElement('div');
-    dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
+    dEl.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#FF6600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(255,102,0,0.6);border:3px solid white;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>`;
     new mapboxgl.Marker({ element: dEl })
       .setLngLat([dropoffLocation[1], dropoffLocation[0]])
       .addTo(map);
