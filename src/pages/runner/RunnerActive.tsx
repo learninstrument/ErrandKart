@@ -620,8 +620,8 @@ export const RunnerActive: React.FC = () => {
               </button>
             </header>
             <div className="w-16 h-16 mb-4 animate-spin rounded-full border-4 border-black/10 border-t-market-green"></div>
-            <h2 className="text-xl font-bold mb-2">Loading Map Data...</h2>
-            <p className="text-black/50 dark:text-white/50 text-sm">Please wait while we initialize your tracking map.</p>
+            <h2 className="text-xl font-bold mb-2 text-red-500">Missing Location Data</h2>
+            <p className="text-black/50 dark:text-white/50 text-sm">This errand was created without exact GPS coordinates. The map cannot be displayed.</p>
           </div>
         ) : (
           <>

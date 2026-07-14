@@ -217,30 +217,31 @@ export const PostErrand: React.FC = () => {
       }
 
       // Fallback to real GPS if OpenStreetMap couldn't find the text address and no explicit pin was dropped
-      if (!pickupLat || !dropoffLat) {
+      if (!pickupLat || !dropoffLat || isNaN(pickupLat) || isNaN(dropoffLat)) {
         try {
           const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(resolve, (err) => {
-              if (err.code === err.PERMISSION_DENIED) {
-                alert("Please enable location services in your browser settings to automatically use your current location.");
-              }
               reject(err);
-            }, { timeout: 5000 });
+            }, { timeout: 5000, enableHighAccuracy: true });
           });
-          if (!pickupLat) {
+          if (!pickupLat || isNaN(pickupLat)) {
             pickupLat = pos.coords.latitude;
             pickupLng = pos.coords.longitude;
           }
-          if (!dropoffLat) {
-            // Dropoff defaults to slightly away from pickup to simulate travel distance
+          if (!dropoffLat || isNaN(dropoffLat)) {
             dropoffLat = pos.coords.latitude + (Math.random() * 0.01 - 0.005);
             dropoffLng = pos.coords.longitude + (Math.random() * 0.01 - 0.005);
           }
         } catch (err) {
-          console.warn('Geolocation fallback failed, using Abuja default', err);
-          if (!pickupLat) { pickupLat = 9.0579; pickupLng = 7.4951; }
-          if (!dropoffLat) { dropoffLat = 9.0579; dropoffLng = 7.4951; }
+          console.warn('Geolocation fallback failed', err);
         }
+      }
+
+      // 🚨 "Make bad data loud": No more silent Abuja fallbacks. If we STILL don't have coords, reject the order.
+      if (!pickupLat || !dropoffLat || isNaN(pickupLat) || isNaN(dropoffLat)) {
+        setIsSubmitting(false);
+        setError("Could not find the exact location on the map. Please click 'Select precise house pin on map' to drop a pin manually.");
+        return;
       }
       console.log(`[PostErrand] FINAL COORDS → pickup=(${pickupLat}, ${pickupLng}) dropoff=(${dropoffLat}, ${dropoffLng}) | explicit pickup=${!!explicitPickupCoords} dropoff=${!!explicitDropoffCoords} | userCoords=${userCoords}`);
       const res = await fetch(`${apiBaseUrl}/api/errands`, {
