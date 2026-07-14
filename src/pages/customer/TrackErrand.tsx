@@ -209,7 +209,17 @@ export const TrackErrand: React.FC = () => {
         });
       }
 
+      // ✅ After adding sources/layers, draw the route if it was already fetched
+      if (routeGeometryRef.current) {
+        const src = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource | undefined;
+        if (src) src.setData({ type: 'Feature', properties: {}, geometry: routeGeometryRef.current });
+      }
+
     });
+
+    // Reset route fetch state so a fresh route is always requested for this order
+    fullRouteFetchedRef.current = false;
+    routeGeometryRef.current = null;
 
     return () => {
       observer.disconnect();
@@ -285,13 +295,16 @@ export const TrackErrand: React.FC = () => {
               if (legs[1]) setEtaLeg2(`Est. ${Math.ceil(legs[1].duration / 60)} mins`);
             }
 
-            if (map.isStyleLoaded() && map.getSource('errand-route-remaining')) {
-              const remainingSource = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource;
-              remainingSource.setData({
-                type: 'Feature',
-                properties: {},
-                geometry: routeGeometry
-              });
+            // ✅ Draw route if style is loaded; otherwise the style.load callback will draw it
+            if (map.isStyleLoaded()) {
+              const remainingSource = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource | undefined;
+              if (remainingSource) {
+                remainingSource.setData({
+                  type: 'Feature',
+                  properties: {},
+                  geometry: routeGeometry
+                });
+              }
             }
           }
         } else if (runnerLocation && routeGeometryRef.current) {

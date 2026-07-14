@@ -463,9 +463,12 @@ export const PostErrand: React.FC = () => {
                 <AddressDropdown
                   results={pickupResults}
                   savedLocations={savedLocations}
-                  onSelect={(value) => {
+                  onSelect={(value, lat, lon) => {
                     setPickupLocation(value);
                     setPickupResults([]);
+                    if (lat != null && lon != null) {
+                      setExplicitPickupCoords({ lat, lng: lon });
+                    }
                   }}
                 />
               )}
@@ -485,9 +488,12 @@ export const PostErrand: React.FC = () => {
                 <AddressDropdown
                   results={dropoffResults}
                   savedLocations={savedLocations}
-                  onSelect={(value) => {
+                  onSelect={(value, lat, lon) => {
                     setDropoffLocation(value);
                     setDropoffResults([]);
+                    if (lat != null && lon != null) {
+                      setExplicitDropoffCoords({ lat, lng: lon });
+                    }
                   }}
                 />
               )}
@@ -566,7 +572,7 @@ export const PostErrand: React.FC = () => {
   );
 };
 
-const AddressDropdown = ({ results, savedLocations, onSelect }: { results: any[], savedLocations: any[], onSelect: (value: string) => void }) => {
+const AddressDropdown = ({ results, savedLocations, onSelect }: { results: any[], savedLocations: any[], onSelect: (value: string, lat?: number, lon?: number) => void }) => {
   const hasSaved = savedLocations.length > 0;
   const hasResults = results.length > 0;
 
@@ -576,7 +582,7 @@ const AddressDropdown = ({ results, savedLocations, onSelect }: { results: any[]
         <>
           <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-black/40 dark:text-white/40">Saved Locations</p>
           {savedLocations.map((loc: any) => (
-            <div key={`saved-${loc.id}`} className="cursor-pointer border-b border-black/5 dark:border-white/5 px-4 py-3 text-sm text-black/80 dark:text-white/80 transition-colors hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white" onClick={() => onSelect(loc.address)}>
+            <div key={`saved-${loc.id}`} className="cursor-pointer border-b border-black/5 dark:border-white/5 px-4 py-3 text-sm text-black/80 dark:text-white/80 transition-colors hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white" onClick={() => onSelect(loc.address, loc.lat ?? undefined, loc.lng ?? undefined)}>
               <span className="font-bold text-kart-orange">{loc.label}:</span> {loc.address}
             </div>
           ))}
@@ -587,7 +593,7 @@ const AddressDropdown = ({ results, savedLocations, onSelect }: { results: any[]
           {hasSaved && <div className="h-1 bg-black/5 dark:bg-white/5"></div>}
           <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-black/40 dark:text-white/40">Suggestions</p>
           {results.map((res: any, idx: number) => (
-            <div key={idx} className="cursor-pointer border-b border-black/5 dark:border-white/5 px-4 py-3 text-sm text-black/80 dark:text-white/80 transition-colors hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white" onClick={() => onSelect(res.display_name)}>
+            <div key={idx} className="cursor-pointer border-b border-black/5 dark:border-white/5 px-4 py-3 text-sm text-black/80 dark:text-white/80 transition-colors hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white" onClick={() => onSelect(res.display_name, res.lat, res.lon)}>
               {res.display_name}
             </div>
           ))}

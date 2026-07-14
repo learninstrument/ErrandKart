@@ -69,9 +69,7 @@ export const RunnerActive: React.FC = () => {
           if (active) {
             setErrand(active);
             if (active.transport_mode) setTransportMode(active.transport_mode as TransportMode);
-            if (active.pickup_lat && active.pickup_lng) {
-               setRunnerLocation([Number(active.pickup_lat), Number(active.pickup_lng)]);
-            }
+            // ✅ Do NOT init runnerLocation to pickup coords — GPS watchPosition will set it correctly
           }
         }
       })
@@ -309,7 +307,17 @@ export const RunnerActive: React.FC = () => {
         });
       }
 
+      // ✅ After adding sources/layers, if the route was already fetched, draw it immediately
+      if (routeGeometryRef.current) {
+        const src = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource | undefined;
+        if (src) src.setData({ type: 'Feature', properties: {}, geometry: routeGeometryRef.current });
+      }
+
     });
+
+    // Reset route fetch flag so a fresh route is requested for this errand
+    fullRouteFetchedRef.current = false;
+    routeGeometryRef.current = null;
 
     return () => {
       observer.disconnect();
@@ -352,13 +360,16 @@ export const RunnerActive: React.FC = () => {
             const routeGeometry = data.routes[0].geometry;
             routeGeometryRef.current = routeGeometry;
             fullRouteFetchedRef.current = true;
-            if (map.isStyleLoaded() && map.getSource('errand-route-remaining')) {
-              const source = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource;
-              source.setData({
-                type: 'Feature',
-                properties: {},
-                geometry: routeGeometry
-              });
+            // ✅ Draw the route immediately if style is loaded, otherwise style.load callback will draw it
+            if (map.isStyleLoaded()) {
+              const source = map.getSource('errand-route-remaining') as mapboxgl.GeoJSONSource | undefined;
+              if (source) {
+                source.setData({
+                  type: 'Feature',
+                  properties: {},
+                  geometry: routeGeometry
+                });
+              }
             }
           }
         } else if (routeGeometryRef.current) {
