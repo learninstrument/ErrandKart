@@ -168,7 +168,9 @@ export const TrackErrand: React.FC = () => {
     // Fit bounds
     const bounds = new mapboxgl.LngLatBounds();
     bounds.extend([pickupLocation[1], pickupLocation[0]]);
-    bounds.extend([initRunnerLoc[1], initRunnerLoc[0]]);
+    if (runnerLocation) {
+      bounds.extend([runnerLocation[1], runnerLocation[0]]);
+    }
     bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
     map.fitBounds(bounds, { padding: 60 });
 
