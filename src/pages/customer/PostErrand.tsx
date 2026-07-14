@@ -141,8 +141,13 @@ export const PostErrand: React.FC = () => {
   }, [apiBaseUrl]);
 
   const handleAddressSearch = (query: string, type: 'pickup' | 'dropoff') => {
-    if (type === 'pickup') setPickupLocation(query);
-    else setDropoffLocation(query);
+    if (type === 'pickup') {
+      setPickupLocation(query);
+      setExplicitPickupCoords(null); // ✅ Clear stale coords when user edits text
+    } else {
+      setDropoffLocation(query);
+      setExplicitDropoffCoords(null); // ✅ Clear stale coords when user edits text
+    }
 
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
@@ -237,6 +242,7 @@ export const PostErrand: React.FC = () => {
           if (!dropoffLat) { dropoffLat = 9.0579; dropoffLng = 7.4951; }
         }
       }
+      console.log(`[PostErrand] FINAL COORDS → pickup=(${pickupLat}, ${pickupLng}) dropoff=(${dropoffLat}, ${dropoffLng}) | explicit pickup=${!!explicitPickupCoords} dropoff=${!!explicitDropoffCoords} | userCoords=${userCoords}`);
       const res = await fetch(`${apiBaseUrl}/api/errands`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

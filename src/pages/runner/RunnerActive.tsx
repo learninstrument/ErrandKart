@@ -612,7 +612,7 @@ export const RunnerActive: React.FC = () => {
       </aside>
 
       <main className="relative flex-1">
-        {(!pickupLocation || !dropoffLocation || !runnerLocation) ? (
+        {(!pickupLocation || !dropoffLocation) ? (
           <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center bg-white dark:bg-black">
             <header className="absolute top-0 left-0 w-full z-20 flex items-center px-5 pt-6 pb-4">
               <button onClick={() => navigate('/runner/dashboard')} className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
@@ -643,7 +643,7 @@ export const RunnerActive: React.FC = () => {
               
               {/* Floating Location Button */}
               <div className="absolute top-24 right-5 flex flex-col gap-2 z-20 lg:hidden">
-                <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-white/10 shadow-lg flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition-colors pointer-events-auto backdrop-blur-sm" onClick={() => mapRef.current?.panTo([runnerLocation[1], runnerLocation[0]])}>
+                <button className="w-10 h-10 rounded-full bg-white/80 dark:bg-white/10 shadow-lg flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition-colors pointer-events-auto backdrop-blur-sm" onClick={() => { const loc = runnerLocation || pickupLocation; if (loc) mapRef.current?.panTo([loc[1], loc[0]]); }}>
                   <MapPin size={18} className="text-black dark:text-white" />
                 </button>
               </div>
