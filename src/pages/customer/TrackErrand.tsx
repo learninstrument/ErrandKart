@@ -157,13 +157,13 @@ export const TrackErrand: React.FC = () => {
       .setLngLat([dropoffLocation[1], dropoffLocation[0]])
       .addTo(map);
 
-    // 4. Add Runner Marker
+    // 4. Create Runner Marker. Do NOT add to map until we have GPS to avoid hiding the market marker.
     const rEl = document.createElement('div');
     rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:18px;background:#2E8B57;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(46,139,87,0.6); border: 2px solid #ffffff; font-size: 20px;">🚶</div>`;
-    const initRunnerLoc = runnerLocation || pickupLocation;
-    runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
-      .setLngLat([initRunnerLoc[1], initRunnerLoc[0]])
-      .addTo(map);
+    runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl });
+    if (runnerLocation) {
+      runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]).addTo(map);
+    }
 
     // Fit bounds
     const bounds = new mapboxgl.LngLatBounds();
@@ -238,7 +238,11 @@ export const TrackErrand: React.FC = () => {
     
     // Animate runner marker smoothly instead of snapping
     if (runnerLocation) {
-      animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 2000);
+      if (!runnerMarkerRef.current.getElement().parentNode) {
+        runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]).addTo(map);
+      } else {
+        animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 1000);
+      }
 
       let heading = map.getBearing();
       if (prevRunnerLocationRef.current) {

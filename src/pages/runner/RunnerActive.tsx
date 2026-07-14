@@ -258,12 +258,13 @@ export const RunnerActive: React.FC = () => {
       .setLngLat([dropoffLocation[1], dropoffLocation[0]])
       .addTo(map);
 
-    // 4. Add Runner Marker at pickup as placeholder — GPS will animate it to real position
+    // 4. Create Runner Marker. Do NOT add to map until we have GPS to avoid hiding the market marker.
     const rEl = document.createElement('div');
     rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black; font-size: 20px;">🚶</div>`;
-    runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
-      .setLngLat([pickupLocation[1], pickupLocation[0]]) // ✅ Start at pickup; GPS will move it
-      .addTo(map);
+    runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl });
+    if (runnerLocation) {
+      runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]).addTo(map);
+    }
 
     // Fit bounds to pickup + dropoff
     const bounds = new mapboxgl.LngLatBounds();
@@ -334,7 +335,11 @@ export const RunnerActive: React.FC = () => {
     
     // Animate runner marker smoothly instead of snapping (only if we have a location)
     if (runnerLocation) {
-      animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 1000);
+      if (!runnerMarkerRef.current.getElement().parentNode) {
+        runnerMarkerRef.current.setLngLat([runnerLocation[1], runnerLocation[0]]).addTo(map);
+      } else {
+        animateMarkerTo(runnerMarkerRef.current, [runnerLocation[1], runnerLocation[0]], 1000);
+      }
 
       // Calculate heading/bearing to dynamically rotate the map
       if (gpsBufferRef.current.length >= 2) {
