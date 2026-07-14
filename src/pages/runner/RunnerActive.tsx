@@ -240,25 +240,23 @@ export const RunnerActive: React.FC = () => {
     });
     observer.observe(document.documentElement, { attributes: true });
 
-    // 2. Add Pickup Marker
+    // 2. Add Pickup Marker (Market - Black/White)
     const pEl = document.createElement('div');
-    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
+    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #000000;box-shadow:0 0 0 6px rgba(0,0,0,0.18);"></div>`;
     new mapboxgl.Marker({ element: pEl })
       .setLngLat([pickupLocation[1], pickupLocation[0]])
       .addTo(map);
 
-    // 3. Add Dropoff Marker
+    // 3. Add Dropoff Marker (Customer - Orange)
     const dEl = document.createElement('div');
-    dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
+    dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
     new mapboxgl.Marker({ element: dEl })
       .setLngLat([dropoffLocation[1], dropoffLocation[0]])
       .addTo(map);
 
     // 4. Add Runner Marker at pickup as placeholder — GPS will animate it to real position
     const rEl = document.createElement('div');
-    rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-            </div>`;
+    rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black; font-size: 20px;">🚶</div>`;
     runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
       .setLngLat([pickupLocation[1], pickupLocation[0]]) // ✅ Start at pickup; GPS will move it
       .addTo(map);

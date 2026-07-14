@@ -142,17 +142,17 @@ export const TrackErrand: React.FC = () => {
     });
     observer.observe(document.documentElement, { attributes: true });
 
-    // 2. Add Pickup Marker
+    // 2. Add Pickup Marker (Market - Black/White)
     const pEl = document.createElement('div');
     pEl.id = 'pickup-marker-el';
-    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18); transition: opacity 0.5s;" id="pickup-marker-inner"></div>`;
+    pEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #000000;box-shadow:0 0 0 6px rgba(0,0,0,0.18); transition: opacity 0.5s;" id="pickup-marker-inner"></div>`;
     new mapboxgl.Marker({ element: pEl })
       .setLngLat([pickupLocation[1], pickupLocation[0]])
       .addTo(map);
 
-    // 3. Add Dropoff Marker
+    // 3. Add Dropoff Marker (Customer - Orange)
     const dEl = document.createElement('div');
-    dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #2E8B57;box-shadow:0 0 0 6px rgba(46,139,87,0.18);"></div>`;
+    dEl.innerHTML = `<div style="width:14px;height:14px;border-radius:999px;background:#ffffff;border:3px solid #FF6600;box-shadow:0 0 0 6px rgba(255,102,0,0.18);"></div>`;
     new mapboxgl.Marker({ element: dEl })
       .setLngLat([dropoffLocation[1], dropoffLocation[0]])
       .addTo(map);
