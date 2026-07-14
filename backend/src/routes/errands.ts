@@ -97,6 +97,43 @@ errandsRouter.get(
     response.json({ errands: formatted });
   })
 );
+// GET /api/errands/my/active - Get the currently active errand for the user
+errandsRouter.get(
+  '/my/active',
+  asyncHandler(async (request, response) => {
+    const context = await requireAuth(request);
+    const userId = context.authUser?.id;
+    if (!userId) throw new HttpError(401, 'Unauthorized');
+    const userRole = context.profile.role;
+
+    let query = supabaseAdmin
+      .from('errands')
+      .select('*, customer:customer_id(id, full_name, phone_number), runner:runner_id(id, full_name, phone_number)')
+      .neq('status', 'completed')
+      .neq('status', 'cancelled');
+
+    if (userRole === 'customer') query = query.eq('customer_id', userId);
+    else if (userRole === 'runner') query = query.eq('runner_id', userId);
+    else throw new HttpError(403, 'Access denied for this role.');
+
+    const { data, error } = await query.order('created_at', { ascending: false }).limit(1).maybeSingle();
+
+    if (error) throw new HttpError(500, 'Failed to fetch active errand', error);
+
+    if (!data) {
+      return response.json({ errand: null });
+    }
+
+    const budget = data.budget_customer_fee ?? data.budget_service_fee ?? 0;
+    const formatted = {
+      ...data,
+      budget_customer_fee: budget,
+      budget_service_fee: budget,
+    };
+
+    response.json({ errand: formatted });
+  })
+);
 
 // GET /api/errands/available - Get all pending errands for runners
 errandsRouter.get(
