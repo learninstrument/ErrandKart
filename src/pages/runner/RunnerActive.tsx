@@ -206,7 +206,8 @@ export const RunnerActive: React.FC = () => {
 
   // --- MAP LOGIC ---
   useEffect(() => {
-    if (!errand || !mapContainerRef.current || mapRef.current || !runnerLocation || !pickupLocation || !dropoffLocation) return;
+    // ✅ Map inits as soon as errand+pickup+dropoff are known. runnerLocation not required.
+    if (!errand || !mapContainerRef.current || mapRef.current || !pickupLocation || !dropoffLocation) return;
 
     const token = import.meta.env.VITE_MAPBOX_TOKEN;
     mapboxgl.accessToken = token || '';
@@ -216,7 +217,7 @@ export const RunnerActive: React.FC = () => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: initialStyle,
-      center: [runnerLocation[1], runnerLocation[0]], // [lng, lat]
+      center: [pickupLocation[1], pickupLocation[0]], // ✅ Center on pickup, not runner
       zoom: 14,
       pitch: 60,
       bearing: -17.6,
@@ -253,21 +254,20 @@ export const RunnerActive: React.FC = () => {
       .setLngLat([dropoffLocation[1], dropoffLocation[0]])
       .addTo(map);
 
-    // 4. Add Runner Marker
+    // 4. Add Runner Marker at pickup as placeholder — GPS will animate it to real position
     const rEl = document.createElement('div');
     rEl.innerHTML = `<div style="width:36px;height:36px;border-radius:999px;background:#2E8B57;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(46,139,87,0.6); border: 3px solid black;">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
             </div>`;
     runnerMarkerRef.current = new mapboxgl.Marker({ element: rEl })
-      .setLngLat([runnerLocation[1], runnerLocation[0]])
+      .setLngLat([pickupLocation[1], pickupLocation[0]]) // ✅ Start at pickup; GPS will move it
       .addTo(map);
 
-    // Fit bounds
+    // Fit bounds to pickup + dropoff
     const bounds = new mapboxgl.LngLatBounds();
-    bounds.extend([runnerLocation[1], runnerLocation[0]]);
     bounds.extend([pickupLocation[1], pickupLocation[0]]);
     bounds.extend([dropoffLocation[1], dropoffLocation[0]]);
-    map.fitBounds(bounds, { padding: 60 });
+    map.fitBounds(bounds, { padding: 80 });
 
     // Wait for style load to add sources/layers
     map.on('style.load', () => {

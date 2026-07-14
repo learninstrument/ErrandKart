@@ -156,7 +156,9 @@ export const PostErrand: React.FC = () => {
     searchTimeout.current = setTimeout(async () => {
       try {
         const token = import.meta.env.VITE_MAPBOX_TOKEN;
-        const res = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&country=ng&proximity=7.49508,9.05785&limit=4&access_token=${token}`);
+        // ✅ Use user's real GPS as proximity bias so results match their actual area
+        const proximity = `${userCoords[0]},${userCoords[1]}`;
+        const res = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&country=ng&proximity=${proximity}&limit=4&access_token=${token}`);
         const data = await res.json();
         const mapped = (data.features || []).map((f: any) => ({
           display_name: f.properties.full_address || f.properties.name,
@@ -185,9 +187,11 @@ export const PostErrand: React.FC = () => {
       let dropoffLng = explicitDropoffCoords?.lng;
       
       const token = import.meta.env.VITE_MAPBOX_TOKEN;
+      // ✅ Use user's real GPS for proximity so fallback geocoding stays in their area
+      const proximity = `${userCoords[0]},${userCoords[1]}`;
       try {
         if (!pickupLat || !pickupLng) {
-          const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
+          const pRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(pickupLocation)}&country=ng&proximity=${proximity}&limit=1&access_token=${token}`);
           const pData = await pRes.json();
           if (pData?.features?.[0]) { 
             pickupLat = Number(pData.features[0].geometry.coordinates[1]); 
@@ -196,7 +200,7 @@ export const PostErrand: React.FC = () => {
         }
 
         if (!dropoffLat || !dropoffLng) {
-          const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&proximity=7.49508,9.05785&limit=1&access_token=${token}`);
+          const dRes = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(dropoffLocation)}&country=ng&proximity=${proximity}&limit=1&access_token=${token}`);
           const dData = await dRes.json();
           if (dData?.features?.[0]) { 
             dropoffLat = Number(dData.features[0].geometry.coordinates[1]); 
