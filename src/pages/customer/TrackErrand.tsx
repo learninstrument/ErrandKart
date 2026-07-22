@@ -13,8 +13,6 @@ export const TrackErrand: React.FC = () => {
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   const [isLoading, setIsLoading] = useState(true);
-  const [etaLeg1, setEtaLeg1] = useState<string>('');
-  const [etaLeg2, setEtaLeg2] = useState<string>('');
 
   // 1. Find the active order on page load
   useEffect(() => {
