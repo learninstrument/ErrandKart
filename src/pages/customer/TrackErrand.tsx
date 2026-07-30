@@ -62,10 +62,10 @@ export const TrackErrand: React.FC = () => {
   const steps = [
     { title: 'Order Posted', subtitle: 'Request sent to ErrandKart', completed: true, active: status === 'pending' },
     { title: 'Runner Assigned', subtitle: order?.runner_id ? 'Runner accepted your errand' : 'Matching with a runner...', completed: !!order?.runner_id || status === 'completed', active: !!order?.runner_id && status === 'active' },
-    { title: 'Heading to Pickup', subtitle: etaLeg1 || 'Heading to market', completed: ['arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_pickup' },
+    { title: 'Heading to Pickup', subtitle: 'Heading to market', completed: ['arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_pickup' },
     { title: 'Arrived at Pickup', subtitle: 'Runner is at the market', completed: ['picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'arrived_at_pickup' },
     { title: 'Items Picked Up', subtitle: 'Runner got your items', completed: ['heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'picked_up' },
-    { title: 'Heading to Drop-off', subtitle: etaLeg2 || 'On the way to you', completed: ['arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_dropoff' },
+    { title: 'Heading to Drop-off', subtitle: 'On the way to you', completed: ['arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_dropoff' },
     { title: 'Arrived at Drop-off', subtitle: 'Runner has arrived', completed: status === 'completed', active: status === 'arrived_at_dropoff' },
     { title: 'Completed', subtitle: 'Errand delivered successfully ✓', completed: status === 'completed', active: status === 'completed' },
   ];
