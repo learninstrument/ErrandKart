@@ -294,7 +294,7 @@ export const RunnerActive: React.FC = () => {
       {/* Bottom CTA — only visible when errand is completed */}
       {errand.status === 'completed' && (
         <div className="px-5 pt-4 pb-8 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]">
-          <Button theme="green" className="w-full py-4 rounded-xl" onClick={() => navigate('/runner/delivery-review')}>
+          <Button theme="green" className="w-full py-4 rounded-xl" onClick={() => navigate(`/runner/delivery-review/${errand.id}`)}>
             Complete & Get Paid 🎉
           </Button>
         </div>
