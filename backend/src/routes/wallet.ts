@@ -39,6 +39,42 @@ walletRouter.get(
   })
 );
 
+const checkoutSchema = z.object({
+  amount: z.coerce.number().positive(),
+  errand_id: z.string().uuid(),
+});
+
+// POST /api/wallet/checkout - Process wallet checkout atomically
+walletRouter.post(
+  '/checkout',
+  asyncHandler(async (request, response) => {
+    const { profile } = await requireAuth(request);
+    const payload = checkoutSchema.parse(request.body);
+
+    const reference = `tx_${crypto.randomUUID()}`;
+
+    // Call the PostgreSQL RPC function to process the escrow hold atomically
+    const { data, error } = await supabaseAdmin.rpc('process_escrow_hold', {
+      p_customer_id: profile.id,
+      p_amount: payload.amount,
+      p_order_id: payload.errand_id,
+      p_reference: reference,
+    });
+
+    if (error) {
+      if (error.message.includes('Insufficient wallet balance')) {
+        throw new HttpError(400, 'Insufficient wallet balance');
+      }
+      throw new HttpError(500, 'Failed to process wallet checkout', error);
+    }
+
+    response.json({
+      status: 'success',
+      transaction_id: data.transaction_id,
+    });
+  })
+);
+
 const withdrawSchema = z.object({
   amount: z.coerce.number().positive(),
   reference: z.string().min(6).optional(),

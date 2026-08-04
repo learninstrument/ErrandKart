@@ -299,42 +299,20 @@ errandsRouter.patch(
 
     // --- ESCROW RELEASE LOGIC ---
     if (status === 'completed' && errand.status !== 'completed' && errand.payment_status === 'escrow_held' && errand.runner_id) {
-      const payoutAmount = Number(errand.budget_service_fee || 0);
+      const payoutAmount = Number(errand.budget_customer_fee || errand.budget_service_fee || 0);
 
-      // 1. Get runner's current wallet balance
-      const { data: runnerUser, error: runnerError } = await supabaseAdmin
-        .from('users')
-        .select('id, wallet_balance')
-        .eq('id', errand.runner_id)
-        .single();
+      const reference = `release_${id}_${Date.now()}`;
 
-      if (!runnerError && runnerUser) {
-        const newBalance = Number(runnerUser.wallet_balance || 0) + payoutAmount;
+      // Use the atomic PostgreSQL RPC function to process the escrow release
+      const { error: rpcError } = await supabaseAdmin.rpc('process_escrow_release', {
+        p_runner_id: errand.runner_id,
+        p_amount: payoutAmount,
+        p_order_id: id,
+        p_reference: reference,
+      });
 
-        // 2. Update runner's wallet balance
-        const { error: walletError } = await supabaseAdmin
-          .from('users')
-          .update({ wallet_balance: newBalance })
-          .eq('id', runnerUser.id);
-
-        if (!walletError) {
-          // 3. Record escrow_release transaction
-          await supabaseAdmin.from('transactions').insert({
-            user_id: runnerUser.id,
-            amount: payoutAmount,
-            type: 'escrow_release',
-            reference: `release_${id}_${Date.now()}`,
-            order_id: id,
-          });
-
-          // 4. Update errand payment_status to released
-          await supabaseAdmin
-            .from('errands')
-            .update({ payment_status: 'released' })
-            .eq('id', id);
-        } else {
-          console.error('[EscrowReleaseError] Failed to update runner wallet', walletError);
-        }
+      if (rpcError) {
+        console.error('[EscrowReleaseError] Failed to process escrow release via RPC:', rpcError);
       }
     }
 

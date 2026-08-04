@@ -58,7 +58,7 @@ export const CustomerCheckout: React.FC = () => {
   }
 
   const serviceFee = 700;
-  const runnerFee = Number(errand.budget_service_fee) || 0;
+  const runnerFee = Number(errand.budget_customer_fee) || Number(errand.budget_service_fee) || 0;
   const priorityFee = priority ? 500 : 0;
   const discount = promoApplied ? 1000 : 0;
   const total = Math.max(0, serviceFee + runnerFee + priorityFee - discount);
@@ -75,8 +75,8 @@ export const CustomerCheckout: React.FC = () => {
     }
 
     try {
-      // For wallet payments, we directly create an escrow hold
-      const res = await fetch(`${apiBaseUrl}/api/payments/initialize`, {
+      // For wallet payments, we directly create an escrow hold via the internal wallet checkout endpoint
+      const res = await fetch(`${apiBaseUrl}/api/wallet/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
