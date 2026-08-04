@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, ArrowUpRight, ArrowDownLeft, Plus, FileText, LifeBuoy, MapPin, Loader2, Lock, ShieldCheck } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
-import { BottomNav } from './BottomNav';
+import { BottomNav } from '../customer/BottomNav';
 
 type Transaction = {
   id: string;

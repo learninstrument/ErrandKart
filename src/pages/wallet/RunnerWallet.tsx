@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowDownLeft, ArrowUpRight, Banknote, TrendingUp, LifeBuoy, User, Loader2, Lock, ShieldCheck } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
-import { RunnerBottomNav } from './RunnerBottomNav';
+import { RunnerBottomNav } from '../runner/RunnerBottomNav';
 
 type Transaction = {
   id: string;
