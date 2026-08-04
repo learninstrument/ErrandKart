@@ -37,9 +37,7 @@ BEGIN
     RETURNING id INTO v_transaction_id;
     
     -- Update order payment status
-    UPDATE public.orders
-    SET payment_status = 'escrow_held', payment_reference = p_reference
-    WHERE id = p_order_id;
+    UPDATE public.errands SET payment_status = 'escrow_held', payment_reference = p_reference WHERE id = p_order_id;
 
     RETURN json_build_object('success', true, 'transaction_id', v_transaction_id);
 END;
@@ -67,8 +65,8 @@ BEGIN
     VALUES (p_runner_id, p_amount, 'escrow_release', p_order_id, p_reference)
     RETURNING id INTO v_transaction_id;
     
-    -- Update order payment status
-    UPDATE public.orders
+    -- Update errand payment status
+    UPDATE public.errands
     SET payment_status = 'released'
     WHERE id = p_order_id;
 
