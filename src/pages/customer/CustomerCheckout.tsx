@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Shield, Check, Info, Lock, Wallet as WalletIcon, CreditCard, HelpCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Shield, Check, Info, Lock, Wallet as WalletIcon, HelpCircle, Loader2 } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 
 declare global {
