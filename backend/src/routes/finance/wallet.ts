@@ -1,11 +1,11 @@
 import crypto from 'node:crypto';
 import { Router } from 'express';
 import { z } from 'zod';
-import { env } from '../config/env.js';
-import { supabaseAdmin } from '../config/supabase.js';
-import { asyncHandler } from '../utils/async-handler.js';
-import { HttpError } from '../utils/http-error.js';
-import { requireAuth } from './auth.js';
+import { env } from '../../config/env.js';
+import { supabaseAdmin } from '../../config/supabase.js';
+import { asyncHandler } from '../../utils/async-handler.js';
+import { HttpError } from '../../utils/http-error.js';
+import { requireAuth } from '../auth.js';
 
 export const walletRouter = Router();
 

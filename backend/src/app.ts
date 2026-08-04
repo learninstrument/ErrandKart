@@ -11,11 +11,11 @@ import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
 import { healthRouter } from './routes/health.js';
 import { supermarketsRouter } from './routes/supermarkets.js';
-import { walletRouter } from './routes/wallet.js';
+import { walletRouter } from './routes/finance/wallet.js';
 import { webhooksRouter } from './routes/webhooks.js';
 import { errandsRouter } from './routes/errands.js';
 import { locationsRouter }  from './routes/locations.js'
-import { paymentsRouter } from './routes/payments.js';
+import { paymentsRouter } from './routes/finance/payments.js';
 import { rateLimit } from './middleware/rate-limit.js';
 
 
