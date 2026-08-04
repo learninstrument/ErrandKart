@@ -229,6 +229,9 @@ export const RunnerWallet: React.FC = () => {
                       <div>
                         <p className="text-sm font-bold text-black dark:text-white">{txLabel(tx.type)}</p>
                         <p className="text-xs font-semibold text-black/50 dark:text-white/50">{formatDate(tx.created_at)}</p>
+                        <p className="text-[10px] text-black/40 dark:text-white/40 mt-0.5 font-mono">
+                          ID: {tx.reference || tx.id.split('-')[0].toUpperCase()}
+                        </p>
                       </div>
                     </div>
                     <span className={`text-base font-black ${txIsCredit(tx.type) ? 'text-market-green' : tx.type === 'escrow_hold' ? 'text-kart-orange' : 'text-red-500 dark:text-red-400'}`}>
