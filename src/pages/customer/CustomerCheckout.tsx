@@ -16,7 +16,6 @@ export const CustomerCheckout: React.FC = () => {
   const location = useLocation();
   const errand = location.state?.errand;
   
-  const [useWallet, setUseWallet] = useState(false); // default to Paystack
   const [priority, setPriority] = useState(false);
   const [promo, setPromo] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
@@ -63,40 +62,6 @@ export const CustomerCheckout: React.FC = () => {
   const priorityFee = priority ? 500 : 0;
   const discount = promoApplied ? 1000 : 0;
   const total = Math.max(0, serviceFee + runnerFee + priorityFee - discount);
-
-  // === Payment Logic ===
-  const processPaystackPayment = async () => {
-    setIsProcessing(true);
-    setPayError('');
-
-    try {
-      // 1. Initialize payment on our backend
-      const callbackUrl = `${window.location.origin}/customer/confirmation`;
-      const res = await fetch(`${apiBaseUrl}/api/payments/initialize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          amount: total,
-          errand_id: errand.id,
-          callback_url: callbackUrl,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to initialize payment');
-
-      // 2. Open Paystack popup
-      const { authorization_url } = data.data;
-      
-      // Redirect to Paystack checkout page
-      window.location.href = authorization_url;
-    } catch (err: any) {
-      setPayError(err.message || 'Payment failed. Please try again.');
-      setIsProcessing(false);
-      setSlideX(0);
-    }
-  };
 
   const processWalletPayment = async () => {
     setIsProcessing(true);
@@ -161,11 +126,7 @@ export const CustomerCheckout: React.FC = () => {
 
     if (slideX >= maxSlide * 0.85) {
       setSlideX(maxSlide);
-      if (useWallet) {
-        processWalletPayment();
-      } else {
-        processPaystackPayment();
-      }
+      processWalletPayment();
     } else {
       setSlideX(0);
     }
@@ -285,45 +246,10 @@ export const CustomerCheckout: React.FC = () => {
         <section>
           <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40 mb-3 px-1">Payment Method</h3>
           <div className="flex flex-col gap-3">
-            {/* Paystack Card */}
-            <button
-              onClick={() => setUseWallet(false)}
-              className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all backdrop-blur-md ${
-                !useWallet
-                  ? 'border-kart-orange/40 bg-kart-orange/10 text-black dark:text-white ring-1 ring-kart-orange/40'
-                  : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 text-black/70 dark:text-white/70 hover:border-black/10 dark:hover:border-white/10'
-              }`}
+            <div
+              className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all backdrop-blur-md border-kart-orange/40 bg-kart-orange/10 text-black dark:text-white ring-1 ring-kart-orange/40`}
             >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all ${
-                !useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50'
-              }`}>
-                <CreditCard size={20} />
-              </div>
-              <div className="flex-grow">
-                <p className="text-sm font-bold">Paystack Online Checkout</p>
-                <p className="text-xs text-black/50 dark:text-white/50">Card, Bank Transfer, USSD</p>
-              </div>
-              {!useWallet ? (
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
-                  <Check size={14} className="text-black stroke-[3]" />
-                </div>
-              ) : (
-                <div className="h-6 w-6 rounded-full border border-black/20 dark:border-white/20" />
-              )}
-            </button>
-
-            {/* Wallet */}
-            <button
-              onClick={() => setUseWallet(true)}
-              className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all backdrop-blur-md ${
-                useWallet
-                  ? 'border-kart-orange/40 bg-kart-orange/10 text-black dark:text-white ring-1 ring-kart-orange/40'
-                  : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 text-black/70 dark:text-white/70 hover:border-black/10 dark:hover:border-white/10'
-              }`}
-            >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all ${
-                useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50'
-              }`}>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full transition-all bg-kart-orange/20 text-kart-orange">
                 <WalletIcon size={20} />
               </div>
               <div className="flex-grow">
@@ -332,14 +258,10 @@ export const CustomerCheckout: React.FC = () => {
                   Balance: {walletBalance !== null ? `₦${walletBalance.toLocaleString()}` : 'Loading...'}
                 </p>
               </div>
-              {useWallet ? (
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
-                  <Check size={14} className="text-black stroke-[3]" />
-                </div>
-              ) : (
-                <div className="h-6 w-6 rounded-full border border-black/20 dark:border-white/20" />
-              )}
-            </button>
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
+                <Check size={14} className="text-black stroke-[3]" />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -391,52 +313,58 @@ export const CustomerCheckout: React.FC = () => {
             <p className="text-lg font-black text-black dark:text-white">₦{total.toLocaleString()}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-black/50 dark:text-white/50">{useWallet ? 'Wallet Pay' : 'Paystack'}</p>
+            <p className="text-xs text-black/50 dark:text-white/50">Wallet Pay</p>
             <div className="flex items-center gap-1 text-xs font-bold text-market-green mt-0.5 justify-end">
               <Lock size={12} /> Secured
             </div>
           </div>
         </div>
 
-        {/* Slide Button */}
-        <div
-          ref={trackRef}
-          id="slide-track"
-          className="relative w-full h-[64px] bg-black/5 dark:bg-white/5 rounded-full p-1 border border-black/10 dark:border-white/10 overflow-hidden slide-to-pay group touch-none"
-        >
-          {/* Progress bar */}
+        {walletBalance !== null && walletBalance < total ? (
+          <Button theme="green" className="w-full h-[64px] rounded-2xl text-lg font-bold" onClick={() => navigate('/customer/wallet')}>
+            Top Up Wallet (₦{(total - walletBalance).toLocaleString()} Short)
+          </Button>
+        ) : (
+          {/* Slide Button */}
           <div
-            className="absolute top-0 left-0 h-full bg-kart-orange/20 transition-all duration-75"
-            style={{ width: `${slideX + 56}px` }}
-          />
-
-          {/* Prompt text */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span
-              className="text-xs font-bold text-kart-orange tracking-widest uppercase flex items-center gap-1.5 transition-opacity"
-              style={{ opacity: 1 - slideX / 200 }}
-            >
-              {isProcessing ? (
-                <><Loader2 size={14} className="animate-spin" /> Processing...</>
-              ) : (
-                <>Slide to Escrow Pay <span className="inline-block animate-pulse">➔</span></>
-              )}
-            </span>
-          </div>
-
-          {/* Grab handle */}
-          <div
-            ref={handleRef}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-            className={`relative z-10 w-14 h-14 bg-kart-orange rounded-full flex items-center justify-center shadow-lg transition-transform ${isProcessing ? 'cursor-not-allowed opacity-70' : 'cursor-grab active:cursor-grabbing'}`}
-            style={{ transform: `translateX(${slideX}px)` }}
+            ref={trackRef}
+            id="slide-track"
+            className="relative w-full h-[64px] bg-black/5 dark:bg-white/5 rounded-full p-1 border border-black/10 dark:border-white/10 overflow-hidden slide-to-pay group touch-none"
           >
-            {isProcessing ? <Loader2 size={20} className="text-black animate-spin" /> : <Lock size={20} className="text-black stroke-[2.5]" />}
+            {/* Progress bar */}
+            <div
+              className="absolute top-0 left-0 h-full bg-kart-orange/20 transition-all duration-75"
+              style={{ width: `${slideX + 56}px` }}
+            />
+
+            {/* Prompt text */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span
+                className="text-xs font-bold text-kart-orange tracking-widest uppercase flex items-center gap-1.5 transition-opacity"
+                style={{ opacity: 1 - slideX / 200 }}
+              >
+                {isProcessing ? (
+                  <><Loader2 size={14} className="animate-spin" /> Processing...</>
+                ) : (
+                  <>Slide to Escrow Pay <span className="inline-block animate-pulse">➔</span></>
+                )}
+              </span>
+            </div>
+
+            {/* Grab handle */}
+            <div
+              ref={handleRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              className={`relative z-10 w-14 h-14 bg-kart-orange rounded-full flex items-center justify-center shadow-lg transition-transform ${isProcessing ? 'cursor-not-allowed opacity-70' : 'cursor-grab active:cursor-grabbing'}`}
+              style={{ transform: `translateX(${slideX}px)` }}
+            >
+              {isProcessing ? <Loader2 size={20} className="text-black animate-spin" /> : <Lock size={20} className="text-black stroke-[2.5]" />}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Full screen success state overlay */}
