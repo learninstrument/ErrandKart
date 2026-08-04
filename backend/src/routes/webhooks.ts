@@ -143,6 +143,46 @@ webhooksRouter.post(
       throw new HttpError(500, 'Failed to record transaction', insertError);
     }
 
+    // --- ESCROW HOLD LOGIC ---
+    const errandId = typeof metadata.errand_id === 'string' ? metadata.errand_id : null;
+    if (errandId) {
+      // 1. Verify errand exists
+      const { data: errand, error: errandError } = await supabaseAdmin
+        .from('orders')
+        .select('id, payment_status')
+        .eq('id', errandId)
+        .maybeSingle();
+
+      if (!errandError && errand) {
+        // 2. Deduct from wallet (we just added `amount`, now we hold it in escrow)
+        const postEscrowBalance = newBalance - amount;
+        
+        const { error: escrowUpdateError } = await supabaseAdmin
+          .from('users')
+          .update({ wallet_balance: postEscrowBalance })
+          .eq('id', profile.id);
+          
+        if (!escrowUpdateError) {
+          // 3. Record escrow_hold transaction
+          await supabaseAdmin.from('transactions').insert({
+            user_id: profile.id,
+            amount: amount,
+            type: 'escrow_hold',
+            reference: `escrow_${reference}`,
+            order_id: errand.id,
+          });
+
+          // 4. Update errand payment status
+          await supabaseAdmin
+            .from('orders')
+            .update({ payment_status: 'escrow_held' })
+            .eq('id', errand.id);
+        } else {
+          console.error('[WebhookEscrowError] Failed to deduct wallet for escrow', escrowUpdateError);
+        }
+      }
+    }
+
     response.json({ status: 'success' });
   })
 );

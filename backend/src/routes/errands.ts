@@ -297,6 +297,47 @@ errandsRouter.patch(
 
     if (error) throw new HttpError(500, 'Failed to update errand status', error);
 
+    // --- ESCROW RELEASE LOGIC ---
+    if (status === 'completed' && errand.status !== 'completed' && errand.payment_status === 'escrow_held' && errand.runner_id) {
+      const payoutAmount = Number(errand.budget_service_fee || 0);
+
+      // 1. Get runner's current wallet balance
+      const { data: runnerUser, error: runnerError } = await supabaseAdmin
+        .from('users')
+        .select('id, wallet_balance')
+        .eq('id', errand.runner_id)
+        .single();
+
+      if (!runnerError && runnerUser) {
+        const newBalance = Number(runnerUser.wallet_balance || 0) + payoutAmount;
+
+        // 2. Update runner's wallet balance
+        const { error: walletError } = await supabaseAdmin
+          .from('users')
+          .update({ wallet_balance: newBalance })
+          .eq('id', runnerUser.id);
+
+        if (!walletError) {
+          // 3. Record escrow_release transaction
+          await supabaseAdmin.from('transactions').insert({
+            user_id: runnerUser.id,
+            amount: payoutAmount,
+            type: 'escrow_release',
+            reference: `release_${id}_${Date.now()}`,
+            order_id: id,
+          });
+
+          // 4. Update errand payment_status to released
+          await supabaseAdmin
+            .from('errands')
+            .update({ payment_status: 'released' })
+            .eq('id', id);
+        } else {
+          console.error('[EscrowReleaseError] Failed to update runner wallet', walletError);
+        }
+      }
+    }
+
     const budget = data.budget_customer_fee ?? data.budget_service_fee ?? 0;
     const formatted = {
       ...data,

@@ -9,6 +9,36 @@ import { requireAuth } from './auth.js';
 
 export const walletRouter = Router();
 
+// GET /api/wallet/balance - Get wallet balance for current user
+walletRouter.get(
+  '/balance',
+  asyncHandler(async (request, response) => {
+    const { profile } = await requireAuth(request);
+    response.json({
+      wallet_balance: Number(profile.wallet_balance ?? 0),
+    });
+  })
+);
+
+// GET /api/wallet/transactions - Get transaction history for current user
+walletRouter.get(
+  '/transactions',
+  asyncHandler(async (request, response) => {
+    const { profile } = await requireAuth(request);
+
+    const { data, error } = await supabaseAdmin
+      .from('transactions')
+      .select('*')
+      .eq('user_id', profile.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw new HttpError(500, 'Failed to fetch transactions', error);
+
+    response.json({ transactions: data ?? [] });
+  })
+);
+
 const withdrawSchema = z.object({
   amount: z.coerce.number().positive(),
   reference: z.string().min(6).optional(),

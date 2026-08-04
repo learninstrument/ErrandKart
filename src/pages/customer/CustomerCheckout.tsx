@@ -1,17 +1,28 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Shield, Check, Info, Lock, Wallet as WalletIcon, CreditCard, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Shield, Check, Info, Lock, Wallet as WalletIcon, CreditCard, HelpCircle, Loader2 } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
+
+declare global {
+  interface Window {
+    PaystackPop?: {
+      setup: (options: Record<string, unknown>) => { openIframe: () => void };
+    };
+  }
+}
 
 export const CustomerCheckout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const errand = location.state?.errand;
   
-  const [useWallet, setUseWallet] = useState(true);
+  const [useWallet, setUseWallet] = useState(false); // default to Paystack
   const [priority, setPriority] = useState(false);
   const [promo, setPromo] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [payError, setPayError] = useState('');
 
   // Slide-to-Pay State
   const [slideX, setSlideX] = useState(0);
@@ -21,6 +32,26 @@ export const CustomerCheckout: React.FC = () => {
   const trackRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef(0);
+
+  const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
+
+  // Fetch wallet balance
+  useEffect(() => {
+    fetch(`${apiBaseUrl}/api/wallet/balance`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setWalletBalance(data.wallet_balance ?? 0))
+      .catch(() => setWalletBalance(0));
+  }, [apiBaseUrl]);
+
+  // Load Paystack Inline JS
+  useEffect(() => {
+    if (document.getElementById('paystack-script')) return;
+    const script = document.createElement('script');
+    script.id = 'paystack-script';
+    script.src = 'https://js.paystack.co/v2/inline.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }, []);
 
   if (!errand) {
     navigate('/customer/post-errand', { replace: true });
@@ -33,16 +64,87 @@ export const CustomerCheckout: React.FC = () => {
   const discount = promoApplied ? 1000 : 0;
   const total = Math.max(0, serviceFee + runnerFee + priorityFee - discount);
 
+  // === Payment Logic ===
+  const processPaystackPayment = async () => {
+    setIsProcessing(true);
+    setPayError('');
+
+    try {
+      // 1. Initialize payment on our backend
+      const callbackUrl = `${window.location.origin}/customer/confirmation`;
+      const res = await fetch(`${apiBaseUrl}/api/payments/initialize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          amount: total,
+          errand_id: errand.id,
+          callback_url: callbackUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to initialize payment');
+
+      // 2. Open Paystack popup
+      const { authorization_url } = data.data;
+      
+      // Redirect to Paystack checkout page
+      window.location.href = authorization_url;
+    } catch (err: any) {
+      setPayError(err.message || 'Payment failed. Please try again.');
+      setIsProcessing(false);
+      setSlideX(0);
+    }
+  };
+
+  const processWalletPayment = async () => {
+    setIsProcessing(true);
+    setPayError('');
+
+    if (walletBalance !== null && walletBalance < total) {
+      setPayError('Insufficient wallet balance. Please top up or use Paystack.');
+      setIsProcessing(false);
+      setSlideX(0);
+      return;
+    }
+
+    try {
+      // For wallet payments, we directly create an escrow hold
+      const res = await fetch(`${apiBaseUrl}/api/payments/initialize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          amount: total,
+          errand_id: errand.id,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to process wallet payment');
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        navigate('/customer/confirmation', { state: { errand } });
+      }, 2200);
+    } catch (err: any) {
+      setPayError(err.message || 'Payment failed. Please try again.');
+      setIsProcessing(false);
+      setSlideX(0);
+    }
+  };
+
   // Drag Handlers
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isSuccess) return;
+    if (isSuccess || isProcessing) return;
     setIsDragging(true);
     startXRef.current = e.clientX - slideX;
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || isSuccess) return;
+    if (!isDragging || isSuccess || isProcessing) return;
     if (!trackRef.current || !handleRef.current) return;
     const maxSlide = trackRef.current.clientWidth - handleRef.current.clientWidth - 8;
     const x = e.clientX - startXRef.current;
@@ -51,7 +153,7 @@ export const CustomerCheckout: React.FC = () => {
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || isSuccess) return;
+    if (!isDragging || isSuccess || isProcessing) return;
     setIsDragging(false);
     e.currentTarget.releasePointerCapture(e.pointerId);
     if (!trackRef.current || !handleRef.current) return;
@@ -59,10 +161,11 @@ export const CustomerCheckout: React.FC = () => {
 
     if (slideX >= maxSlide * 0.85) {
       setSlideX(maxSlide);
-      setIsSuccess(true);
-      setTimeout(() => {
-        navigate('/customer/confirmation', { state: { errand } });
-      }, 2200);
+      if (useWallet) {
+        processWalletPayment();
+      } else {
+        processPaystackPayment();
+      }
     } else {
       setSlideX(0);
     }
@@ -182,33 +285,6 @@ export const CustomerCheckout: React.FC = () => {
         <section>
           <h3 className="text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40 mb-3 px-1">Payment Method</h3>
           <div className="flex flex-col gap-3">
-            {/* Wallet */}
-            <button
-              onClick={() => setUseWallet(true)}
-              className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all backdrop-blur-md ${
-                useWallet
-                  ? 'border-kart-orange/40 bg-kart-orange/10 text-black dark:text-white ring-1 ring-kart-orange/40'
-                  : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 text-black/70 dark:text-white/70 hover:border-black/10 dark:hover:border-white/10'
-              }`}
-            >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all ${
-                useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50'
-              }`}>
-                <WalletIcon size={20} />
-              </div>
-              <div className="flex-grow">
-                <p className="text-sm font-bold">ErrandKart Wallet</p>
-                <p className="text-xs text-black/50 dark:text-white/50">Balance: ₦48,200</p>
-              </div>
-              {useWallet ? (
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
-                  <Check size={14} className="text-black stroke-[3]" />
-                </div>
-              ) : (
-                <div className="h-6 w-6 rounded-full border border-black/20 dark:border-white/20" />
-              )}
-            </button>
-
             {/* Paystack Card */}
             <button
               onClick={() => setUseWallet(false)}
@@ -228,6 +304,35 @@ export const CustomerCheckout: React.FC = () => {
                 <p className="text-xs text-black/50 dark:text-white/50">Card, Bank Transfer, USSD</p>
               </div>
               {!useWallet ? (
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
+                  <Check size={14} className="text-black stroke-[3]" />
+                </div>
+              ) : (
+                <div className="h-6 w-6 rounded-full border border-black/20 dark:border-white/20" />
+              )}
+            </button>
+
+            {/* Wallet */}
+            <button
+              onClick={() => setUseWallet(true)}
+              className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all backdrop-blur-md ${
+                useWallet
+                  ? 'border-kart-orange/40 bg-kart-orange/10 text-black dark:text-white ring-1 ring-kart-orange/40'
+                  : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 text-black/70 dark:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+              }`}
+            >
+              <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all ${
+                useWallet ? 'bg-kart-orange/20 text-kart-orange' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50'
+              }`}>
+                <WalletIcon size={20} />
+              </div>
+              <div className="flex-grow">
+                <p className="text-sm font-bold">ErrandKart Wallet</p>
+                <p className="text-xs text-black/50 dark:text-white/50">
+                  Balance: {walletBalance !== null ? `₦${walletBalance.toLocaleString()}` : 'Loading...'}
+                </p>
+              </div>
+              {useWallet ? (
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-kart-orange">
                   <Check size={14} className="text-black stroke-[3]" />
                 </div>
@@ -261,6 +366,13 @@ export const CustomerCheckout: React.FC = () => {
           </div>
         </section>
 
+        {/* Error display */}
+        {payError && (
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm font-bold text-red-500">
+            {payError}
+          </div>
+        )}
+
         {/* Support Link */}
         <section className="flex gap-3 rounded-2xl border border-market-green/20 bg-market-green/5 p-4 items-center">
           <HelpCircle size={18} className="text-market-green" />
@@ -279,9 +391,9 @@ export const CustomerCheckout: React.FC = () => {
             <p className="text-lg font-black text-black dark:text-white">₦{total.toLocaleString()}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-black/50 dark:text-white/50">Security Protocol</p>
+            <p className="text-xs text-black/50 dark:text-white/50">{useWallet ? 'Wallet Pay' : 'Paystack'}</p>
             <div className="flex items-center gap-1 text-xs font-bold text-market-green mt-0.5 justify-end">
-              <Lock size={12} /> AES-256
+              <Lock size={12} /> Secured
             </div>
           </div>
         </div>
@@ -304,8 +416,11 @@ export const CustomerCheckout: React.FC = () => {
               className="text-xs font-bold text-kart-orange tracking-widest uppercase flex items-center gap-1.5 transition-opacity"
               style={{ opacity: 1 - slideX / 200 }}
             >
-              Slide to Escrow Pay
-              <span className="inline-block animate-pulse">➔</span>
+              {isProcessing ? (
+                <><Loader2 size={14} className="animate-spin" /> Processing...</>
+              ) : (
+                <>Slide to Escrow Pay <span className="inline-block animate-pulse">➔</span></>
+              )}
             </span>
           </div>
 
@@ -316,10 +431,10 @@ export const CustomerCheckout: React.FC = () => {
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className="relative z-10 w-14 h-14 bg-kart-orange rounded-full flex items-center justify-center shadow-lg cursor-grab active:cursor-grabbing transition-transform"
+            className={`relative z-10 w-14 h-14 bg-kart-orange rounded-full flex items-center justify-center shadow-lg transition-transform ${isProcessing ? 'cursor-not-allowed opacity-70' : 'cursor-grab active:cursor-grabbing'}`}
             style={{ transform: `translateX(${slideX}px)` }}
           >
-            <Lock size={20} className="text-black stroke-[2.5]" />
+            {isProcessing ? <Loader2 size={20} className="text-black animate-spin" /> : <Lock size={20} className="text-black stroke-[2.5]" />}
           </div>
         </div>
       </div>
@@ -342,4 +457,3 @@ export const CustomerCheckout: React.FC = () => {
     </div>
   );
 };
-
