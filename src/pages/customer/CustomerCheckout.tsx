@@ -325,7 +325,6 @@ export const CustomerCheckout: React.FC = () => {
             Top Up Wallet (₦{(total - walletBalance).toLocaleString()} Short)
           </Button>
         ) : (
-          {/* Slide Button */}
           <div
             ref={trackRef}
             id="slide-track"
