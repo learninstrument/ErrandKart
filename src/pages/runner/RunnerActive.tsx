@@ -304,7 +304,7 @@ export const RunnerActive: React.FC = () => {
         )}
         
         {errand.status === 'item_funds_requested' && (
-          <Button theme="gray" className="w-full py-4 rounded-xl" disabled>
+          <Button theme="black" className="w-full py-4 rounded-xl opacity-50" disabled>
             Waiting for Customer Approval...
           </Button>
         )}

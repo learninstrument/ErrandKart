@@ -190,8 +190,8 @@ export const PaySellerModal: React.FC<PaySellerModalProps> = ({ isOpen, onClose,
 
                 <div className="flex gap-3 mt-6">
                   <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
-                  <Button theme="orange" className="flex-1" onClick={handleSubmit} isLoading={isSubmitting} disabled={!photoUrl}>
-                    Send Request
+                  <Button theme="orange" className="flex-1" onClick={handleSubmit} disabled={!photoUrl || isSubmitting}>
+                    {isSubmitting ? 'Sending Request...' : 'Send Request'}
                   </Button>
                 </div>
               </div>
