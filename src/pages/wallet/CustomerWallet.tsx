@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, ArrowUpRight, ArrowDownLeft, Plus, FileText, LifeBuoy, MapPin, Loader2, Lock, ShieldCheck } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { BottomNav } from '../customer/BottomNav';
+import { buildAuthHeaders } from '../../utils/auth';
 
 type Transaction = {
   id: string;
@@ -37,12 +38,14 @@ export const CustomerWallet: React.FC = () => {
 
   // Fetch wallet balance & transactions
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/wallet/balance`, { credentials: 'include' })
+    const headers = { ...buildAuthHeaders() } as HeadersInit;
+    
+    fetch(`${apiBaseUrl}/api/wallet/balance`, { headers, credentials: 'include' })
       .then(res => res.json())
       .then(data => setWalletBalance(data.wallet_balance ?? 0))
       .catch(() => setWalletBalance(0));
 
-    fetch(`${apiBaseUrl}/api/wallet/transactions`, { credentials: 'include' })
+    fetch(`${apiBaseUrl}/api/wallet/transactions`, { headers, credentials: 'include' })
       .then(res => res.json())
       .then(data => setTransactions(data.transactions ?? []))
       .catch(() => {});
@@ -60,7 +63,10 @@ export const CustomerWallet: React.FC = () => {
     try {
       const res = await fetch(`${apiBaseUrl}/api/payments/initialize`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...buildAuthHeaders()
+        } as HeadersInit,
         credentials: 'include',
         body: JSON.stringify({
           amount,

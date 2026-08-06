@@ -4,6 +4,7 @@ import { ArrowLeft, Phone, MessageSquare, CheckCircle, Navigation, MapPin, Packa
 import { motion } from 'framer-motion';
 
 import { clearSession } from '../../utils/auth';
+import { ApproveFundsModal } from '../../components/Customer/ApproveFundsModal';
 
 export const TrackErrand: React.FC = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export const TrackErrand: React.FC = () => {
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
 
   // 1. Find the active order on page load
   useEffect(() => {
@@ -62,12 +64,12 @@ export const TrackErrand: React.FC = () => {
   const steps = [
     { title: 'Order Posted', subtitle: 'Request sent to ErrandKart', completed: true, active: status === 'pending' },
     { title: 'Runner Assigned', subtitle: order?.runner_id ? 'Runner accepted your errand' : 'Matching with a runner...', completed: !!order?.runner_id || status === 'completed', active: !!order?.runner_id && status === 'active' },
-    { title: 'Heading to Pickup', subtitle: 'Heading to market', completed: ['arrived_at_pickup', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_pickup' },
-    { title: 'Arrived at Pickup', subtitle: 'Runner is at the market', completed: ['picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'arrived_at_pickup' },
-    { title: 'Items Picked Up', subtitle: 'Runner got your items', completed: ['heading_to_dropoff', 'arrived_at_dropoff', 'completed'].includes(status), active: status === 'picked_up' },
-    { title: 'Heading to Drop-off', subtitle: 'On the way to you', completed: ['arrived_at_dropoff', 'completed'].includes(status), active: status === 'heading_to_dropoff' },
-    { title: 'Arrived at Drop-off', subtitle: 'Runner has arrived', completed: status === 'completed', active: status === 'arrived_at_dropoff' },
-    { title: 'Completed', subtitle: 'Errand delivered successfully ✓', completed: status === 'completed', active: status === 'completed' },
+    { title: 'Heading to Pickup', subtitle: 'Heading to market', completed: ['at_market', 'item_funds_requested', 'item_funds_released', 'items_purchased', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'delivered', 'customer_confirmed', 'completed'].includes(status), active: status === 'heading_to_pickup' },
+    { title: 'At Market', subtitle: 'Runner is gathering items', completed: ['items_purchased', 'picked_up', 'heading_to_dropoff', 'arrived_at_dropoff', 'delivered', 'customer_confirmed', 'completed'].includes(status), active: ['at_market', 'item_funds_requested', 'item_funds_released'].includes(status) },
+    { title: 'Items Picked Up', subtitle: 'Runner got your items', completed: ['heading_to_dropoff', 'arrived_at_dropoff', 'delivered', 'customer_confirmed', 'completed'].includes(status), active: status === 'items_purchased' || status === 'picked_up' },
+    { title: 'Heading to Drop-off', subtitle: 'On the way to you', completed: ['arrived_at_dropoff', 'delivered', 'customer_confirmed', 'completed'].includes(status), active: status === 'heading_to_dropoff' },
+    { title: 'Arrived at Drop-off', subtitle: 'Runner has arrived', completed: ['delivered', 'customer_confirmed', 'completed'].includes(status), active: status === 'arrived_at_dropoff' },
+    { title: 'Completed', subtitle: 'Errand delivered successfully ✓', completed: status === 'completed' || status === 'customer_confirmed', active: status === 'completed' },
   ];
 
   // Loading state
@@ -240,7 +242,41 @@ export const TrackErrand: React.FC = () => {
 
       {/* Bottom Actions */}
       <div className="px-5 pt-4 pb-8 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A] flex flex-col gap-3">
-        {status !== 'completed' && status !== 'cancelled' && (
+        {status === 'item_funds_requested' && (
+          <button
+            onClick={() => setIsApproveModalOpen(true)}
+            className="w-full bg-market-green hover:bg-market-green/90 text-white font-bold py-4 rounded-xl shadow-[0_4px_20px_rgba(46,139,87,0.4)] transition-all flex items-center justify-center gap-2"
+          >
+            <CheckCircle size={20} /> Approve Funds Transfer
+          </button>
+        )}
+
+        {status === 'delivered' && (
+          <button
+            onClick={async () => {
+              if (window.confirm('Have you received your items? This will release the delivery fee to the runner.')) {
+                try {
+                  const res = await fetch(`${apiBaseUrl}/api/errands/${order.id}/customer-confirm`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                  });
+                  if (res.ok) {
+                    const data = await res.json();
+                    setOrder(data.errand);
+                  }
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+            }}
+            className="w-full bg-[#FF6600] hover:bg-[#FF6600]/90 text-white font-bold py-4 rounded-xl shadow-[0_4px_20px_rgba(255,102,0,0.4)] transition-all flex items-center justify-center gap-2"
+          >
+            <CheckCircle size={20} /> Confirm Receipt
+          </button>
+        )}
+
+        {status !== 'completed' && status !== 'cancelled' && status !== 'item_funds_requested' && status !== 'delivered' && (
           <button
             onClick={() => {
               if (window.confirm('Are you sure you want to cancel this errand?')) {
@@ -248,15 +284,16 @@ export const TrackErrand: React.FC = () => {
                   method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
                   credentials: 'include',
-                  body: JSON.stringify({ status: 'cancelled' }),
-                }).then(() => window.location.reload());
+                  body: JSON.stringify({ status: 'cancelled' })
+                }).then(() => setOrder({ ...order, status: 'cancelled' }));
               }
             }}
-            className="w-full bg-transparent border-2 border-red-500/30 text-red-500 text-sm font-bold py-3.5 rounded-xl hover:bg-red-500/5 transition-colors"
+            className="w-full bg-red-500/10 text-red-500 font-bold py-4 rounded-xl hover:bg-red-500/20 transition-colors"
           >
-            Cancel Order
+            Cancel Errand
           </button>
         )}
+
         {status === 'completed' && (
           <button
             onClick={() => navigate('/customer/dashboard')}
@@ -266,6 +303,17 @@ export const TrackErrand: React.FC = () => {
           </button>
         )}
       </div>
+
+      <ApproveFundsModal
+        isOpen={isApproveModalOpen}
+        onClose={() => setIsApproveModalOpen(false)}
+        apiBaseUrl={apiBaseUrl}
+        errand={order}
+        onSuccess={(updated) => {
+          setOrder(updated);
+          setIsApproveModalOpen(false);
+        }}
+      />
     </div>
   );
 };

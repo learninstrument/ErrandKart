@@ -4,8 +4,9 @@ import { ArrowLeft, CheckCircle2, Phone, MessageSquare, Upload, Store, User, Map
 import { motion } from 'framer-motion';
 import { Button } from '../../components/UI/Button';
 import { clearSession } from '../../utils/auth';
+import { PaySellerModal } from '../../components/Runner/PaySellerModal';
 
-const STATUS_STEPS = ['At Pickup / Shopping', 'Heading to Drop-off', 'Arrived at Drop-off', 'Completed'];
+const STATUS_STEPS = ['Heading to Pickup', 'At Market', 'Items Purchased', 'Heading to Drop-off', 'Delivered'];
 
 export const RunnerActive: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export const RunnerActive: React.FC = () => {
   const [receiptSelected, setReceiptSelected] = useState(false);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [error, setError] = useState('');
+  const [isPayModalOpen, setIsPayModalOpen] = useState(false);
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
@@ -57,10 +59,11 @@ export const RunnerActive: React.FC = () => {
   }, [errand?.id, errand?.status, apiBaseUrl]);
 
   const getStepIndex = (status: string) => {
-    if (status === 'shopping') return 0;
-    if (status === 'en_route') return 1;
-    if (status === 'arrived') return 2;
-    if (status === 'completed' || status === 'dropped_off') return 3;
+    if (status === 'heading_to_pickup') return 0;
+    if (status === 'at_market' || status === 'item_funds_requested' || status === 'item_funds_released') return 1;
+    if (status === 'items_purchased') return 2;
+    if (status === 'heading_to_dropoff' || status === 'arrived_at_dropoff') return 3;
+    if (status === 'delivered' || status === 'completed') return 4;
     return -1;
   };
 
@@ -71,10 +74,11 @@ export const RunnerActive: React.FC = () => {
     if (stepIndex !== currentStep + 1) return;
 
     let nextStatus = '';
-    if (stepIndex === 0) nextStatus = 'shopping';
-    else if (stepIndex === 1) nextStatus = 'en_route';
-    else if (stepIndex === 2) nextStatus = 'arrived';
-    else if (stepIndex === 3) nextStatus = 'completed';
+    if (stepIndex === 0) nextStatus = 'heading_to_pickup';
+    else if (stepIndex === 1) nextStatus = 'at_market';
+    else if (stepIndex === 2) nextStatus = 'items_purchased'; // Usually triggered by CTA, but left here for manual override
+    else if (stepIndex === 3) nextStatus = 'heading_to_dropoff';
+    else if (stepIndex === 4) nextStatus = 'delivered';
 
     if (!nextStatus) return;
     setError('');
@@ -291,14 +295,43 @@ export const RunnerActive: React.FC = () => {
         )}
       </div>
 
-      {/* Bottom CTA — only visible when errand is completed */}
-      {errand.status === 'completed' && (
-        <div className="px-5 pt-4 pb-8 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]">
+      {/* Bottom CTA */}
+      <div className="px-5 pt-4 pb-8 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]">
+        {errand.status === 'at_market' && Number(errand.budget_item_cost) > 0 && (
+          <Button theme="orange" className="w-full py-4 rounded-xl" onClick={() => setIsPayModalOpen(true)}>
+            Request Item Funds (₦{Number(errand.budget_item_cost).toLocaleString()})
+          </Button>
+        )}
+        
+        {errand.status === 'item_funds_requested' && (
+          <Button theme="gray" className="w-full py-4 rounded-xl" disabled>
+            Waiting for Customer Approval...
+          </Button>
+        )}
+
+        {errand.status === 'item_funds_released' && (
+          <Button theme="green" className="w-full py-4 rounded-xl" onClick={() => handleStepClick(2)}>
+            Funds Sent to Seller! Mark as Purchased
+          </Button>
+        )}
+
+        {errand.status === 'completed' && (
           <Button theme="green" className="w-full py-4 rounded-xl" onClick={() => navigate(`/runner/delivery-review/${errand.id}`)}>
             Complete & Get Paid 🎉
           </Button>
-        </div>
-      )}
+        )}
+      </div>
+
+      <PaySellerModal 
+        isOpen={isPayModalOpen} 
+        onClose={() => setIsPayModalOpen(false)}
+        apiBaseUrl={apiBaseUrl}
+        errandId={errand.id}
+        onSuccess={(updated) => {
+          setErrand(updated);
+          setIsPayModalOpen(false);
+        }}
+      />
     </div>
   );
 };

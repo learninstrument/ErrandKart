@@ -6,6 +6,7 @@ import { supabaseAdmin } from '../../config/supabase.js';
 import { asyncHandler } from '../../utils/async-handler.js';
 import { HttpError } from '../../utils/http-error.js';
 import { requireAuth } from '../auth.js';
+import { createRecipient, initiateTransfer, getBanks, resolveAccountNumber } from '../../utils/paystack.js';
 
 export const walletRouter = Router();
 
@@ -137,73 +138,6 @@ const withdrawSchema = z.object({
   reference: z.string().min(6).optional(),
 });
 
-type PaystackRecipientResponse = {
-  status: boolean;
-  message?: string;
-  data?: {
-    recipient_code: string;
-  };
-};
-
-type PaystackTransferResponse = {
-  status: boolean;
-  message?: string;
-  data?: Record<string, unknown>;
-};
-
-const createRecipient = async (payload: {
-  name: string;
-  accountNumber: string;
-  bankCode: string;
-}) => {
-  const response = await fetch('https://api.paystack.co/transferrecipient', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${env.PAYSTACK_SECRET_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      type: 'nuban',
-      name: payload.name,
-      account_number: payload.accountNumber,
-      bank_code: payload.bankCode,
-      currency: 'NGN',
-    }),
-  });
-
-  const data = (await response.json().catch(() => ({}))) as PaystackRecipientResponse;
-
-  if (!response.ok || !data.status || !data.data?.recipient_code) {
-    throw new HttpError(502, data.message ?? 'Failed to create Paystack recipient');
-  }
-
-  return data.data.recipient_code;
-};
-
-const initiateTransfer = async (payload: { amount: number; recipientCode: string; reference: string }) => {
-  const response = await fetch('https://api.paystack.co/transfer', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${env.PAYSTACK_SECRET_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      source: 'balance',
-      amount: payload.amount,
-      recipient: payload.recipientCode,
-      reason: 'Runner withdrawal',
-      reference: payload.reference,
-    }),
-  });
-
-  const data = (await response.json().catch(() => ({}))) as PaystackTransferResponse;
-
-  if (!response.ok || !data.status) {
-    throw new HttpError(502, data.message ?? 'Paystack transfer failed');
-  }
-
-  return data.data ?? null;
-};
 
 // POST /api/wallet/withdraw - Atomic withdrawal via double-entry ledger
 walletRouter.post(
@@ -264,7 +198,7 @@ walletRouter.post(
     });
 
     const transferData = await initiateTransfer({
-      amount: Math.round(amount * 100),
+      amount: amount,
       recipientCode,
       reference,
     });
@@ -275,5 +209,30 @@ walletRouter.post(
       transfer: transferData,
       wallet_balance: withdrawData.new_balance,
     });
+  })
+);
+
+// GET /api/wallet/banks - Get list of Nigerian banks from Paystack
+walletRouter.get(
+  '/banks',
+  asyncHandler(async (request, response) => {
+    await requireAuth(request);
+    const banks = await getBanks();
+    response.json({ status: 'success', banks });
+  })
+);
+
+// POST /api/wallet/resolve-account - Resolve account name
+walletRouter.post(
+  '/resolve-account',
+  asyncHandler(async (request, response) => {
+    await requireAuth(request);
+    const { account_number, bank_code } = z.object({
+      account_number: z.string().min(10).max(10),
+      bank_code: z.string()
+    }).parse(request.body);
+
+    const account = await resolveAccountNumber(account_number, bank_code);
+    response.json({ status: 'success', account });
   })
 );

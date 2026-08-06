@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Shield, Check, Info, Lock, Wallet as WalletIcon, HelpCircle, Loader2 } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
+import { buildAuthHeaders } from '../../utils/auth';
 
 declare global {
   interface Window {
@@ -39,7 +40,8 @@ export const CustomerCheckout: React.FC = () => {
 
   // Fetch wallet balance
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/wallet/balance`, { credentials: 'include' })
+    const headers = { ...buildAuthHeaders() } as HeadersInit;
+    fetch(`${apiBaseUrl}/api/wallet/balance`, { headers, credentials: 'include' })
       .then(res => res.json())
       .then(data => setWalletBalance(data.wallet_balance ?? 0))
       .catch(() => setWalletBalance(0));
@@ -53,10 +55,11 @@ export const CustomerCheckout: React.FC = () => {
   }
 
   const serviceFee = 700;
+  const itemCost = Number(errand.budget_item_cost) || 0;
   const runnerFee = Number(errand.budget_customer_fee) || Number(errand.budget_service_fee) || 0;
   const priorityFee = priority ? 500 : 0;
   const discount = promoApplied ? 1000 : 0;
-  const total = Math.max(0, serviceFee + runnerFee + priorityFee - discount);
+  const total = Math.max(0, itemCost + serviceFee + runnerFee + priorityFee - discount);
 
   const processWalletPayment = async () => {
     setIsProcessing(true);
@@ -76,7 +79,8 @@ export const CustomerCheckout: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
           'Idempotency-Key': idempotencyKey,
-        },
+          ...buildAuthHeaders()
+        } as HeadersInit,
         credentials: 'include',
         body: JSON.stringify({
           amount: total,
@@ -179,6 +183,12 @@ export const CustomerCheckout: React.FC = () => {
 
           {/* Pricing breakdown */}
           <div className="mt-5 space-y-3">
+            {itemCost > 0 && (
+              <div className="flex justify-between text-sm text-black dark:text-white">
+                <span className="text-black/60 dark:text-white/60">Item cost (Market)</span>
+                <span className="font-semibold text-black dark:text-white">₦{itemCost.toLocaleString()}</span>
+              </div>
+            )}
             <div className="flex justify-between text-sm">
               <span className="text-black/60 dark:text-white/60">Runner fee</span>
               <span className="font-semibold text-black dark:text-white">₦{runnerFee.toLocaleString()}</span>
