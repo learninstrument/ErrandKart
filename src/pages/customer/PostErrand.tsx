@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home, Store } from 'lucide-react';
+import { ArrowLeft, ShoppingBasket, ShoppingCart, PackageCheck, MapPin, Home, Store, Plus, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
@@ -35,6 +35,9 @@ export const PostErrand: React.FC = () => {
   const [description, setDescription] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
+  
+  // Market specific state
+  const [marketItems, setMarketItems] = useState([{ name: '', estimatedPrice: '' }]);
   
   // Track exact GPS coordinates if the user dropped a pin or we auto-detected them
   const [explicitPickupCoords, setExplicitPickupCoords] = useState<{lat: number, lng: number} | null>(null);
@@ -277,6 +280,12 @@ export const PostErrand: React.FC = () => {
           pickup_lng: pickupLng,
           dropoff_lat: dropoffLat, 
           dropoff_lng: dropoffLng,
+          market_items: category === 'Market' 
+            ? marketItems.filter(item => item.name.trim() !== '').map(item => ({
+                name: item.name,
+                estimatedPrice: Number(item.estimatedPrice) || 0
+              }))
+            : [],
         }),
       });
 
@@ -333,13 +342,67 @@ export const PostErrand: React.FC = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            <TextArea
-              label="Description"
-              placeholder="Share item list, preferred brand, quantity, and instructions..."
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+            {category !== 'Market' ? (
+              <TextArea
+                label="Description"
+                placeholder="Share item list, preferred brand, quantity, and instructions..."
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            ) : (
+              <div className="mt-4 mb-2">
+                <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-black/50 dark:text-white/50">
+                  Shopping List
+                </label>
+                <div className="flex flex-col gap-3">
+                  {marketItems.map((item, index) => (
+                    <div key={index} className="flex gap-2 items-center">
+                      <div className="flex-1">
+                        <Input 
+                          placeholder="e.g. 1 Bag of Rice" 
+                          value={item.name}
+                          onChange={(e) => {
+                            const newItems = [...marketItems];
+                            newItems[index].name = e.target.value;
+                            setMarketItems(newItems);
+                          }}
+                        />
+                      </div>
+                      <div className="w-1/3">
+                        <Input 
+                          type="number"
+                          placeholder="Price (₦)" 
+                          value={item.estimatedPrice}
+                          onChange={(e) => {
+                            const newItems = [...marketItems];
+                            newItems[index].estimatedPrice = e.target.value;
+                            setMarketItems(newItems);
+                          }}
+                        />
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const newItems = marketItems.filter((_, i) => i !== index);
+                          setMarketItems(newItems);
+                        }}
+                        className="h-12 w-12 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 mt-1 transition-colors"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setMarketItems([...marketItems, { name: '', estimatedPrice: '' }])}
+                    className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-black/20 dark:border-white/20 py-3 text-sm font-bold text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 transition-colors mt-2"
+                  >
+                    <Plus size={16} /> Add Item
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="mt-2">
               <label className="mb-2 ml-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-black/50 dark:text-white/50">
@@ -559,8 +622,21 @@ export const PostErrand: React.FC = () => {
           </section>
 
           <section className="rounded-3xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#0A0A0A]/80 p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-2xl md:p-6 backdrop-blur-md">
-            <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">BUDGET</h3>
-            <p className="mb-3 ml-1 text-xs text-black/50 dark:text-white/50">How much are you paying the runner for this errand?</p>
+            <h3 className="mb-4 text-xs font-black tracking-widest uppercase text-black/40 dark:text-white/40">RUNNER SERVICE FEE</h3>
+            
+            {category === 'Market' && (
+              <div className="mb-4 rounded-xl bg-kart-orange/10 p-4 border border-kart-orange/20">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-kart-orange uppercase tracking-wider">Total Item Cost (Escrow)</span>
+                  <span className="text-lg font-black text-kart-orange">
+                    ₦{marketItems.reduce((sum, item) => sum + (Number(item.estimatedPrice) || 0), 0).toLocaleString()}
+                  </span>
+                </div>
+                <p className="mt-1 text-[10px] text-kart-orange/80">This amount will be held safely and sent directly to the seller when purchased.</p>
+              </div>
+            )}
+
+            <p className="mb-3 ml-1 text-xs text-black/50 dark:text-white/50">How much are you paying the runner for their service?</p>
 
             <div className="relative">
               <div className="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-black text-black dark:text-white">₦</div>

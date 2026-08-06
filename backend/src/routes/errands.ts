@@ -26,6 +26,10 @@ const createErrandSchema = z.object({
   pickup_lng: z.number().optional(),
   dropoff_lat: z.number().optional(),
   dropoff_lng: z.number().optional(),
+  market_items: z.array(z.object({
+    name: z.string(),
+    estimatedPrice: z.number()
+  })).optional(),
 });
 
 // POST /api/errands - Customer creates a new errand
@@ -57,6 +61,8 @@ errandsRouter.post(
         pickup_lng: payload.pickup_lng,
         dropoff_lat: payload.dropoff_lat,
         dropoff_lng: payload.dropoff_lng,
+        market_items: payload.market_items ?? [],
+        budget_item_cost: payload.market_items ? payload.market_items.reduce((sum, item) => sum + item.estimatedPrice, 0) : 0,
       })
       .select('*')
       .single();
