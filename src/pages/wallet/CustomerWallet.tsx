@@ -236,7 +236,14 @@ export const CustomerWallet: React.FC = () => {
                          txIsCredit(tx.type) ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-black dark:text-white">{txLabel(tx.type)}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-black dark:text-white">{txLabel(tx.type)}</p>
+                          {txStatusBadge(tx.status) && (
+                            <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-black/5 dark:bg-white/5 ${txStatusBadge(tx.status)?.color}`}>
+                              {txStatusBadge(tx.status)?.label}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">{formatDate(tx.created_at)}</p>
                         <p className="text-[10px] text-black/40 dark:text-white/40 mt-0.5 font-mono">
                           ID: {tx.reference || tx.id.split('-')[0].toUpperCase()}

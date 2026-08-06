@@ -7,8 +7,10 @@ import { RunnerBottomNav } from '../runner/RunnerBottomNav';
 type Transaction = {
   id: string;
   amount: number;
-  type: 'deposit' | 'withdrawal' | 'escrow_hold' | 'escrow_release';
+  type: 'deposit' | 'withdrawal' | 'escrow_hold' | 'escrow_release' | 'refund';
+  status?: 'pending' | 'completed' | 'refunded' | 'disputed' | 'failed';
   reference: string | null;
+  errand_id?: string | null;
   created_at: string;
 };
 
@@ -95,13 +97,24 @@ export const RunnerWallet: React.FC = () => {
     switch (type) {
       case 'deposit': return 'Wallet Funded';
       case 'withdrawal': return 'Withdrawal';
-      case 'escrow_hold': return 'Escrow Hold';
-      case 'escrow_release': return 'Errand Payout';
+      case 'escrow_hold': return 'Errand Payment';
+      case 'escrow_release': return 'Runner Payout';
+      case 'refund': return 'Refund';
       default: return type;
     }
   };
 
-  const txIsCredit = (type: string) => type === 'deposit' || type === 'escrow_release';
+  const txStatusBadge = (status?: string) => {
+    switch (status) {
+      case 'refunded': return { label: 'Refunded', color: 'text-orange-500' };
+      case 'disputed': return { label: 'Disputed', color: 'text-red-500' };
+      case 'failed': return { label: 'Failed', color: 'text-red-500' };
+      case 'pending': return { label: 'Pending', color: 'text-yellow-500' };
+      default: return null;
+    }
+  };
+
+  const txIsCredit = (type: string) => type === 'deposit' || type === 'escrow_release' || type === 'refund';
 
   // This week's earnings
   const thisWeekStart = new Date();
@@ -216,10 +229,8 @@ export const RunnerWallet: React.FC = () => {
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`flex h-12 w-12 items-center justify-center rounded-[14px] shadow-inner ${
-                          txIsCredit(tx.type) ? 'bg-market-green/15 text-market-green' :
-                          tx.type === 'escrow_hold' ? 'bg-kart-orange/15 text-kart-orange' :
-                          'bg-red-500/15 text-red-500 dark:text-red-400'
+                        className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+                          txIsCredit(tx.type) ? 'bg-market-green/10 text-market-green' : tx.type === 'escrow_hold' ? 'bg-kart-orange/10 text-kart-orange' : 'bg-red-500/10 text-red-500'
                         }`}
                       >
                         {tx.type === 'escrow_hold' ? <Lock size={20} /> :
@@ -227,14 +238,21 @@ export const RunnerWallet: React.FC = () => {
                          txIsCredit(tx.type) ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-black dark:text-white">{txLabel(tx.type)}</p>
-                        <p className="text-xs font-semibold text-black/50 dark:text-white/50">{formatDate(tx.created_at)}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-black dark:text-white">{txLabel(tx.type)}</p>
+                          {txStatusBadge(tx.status) && (
+                            <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-black/5 dark:bg-white/5 ${txStatusBadge(tx.status)?.color}`}>
+                              {txStatusBadge(tx.status)?.label}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">{formatDate(tx.created_at)}</p>
                         <p className="text-[10px] text-black/40 dark:text-white/40 mt-0.5 font-mono">
                           ID: {tx.reference || tx.id.split('-')[0].toUpperCase()}
                         </p>
                       </div>
                     </div>
-                    <span className={`text-base font-black ${txIsCredit(tx.type) ? 'text-market-green' : tx.type === 'escrow_hold' ? 'text-kart-orange' : 'text-red-500 dark:text-red-400'}`}>
+                    <span className={`text-sm font-bold ${txIsCredit(tx.type) ? 'text-market-green' : tx.type === 'escrow_hold' ? 'text-kart-orange' : 'text-red-500'}`}>
                       {txIsCredit(tx.type) ? '+' : '-'}₦{Number(tx.amount).toLocaleString()}
                     </span>
                   </div>
