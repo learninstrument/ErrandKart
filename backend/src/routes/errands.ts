@@ -297,22 +297,24 @@ errandsRouter.patch(
 
     if (error) throw new HttpError(500, 'Failed to update errand status', error);
 
-    // --- ESCROW RELEASE LOGIC ---
+    // --- ESCROW RELEASE LOGIC (Double-Entry Ledger) ---
     if (status === 'completed' && errand.status !== 'completed' && errand.payment_status === 'escrow_held' && errand.runner_id) {
       const payoutAmount = Number(errand.budget_customer_fee || errand.budget_service_fee || 0);
 
       const reference = `release_${id}_${Date.now()}`;
 
-      // Use the atomic PostgreSQL RPC function to process the escrow release
-      const { error: rpcError } = await supabaseAdmin.rpc('process_escrow_release', {
+      // Use the atomic ledger_escrow_release RPC (double-entry: escrow DEBIT → runner_wallet CREDIT)
+      const { data: releaseData, error: rpcError } = await supabaseAdmin.rpc('ledger_escrow_release', {
         p_runner_id: errand.runner_id,
         p_amount: payoutAmount,
-        p_order_id: id,
+        p_errand_id: id,
         p_reference: reference,
       });
 
       if (rpcError) {
-        console.error('[EscrowReleaseError] Failed to process escrow release via RPC:', rpcError);
+        console.error('[EscrowReleaseError] Failed to process escrow release via ledger RPC:', rpcError);
+      } else if (releaseData?.duplicate) {
+        console.warn('[EscrowRelease] Duplicate release detected for errand:', id);
       }
     }
 

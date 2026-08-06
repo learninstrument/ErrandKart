@@ -7,8 +7,10 @@ import { BottomNav } from '../customer/BottomNav';
 type Transaction = {
   id: string;
   amount: number;
-  type: 'deposit' | 'withdrawal' | 'escrow_hold' | 'escrow_release';
+  type: 'deposit' | 'withdrawal' | 'escrow_hold' | 'escrow_release' | 'refund';
+  status?: 'pending' | 'completed' | 'refunded' | 'disputed' | 'failed';
   reference: string | null;
+  errand_id?: string | null;
   created_at: string;
 };
 
@@ -89,13 +91,24 @@ export const CustomerWallet: React.FC = () => {
     switch (type) {
       case 'deposit': return 'Wallet Top Up';
       case 'withdrawal': return 'Withdrawal';
-      case 'escrow_hold': return 'Escrow Hold';
-      case 'escrow_release': return 'Escrow Released';
+      case 'escrow_hold': return 'Errand Payment';
+      case 'escrow_release': return 'Runner Payout';
+      case 'refund': return 'Refund';
       default: return type;
     }
   };
 
-  const txIsCredit = (type: string) => type === 'deposit' || type === 'escrow_release';
+  const txStatusBadge = (status?: string) => {
+    switch (status) {
+      case 'refunded': return { label: 'Refunded', color: 'text-orange-500' };
+      case 'disputed': return { label: 'Disputed', color: 'text-red-500' };
+      case 'failed': return { label: 'Failed', color: 'text-red-500' };
+      case 'pending': return { label: 'Pending', color: 'text-yellow-500' };
+      default: return null;
+    }
+  };
+
+  const txIsCredit = (type: string) => type === 'deposit' || type === 'escrow_release' || type === 'refund';
 
   // Calculate pending escrow from transactions
   const pendingEscrow = transactions

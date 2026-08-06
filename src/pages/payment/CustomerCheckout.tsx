@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Shield, Check, Info, Lock, Wallet as WalletIcon, HelpCircle, Loader2 } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
@@ -34,6 +34,9 @@ export const CustomerCheckout: React.FC = () => {
 
   const apiBaseUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? 'http://localhost:4000');
 
+  // Generate a unique idempotency key per checkout session to prevent double-charges
+  const idempotencyKey = useMemo(() => `checkout_${crypto.randomUUID()}`, []);
+
   // Fetch wallet balance
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/wallet/balance`, { credentials: 'include' })
@@ -42,15 +45,7 @@ export const CustomerCheckout: React.FC = () => {
       .catch(() => setWalletBalance(0));
   }, [apiBaseUrl]);
 
-  // Load Paystack Inline JS
-  useEffect(() => {
-    if (document.getElementById('paystack-script')) return;
-    const script = document.createElement('script');
-    script.id = 'paystack-script';
-    script.src = 'https://js.paystack.co/v2/inline.js';
-    script.async = true;
-    document.head.appendChild(script);
-  }, []);
+  // No longer loading Paystack script — checkout is wallet-only
 
   if (!errand) {
     navigate('/customer/post-errand', { replace: true });
@@ -75,10 +70,13 @@ export const CustomerCheckout: React.FC = () => {
     }
 
     try {
-      // For wallet payments, we directly create an escrow hold via the internal wallet checkout endpoint
+      // Atomic wallet checkout with idempotency key to prevent double-charges
       const res = await fetch(`${apiBaseUrl}/api/wallet/checkout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey,
+        },
         credentials: 'include',
         body: JSON.stringify({
           amount: total,
